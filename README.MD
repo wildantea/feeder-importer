@@ -23,7 +23,7 @@ edit lalu sesuaikan username,pass, dan nama database,
 	//main directory
 	define( "DIR_MAIN", "feeder-importer/");
 ```
-* buka Aplikasi di http://localhost/feeder-importer
+* buka Aplikasi di http://localhost/feeder-importer dan login dengan akun berikut
 ```
 	username : admin
 	password : admin
