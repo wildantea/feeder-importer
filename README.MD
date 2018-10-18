@@ -11,6 +11,7 @@
 * import db.sql ke databse baru tersebut
 * Buka file config.php di C:/xampp/htdocs/feeder-importer/admina/inc/config.php
 edit lalu sesuaikan username,pass, dan nama database,
+
 	define( "DATABASE_NAME", "feeder_importer" );
 	define( "DB_USERNAME", "root" );
 
