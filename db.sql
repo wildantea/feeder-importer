@@ -8801,7 +8801,7 @@ CREATE TABLE IF NOT EXISTS `sys_system` (
 -- Dumping data for table feeder_free_production.sys_system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `sys_system` DISABLE KEYS */;
 INSERT INTO `sys_system` (`id`, `data`) VALUES
-	(1, 'eyJXZOyZWRpcmVjdCI6IlkiLCJsYXN0X2xvZ2luIjoiMjAxOC0xMC0xNyJ9');
+	(1, 'eyJXZOyZWRpcmVjdCI6Ik4iLCJsYXN0X2xvZ2luIjoiMjAxOC0xMC0xNyJ9');
 /*!40000 ALTER TABLE `sys_system` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.sys_update
