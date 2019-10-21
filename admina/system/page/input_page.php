@@ -33,10 +33,10 @@ if ($_POST['type_menu']=='main') {
 
   foreach ($db->fetch_all('sys_group_users') as $group) {
     if ($group->id==1) {
-      $db->fetch_custom("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
+      $db->query("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
   values (".$last_id.",".$group->id.",'Y','Y','Y','Y')");
     } else {
-      $db->fetch_custom("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
+      $db->query("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
   values (".$last_id.",".$group->id.",'N','N','N','N')");
     }
     
@@ -111,7 +111,7 @@ $db->insert("'.$_POST['foreign_album'].'",array("'.$_POST['foreign_album_nama'].
     }
     break; //delete album
   case "hapus_album":
-    foreach ($db->fetch_custom("select * from '.$_POST['foreign_album'].' where '.$_POST['foreign_album_primary'].'=?",array("'.$_POST['foreign_album_primary'].'"=>$_GET["id"])) as $key) {
+    foreach ($db->query("select * from '.$_POST['foreign_album'].' where '.$_POST['foreign_album_primary'].'=?",array("'.$_POST['foreign_album_primary'].'"=>$_GET["id"])) as $key) {
       $db->deleteDirectory("../../../upload/foto_'.$_POST['album_table'].'/".$key->'.$_POST['foreign_album_nama'].');
     }
     $db->delete("'.$_POST['album_table'].'","'.$_POST['album_primary'].'",$_GET["id"]);
@@ -196,7 +196,7 @@ $query_album_on_list = '
       }
       foreach ($dtb as $isi) {
 
-      $sub=$db->fetch_custom("select count('.$_POST['foreign_album_primary'].') as jml,'.$_POST['foreign_album_nama'].' from '.$_POST['foreign_album'].' where '.$_POST['foreign_album_id'].'=\'$isi->id\' limit 1"); 
+      $sub=$db->query("select count('.$_POST['foreign_album_primary'].') as jml,'.$_POST['foreign_album_nama'].' from '.$_POST['foreign_album'].' where '.$_POST['foreign_album_id'].'=\'$isi->id\' limit 1"); 
 
         foreach ($sub as $sb) {
           ?>
@@ -416,7 +416,7 @@ elseif ($_POST['method_table']=='dtb_server') {
       $join1.= " ".$_POST['join_cond'][$i]." join ".$_POST['join_with'][$i]." on ".$_POST['join_on_first'][$i]."=".$_POST['join_on_next'][$i];
     }
       $select_table = '<?php 
-      $dtb=$db->fetch_custom("select '.$col1.','.$main_table.'.'.$primary_key.' from '.$main_table.' '.$join1.'");
+      $dtb=$db->query("select '.$col1.','.$main_table.'.'.$primary_key.' from '.$main_table.' '.$join1.'");
       $i=1;
       foreach ($dtb as $isi) {
         ?><tr id="line_<?=$isi->'.$primary_key.';?>">
@@ -433,7 +433,7 @@ elseif ($_POST['method_table']=='dtb_server') {
       ?>';
   } else {
       $select_table = '<?php 
-      $dtb=$db->fetch_custom("select '.$col1.' from '.$main_table.'");
+      $dtb=$db->query("select '.$col1.' from '.$main_table.'");
       $i=1;
       foreach ($dtb as $isi) {
         ?><tr id="line_<?=$isi->'.$primary_key.';?>"><td align="center"><?=$i;?></td>
@@ -1068,10 +1068,10 @@ $data = array(
 
   foreach ($db->fetch_all('sys_group_users') as $group) {
     if ($group->id==1) {
-      $db->fetch_custom("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
+      $db->query("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
   values (".$last_id.",".$group->id.",'Y','Y','Y','Y')");
     } else {
-      $db->fetch_custom("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
+      $db->query("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
   values (".$last_id.",".$group->id.",'N','N','N','N')");
     }
     

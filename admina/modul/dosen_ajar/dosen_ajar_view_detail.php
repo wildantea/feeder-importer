@@ -39,7 +39,7 @@
                         <label for="Jurusan" class="control-label col-lg-1">Semester</label>
                         <div class="col-lg-3">
                           <select id="semester" name="semester" data-placeholder="Pilih Jurusan ..." class="form-control chzn-select" tabindex="2" required>
-               <?php foreach ($db->fetch_custom("select * from semester order by semester desc") as $isi) {
+               <?php foreach ($db->query("select * from semester order by semester desc") as $isi) {
                   echo "<option value='$isi->semester'>$isi->semester $isi->nama_semester</option>";
                } ?>
               </select>
@@ -67,7 +67,7 @@
                         <label for="Jurusan" class="control-label col-lg-1">Semester</label>
                         <div class="col-lg-3">
                           <select id="semester_up" name="semester_up" data-placeholder="Pilih Jurusan ..." class="form-control chzn-select" tabindex="2" required>
-               <?php foreach ($db->fetch_custom("select ajar_dosen.semester,nama_semester from ajar_dosen inner join semester on
+               <?php foreach ($db->query("select ajar_dosen.semester,nama_semester from ajar_dosen inner join semester on
  ajar_dosen.semester=semester.semester where kode_jurusan='".$id_jur."' group by ajar_dosen.semester order by ajar_dosen.semester desc") as $isi) {
                   echo "<option value='$isi->semester'>$isi->semester $isi->nama_semester</option>";
                } ?>
@@ -113,7 +113,7 @@
                         <div class="col-lg-3">
                         <select id="sem_filter" data-placeholder="Pilih Semester ..." class="form-control chzn-select" tabindex="2">
                         <option value="all">Semua</option>
-               <?php foreach ($db->fetch_custom("select ajar_dosen.semester,nama_semester from ajar_dosen inner join semester on
+               <?php foreach ($db->query("select ajar_dosen.semester,nama_semester from ajar_dosen inner join semester on
  ajar_dosen.semester=semester.semester where kode_jurusan='".$id_jur."' group by ajar_dosen.semester order by ajar_dosen.semester desc") as $isi) {
                   echo "<option value='$isi->semester'>$isi->semester $isi->nama_semester</option>";
                } ?>

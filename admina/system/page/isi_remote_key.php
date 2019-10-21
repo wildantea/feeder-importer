@@ -1,8 +1,8 @@
 <?php
 include "../../inc/config.php";
-$tables = $db->fetch_custom("show columns from ".$_GET['table']);
-$tabled = $db->fetch_custom("show columns from ".$_GET['table']);
-$table = $db->fetch_custom("show columns from ".$_GET['table']);
+$tables = $db->query("show columns from ".$_GET['table']);
+$tabled = $db->query("show columns from ".$_GET['table']);
+$table = $db->query("show columns from ".$_GET['table']);
 ?>
  Primary Key <select name="isi_remote_primary" class="form-control">
   <?php foreach ($tables as $tab) {

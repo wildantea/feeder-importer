@@ -12,7 +12,7 @@ switch ($_GET["act"]) {
 
 
   //SKS per semester > 30 sks
-   $valids_smt = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and sks_smt > 30");
+   $valids_smt = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and sks_smt > 30");
 
     //check if ips is valid
     if ($valids_smt->rowCount()>0) {
@@ -32,7 +32,7 @@ switch ($_GET["act"]) {
     }
 
 
-    $valids = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and ips > 4");
+    $valids = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and ips > 4");
 
     //check if ips is valid
     if ($valids->rowCount()>0) {
@@ -48,7 +48,7 @@ switch ($_GET["act"]) {
     }
     
     //check if ipk is valid
-    $valids_ipk = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and ipk > 4");
+    $valids_ipk = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and ipk > 4");
 
     if ($valids_ipk->rowCount()>0) {
          foreach ($valids_ipk as $val_ipk) {
@@ -62,7 +62,7 @@ switch ($_GET["act"]) {
     } 
 
     //check if ipk=0 but ips > 0
-     $valids_ips_ipk = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and ipk=0 and ips>0");
+     $valids_ips_ipk = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and ipk=0 and ips>0");
     if ($valids_ips_ipk->rowCount()>0) {
         foreach ($valids_ips_ipk as $valid_ips_ipk) {
        $ket_valid_ips_ipk = "NIlai IPK = 0 , tapi IPS > 0 ";
@@ -76,7 +76,7 @@ switch ($_GET["act"]) {
   }
 
    //check if SKS semester = 0 , tapi KRS atau ips > 0
-     $ket_krs_ada = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and (sks_smt=0 or sks_total=0) and ips>0");
+     $ket_krs_ada = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and (sks_smt=0 or sks_total=0) and ips>0");
     if ($ket_krs_ada->rowCount()>0) {
         foreach ($ket_krs_ada as $ket_krs) {
        $ket_krsnya = "SKS semester = 0 , tapi KRS atau ips > 0";
@@ -91,7 +91,7 @@ switch ($_GET["act"]) {
 
     
     //othewise success all
-     $sukses = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and valid=0");
+     $sukses = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['jurusan']."' and semester='".$_POST['sem']."' and valid!=1 and valid=0");
      foreach ($sukses as $su) {
        
         $data = array(
@@ -103,13 +103,13 @@ switch ($_GET["act"]) {
     break;
 
     case 'delete_error':
-    $db->fetch_custom("delete from nilai_akm where status_error=2 and kode_jurusan='".$_POST['id']."'");
+    $db->query("delete from nilai_akm where status_error=2 and kode_jurusan='".$_POST['id']."'");
     break;
     case 'delete_all':
     if ($_POST['sem']=='all') {
-      $db->fetch_custom("delete from nilai_akm where kode_jurusan='".$_POST['id']."'");
+      $db->query("delete from nilai_akm where kode_jurusan='".$_POST['id']."'");
     } else {
-      $db->fetch_custom("delete from nilai_akm where kode_jurusan='".$_POST['id']."' and semester='".$_POST['sem']."'");
+      $db->query("delete from nilai_akm where kode_jurusan='".$_POST['id']."' and semester='".$_POST['sem']."'");
     }
     
     break;
@@ -239,13 +239,13 @@ if (($sukses>0) || ($error_count>0)) {
    
     $up = $db->update("nilai_akm",$data,"id",$_POST["id"]);
 
-     $valids = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['kode_jurusan']."' and semester='".$_POST['semester']."' and ips > 4 and id='".$_POST["id"]."'");
+     $valids = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['kode_jurusan']."' and semester='".$_POST['semester']."' and ips > 4 and id='".$_POST["id"]."'");
 
      //check if ipk is valid
-    $valids_ipk = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['kode_jurusan']."' and semester='".$_POST['semester']."' and ipk > 4 and id='".$_POST["id"]."'");
+    $valids_ipk = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['kode_jurusan']."' and semester='".$_POST['semester']."' and ipk > 4 and id='".$_POST["id"]."'");
 
     //check if ipk=0 but ips > 0
-     $valids_ips_ipk = $db->fetch_custom("select * from nilai_akm where kode_jurusan='".$_POST['kode_jurusan']."' and semester='".$_POST['semester']."' and ipk=0 and ips>0  and id='".$_POST["id"]."'");
+     $valids_ips_ipk = $db->query("select * from nilai_akm where kode_jurusan='".$_POST['kode_jurusan']."' and semester='".$_POST['semester']."' and ipk=0 and ips>0  and id='".$_POST["id"]."'");
 
 
     //check if ips is valid

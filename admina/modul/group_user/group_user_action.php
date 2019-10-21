@@ -10,7 +10,7 @@ switch ($_GET["act"]) {
 
 	  $last_id= $db->get_last_id();  
 
-		$db->fetch_custom("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
+		$db->query("insert into sys_menu_role(id_menu,group_id,read_act,insert_act,update_act,delete_act)
 select sys_menu.id,".$last_id.",'N','N','N','N' from sys_menu");
 		
 		if ($in=true) {

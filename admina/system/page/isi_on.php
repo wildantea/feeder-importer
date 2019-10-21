@@ -1,7 +1,7 @@
 <?php
 include "../../inc/config.php";
-$table = $db->fetch_custom("show columns from ".$_GET['tb']);
-$tabs = $db->fetch_custom("show columns from ".$_GET['tb']);
+$table = $db->query("show columns from ".$_GET['tb']);
+$tabs = $db->query("show columns from ".$_GET['tb']);
 $col = $_GET['col'];
 ?>
  on Name <select name="on_name[<?=$col?>]" id="on_name[<?=$col->Field;?>]" class="form-control">

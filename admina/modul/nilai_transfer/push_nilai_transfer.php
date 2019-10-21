@@ -60,7 +60,7 @@ $token = $result;
 	$id_sp = $get_id_sp['result']['id_sp'];
 
 
-	$count = $db->fetch_custom("select *,nilai_transfer.id as id_krs from nilai_transfer inner join jurusan on nilai_transfer.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and status_error!=1");
+	$count = $db->query("select *,nilai_transfer.id as id_krs from nilai_transfer inner join jurusan on nilai_transfer.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and status_error!=1");
 	$jumlah = $count->rowCount();
 
 
@@ -79,7 +79,7 @@ $token = $result;
 		$new_pu = new Manticorp\ProgressUpdater($options);
 
 	
-	 	$data = $db->fetch_custom("select *,nilai_transfer.id as id_krs from nilai_transfer inner join jurusan on nilai_transfer.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and status_error!=1");
+	 	$data = $db->query("select *,nilai_transfer.id as id_krs from nilai_transfer inner join jurusan on nilai_transfer.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and status_error!=1");
 			//let's push first page
 
 			$stageOptions = array(

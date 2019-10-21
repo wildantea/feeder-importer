@@ -32,7 +32,7 @@
                         <div class="col-lg-3">
                         <select id="provinsi" name="provinsi" data-placeholder="Pilih Provinsi ..." class="form-control chzn-select" tabindex="2">
                         <option value="all">Semua</option>
-               <?php foreach ($db->fetch_custom("select id_wil,nm_wil from data_wilayah where id_level_wil='1'") as $isi) {
+               <?php foreach ($db->query("select id_wil,nm_wil from data_wilayah where id_level_wil='1'") as $isi) {
                   echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
                } ?>
               </select>

@@ -61,22 +61,21 @@ switch ($_GET["act"]) {
             $error[] = $val[0]." Sudah Ada";
           } else {
             $sukses++;
-            $data = array(
+            $data[] = array(
             "id_kurikulum"=>$_POST['id_kur'],
-            "kode_mk"=>filter_var($val[0], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-            "nama_mk"=>filter_var($val[1], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-            "jns_mk"=>$val[2],
-            "sks_tm"=>$val[3],
-            "sks_prak"=>$val[4],
-            "sks_prak_lap"=>$val[5],
-            "sks_sim"=>$val[6],
-            "tgl_mulai_efektif"=>$val[7],
-            "tgl_akhir_efektif"=>$val[8],
-            "semester"=>$val[9],
+            "kode_mk"=>$db->trimmer($val[0]),
+            "nama_mk"=>$db->trimmer($val[1]),
+            "jns_mk"=>$db->trimmer($val[2]),
+            "sks_tm"=>$db->trimmer($val[3]),
+            "sks_prak"=>$db->trimmer($val[4]),
+            "sks_prak_lap"=>$db->trimmer($val[5]),
+            "sks_sim"=>$db->trimmer($val[6]),
+            'metode_pelaksanaan_kuliah' => $db->trimmer($val[7]),
+            "tgl_mulai_efektif"=>$db->trimmer($val[8]),
+            "tgl_akhir_efektif"=>$db->trimmer($val[9]),
+            "semester"=>$db->trimmer($val[10]),
             "kode_jurusan" =>$_POST["jurusan"]
             );
-
-            $in = $db->insert('mat_kurikulum',$data);
 
         }
 
@@ -86,6 +85,9 @@ switch ($_GET["act"]) {
 
       }
 
+if (!empty($data)) {
+  $db->insert_massal('mat_kurikulum',$data);
+}
 
           unlink("../../../upload/matakuliah/".$_FILES['semester']['name']);
           $msg = '';
@@ -111,7 +113,7 @@ switch ($_GET["act"]) {
           break;
 
    case 'delete_all':
-    $db->fetch_custom("delete from mat_kurikulum where kode_jurusan='".$_POST['id']."' and tahun='".$_POST['tahun']."'");
+    $db->query("delete from mat_kurikulum where kode_jurusan='".$_POST['id']."' and id_kurikulum='".$_POST['tahun']."'");
     break;
 
   case "in":

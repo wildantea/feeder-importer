@@ -45,7 +45,7 @@
         } else {
           $jurusan_sem = "where mhs.kode_jurusan='".$id_jur."'";
         }
-          foreach ($db->fetch_custom("select mulai_smt from mhs $jurusan_sem group by mulai_smt order by mulai_smt desc") as $isi) {
+          foreach ($db->query("select mulai_smt from mhs $jurusan_sem group by mulai_smt order by mulai_smt desc") as $isi) {
                   echo "<option value='$isi->mulai_smt'>$isi->mulai_smt</option>";
                } 
            ?>
@@ -98,7 +98,7 @@
         } else {
           $jurusan_sem = "where mhs.kode_jurusan='".$id_jur."'";
         }
-          foreach ($db->fetch_custom("select mulai_smt from mhs $jurusan_sem group by mulai_smt order by mulai_smt desc") as $isi) {
+          foreach ($db->query("select mulai_smt from mhs $jurusan_sem group by mulai_smt order by mulai_smt desc") as $isi) {
                   echo "<option value='$isi->mulai_smt'>$isi->mulai_smt</option>";
                } 
            ?>

@@ -155,7 +155,7 @@
                         <div class="col-lg-10">
                           <select name="id_wil" id="id_wil" data-placeholder="Kecamatan ..." class="form-control chzn-select" tabindex="2" required="">
                <option value=""></option>
-               <?php foreach ($db->fetch_custom("select dwc.id_wil as id_wil, data_wilayah.nm_wil as provinsi,dw.nm_wil as kab,dwc.nm_wil as kecamatan from data_wilayah
+               <?php foreach ($db->query("select dwc.id_wil as id_wil, data_wilayah.nm_wil as provinsi,dw.nm_wil as kab,dwc.nm_wil as kecamatan from data_wilayah
 inner join data_wilayah dw on data_wilayah.id_wil=dw.id_induk_wilayah
 inner join data_wilayah dwc on dw.id_wil=dwc.id_induk_wilayah
 where data_wilayah.id_level_wil='1'") as $isi) {
@@ -402,11 +402,17 @@ echo "<option value='$isi->id_pembiayaan'>$isi->nm_pembiayaan</option>";
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
+                        <label for="biaya_masuk_kuliah" class="control-label col-lg-2">Biaya Masuk Kuliah</label>
+                        <div class="col-lg-10">
+                          <input type="number" name="biaya_masuk_kuliah" class="form-control" > 
+                        </div>
+                      </div><!-- /.form-group -->
+<div class="form-group">
                         <label for="Jurusan" class="control-label col-lg-2">Jurusan</label>
                         <div class="col-lg-10">
                           <select name="kode_jurusan" data-placeholder="Pilih Jurusan ..." class="form-control chzn-select" tabindex="2" required>
                <?php 
-  $jur = $db->fetch_custom("select * from jurusan where kode_jurusan=?",array('jur' => $path_four));
+  $jur = $db->query("select * from jurusan where kode_jurusan=?",array('jur' => $path_four));
 foreach ( $jur as $isi) {
                   echo "<option value='$isi->kode_jurusan'>$isi->jenjang $isi->nama_jurusan</option>";
                   

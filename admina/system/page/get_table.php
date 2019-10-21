@@ -1,6 +1,6 @@
 <?php
 include "../../inc/config.php";
-$column = $db->fetch_custom("show columns from ".$_GET['tb']);
+$column = $db->query("show columns from ".$_GET['tb']);
 ?>
    <div class="col-lg-12">
    	<h4>Checklist Kolom Yang akan dijadikan Crud</h4>

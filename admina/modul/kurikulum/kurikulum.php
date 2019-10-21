@@ -29,7 +29,7 @@ switch ($path_act) {
 
     break;
     case 'kurmat':
-      $data_edit = $db->fetch_custom("select mk.id, k.nama_kur,mk.kode_mk,mk.nama_mk,mk.jns_mk from mat_kurikulum mk inner join kurikulum k
+      $data_edit = $db->query("select mk.id, k.nama_kur,mk.kode_mk,mk.nama_mk,mk.jns_mk from mat_kurikulum mk inner join kurikulum k
 on mk.id_kurikulum=k.id and k.id=?",array("k.id" =>$path_id));
       foreach ($data_edit as $dt) {
        

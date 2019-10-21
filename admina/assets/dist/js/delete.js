@@ -149,7 +149,7 @@ $(function(){
                 data: {id:id,tahun:tahun},
                 url: uri+"?act=delete_all",
                 success: function(data){
-                  //console.log(data);
+                  console.log(data);
                     window.location.reload();
                 }
                 });

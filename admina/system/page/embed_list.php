@@ -1,6 +1,6 @@
 <?php
 include "../../inc/config.php";
-$column = $db->fetch_custom("show columns from ".$_GET['tb']);
+$column = $db->query("show columns from ".$_GET['tb']);
 $i=1;
 ?>
 

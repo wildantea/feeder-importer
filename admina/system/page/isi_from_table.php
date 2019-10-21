@@ -1,6 +1,6 @@
 <?php
 include "../../inc/config.php";
-$table = $db->fetch_custom("show table status");
+$table = $db->query("show table status");
 $col = $_GET['col'];
 ?>
 

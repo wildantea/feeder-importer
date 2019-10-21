@@ -76,9 +76,9 @@
 
                <?php 
 if ($_SESSION['level']==1) {
-  $jur = $db->fetch_custom("select * from jurusan");
+  $jur = $db->query("select * from jurusan");
 } else {
-  $jur = $db->fetch_custom("select * from jurusan where id_fakultas='".$_SESSION['fakultas']."'");
+  $jur = $db->query("select * from jurusan where id_fakultas='".$_SESSION['fakultas']."'");
 }
 foreach ($jur as $isi) {
 

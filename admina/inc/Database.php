@@ -10,20 +10,28 @@ class Database {
     protected $pdo;
 
     public $type_db;
+    private $error_message = '';
 
      public function __construct($type)
     {
+      $driver_options = array(
+         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+         PDO::ATTR_TIMEOUT => ini_get('max_execution_time')
+         //,PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"
+
+      );   
+
         try {
             if ($type=='mysql') {
-                  $this->pdo = new PDO($type.":host=".HOST.":".PORT.";dbname=".DATABASE_NAME, DB_USERNAME, DB_PASSWORD );
+                  $this->pdo = new PDO($type.":host=".HOST.":".PORT.";dbname=".DATABASE_NAME, DB_USERNAME, DB_PASSWORD,$driver_options);
       
             } else {
                   $this->pdo = new PDO($type.":host=".PG_HOST.";port=".PG_PORT.";dbname=".PG_DATABASE_NAME.";user=".PG_DB_USERNAME.";password=".PG_DB_PASSWORD );
       
             }
-        $this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         }
         catch( PDOException $e ) {
+
             echo "error ". $e->getMessage();
         }
     }
@@ -53,21 +61,42 @@ class Database {
     * @param  array $data associative array
     * @return array  recordset
     */
-    public function fetch_custom( $sql,$data=null) {
+    public function query( $sql,$data=null) {
         if ($data!==null) {
         $dat=array_values($data);
         }
         $sel = $this->pdo->prepare( $sql );
-        if ($data!==null) {
-            $sel->execute($dat);
-        } else {
-            $sel->execute();
+        try{ 
+            if ($data!==null) {
+                $sel->execute($dat);
+            } else {
+               $sel->execute();
+            }
+            $sel->setFetchMode( PDO::FETCH_OBJ );
+            return $sel;
+        } 
+        catch(PDOException $exception){ 
+            $this->setErrorMessage($exception->getMessage());
+            return false;
         }
-        $sel->setFetchMode( PDO::FETCH_OBJ );
-        return $sel;
-
+ 
     }
 
+        /**
+     * [getErrorMessage return string throw exception
+     * @return string return string error
+     */
+    function getErrorMessage() {
+        return $this->error_message;
+    }
+
+    /**
+     * [setErrorMessage set error message]
+     * @param [type] $error [description]
+     */
+    function setErrorMessage($error) {
+        $this->error_message = $error;
+    }
 
 
     /**
@@ -172,7 +201,9 @@ class Database {
     */
     public function check_exist($table,$dat) {
 
+
         $data = array_values( $dat );
+
        //grab keys
         $cols=array_keys($dat);
         $col=implode(', ', $cols);
@@ -190,6 +221,7 @@ class Database {
           $im=implode('', $mark);
              $sel = $this->pdo->prepare("SELECT $col from $table WHERE $im");
         }
+      
         $sel->execute( $data );
         $sel->setFetchMode( PDO::FETCH_OBJ );
         $jum=$sel->rowCount();
@@ -254,11 +286,42 @@ class Database {
         }
         $im=implode(', ', $mark);
         $ins = $this->pdo->prepare("INSERT INTO $table ($col) values ($im)");
-
         $ins->execute( $data );
         
 
     }
+    /**
+     * insert multiple row at once
+     *
+     * @param  [type] $table      table name
+     * @param  [type] $array_data multi array
+     * @return [type]             boolen
+     */
+    public function insertMulti($table_name, $values)
+    {
+        $column_name = array_keys($values[0]);
+        $column_name = implode(',', $column_name);
+        $value_data = array();
+        foreach ($values as $data => $val) {
+            $value_data[] = '("' . implode('","', array_values($val)) . '")';
+        }
+        $string_value = implode(",", $value_data);
+        $sql = "INSERT INTO $table_name ($column_name) VALUES " . $string_value;
+        $this->query($sql);
+    }
+
+    /**
+     * [trimmer trim for import excel
+     *
+     * @param  [type] $excel column value
+     * @return [type]  trimmed value
+     */
+    public function trimmer($value)
+    {
+        $result = preg_replace('/[^[:print:]]/', '', filter_var($value, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH));
+        return addslashes(trim($result));
+    }
+
 
     public function get_last_id()
     {
@@ -302,7 +365,7 @@ class Database {
 
 
     public function __destruct() {
-    $this->pdo = null;
+      unset($this->pdo);
     }
 
     function get_settings($name){
@@ -344,7 +407,7 @@ class Database {
 
     function check_tb_exist()
     {
-       return $this->fetch_custom("show tables like 'sys_modul'")->rowCount();
+       return $this->query("show tables like 'sys_modul'")->rowCount();
     }
 
 
@@ -377,7 +440,7 @@ class Database {
       $pilih="";
       //  $mod = $this->fetch_single_row('sys_menu','nav_act',$nav);
         if ($nav!='') {
-             $menu = $this->fetch_custom("select * from sys_menu where url=?",array('url'=>$nav));
+             $menu = $this->query("select * from sys_menu where url=?",array('url'=>$nav));
 
         foreach ($menu as $men) {
 
@@ -417,114 +480,9 @@ class Database {
 
         return $pilih;
     }
-
-    function is_connected()
-    {
-      if(!$sock = @fsockopen('wildantea.com', 80))
-      {
-         return false;
-      }
-      else
-      {
-          return true;
-      }
-
-    }
-
-
-    function check_home_update($date)
-    {
-      $update = "";
-      if ($this->is_connected()) {
-      $check_latest_version = $this->fetch_custom_single("select version from sys_update where status_complete='Y' order by id desc limit 1");
-
-      $check_count = file_get_contents('http://wildantea.com/feeder-free-up/count_version_left.php?local_last='.$check_latest_version->version);
-
-      $dta_server_version = json_decode($check_count);
-
-      if (count($dta_server_version)>0) {
-
-        $update = '<div class="alert alert-info" style="margin-bottom: 10px;text-align:left">
-                Ada Update terbaru, silakan klik update di menu system setting -> update uplikasi
-              </div>';"";
-
-      } else {
-        $update = "";
-      }
-
-      $this->update_status($date);
-      $this->update_pesan();
-      }
-      return $update;
-  }
-
-    function update_status($dt)
-    {
-     
-            $datas = $this->fetch_custom("select id,last_login from sys_users where last_login=? and stat_act=? limit 1",array('last_login' => $dt,'stat_act' => 'N'));
-            if ($datas->rowCount()>0) {
-                $check_exist_config = $this->check_exist('config_user',array('status_connected' => 'Y'));
-                if ($check_exist_config==true) {
-                    $dts=$this->fetch_single_row('config_user','id',1);
-                    foreach ($datas as $data) {
-                       //just track npsn and nm_lemb, not your password
-                        //$update = array('kode_pt' => $dts->id_sp,'nm_lemb'=>$dts->nm_lemb,'tgl' => $dt);
-                        $nm_lemb = str_replace(' ', '%20',$dts->nm_lemb);
-                        $this->update('sys_users',array('stat_act' => 'Y'),'id',$data->id);
-                        $check_count = file_get_contents('http://wildantea.com/feeder-free-up/update_check.php?kode_pt='.$dts->id_sp.'&nm_lemb='.$nm_lemb.'&tgl='.$dt);
-                        return json_decode($check_count);
-                    }
-
-                } else {
-                  return false;
-                }
-                
-            }
-    }
-
-    function update_pesan() {
-      $check_latest_version = $this->fetch_custom("select id from pesan order by id desc limit 1");
-      
-       $latest_version = 0;
-
-      if ($check_latest_version->rowCount()>0) {
-        foreach ($check_latest_version as $latest) {
-          $latest_version = $latest->id;
-        }
-      }
-
-     
-
-      $check_count = file_get_contents('http://wildantea.com/feeder-free-up/check_index.php?index_pesan='.$latest_version);
-
-      $dta_server_version = json_decode($check_count);
-
-      $to_pesan = $this->fetch_single_row('sys_users','id_group',1);
-      $to_pesan = $to_pesan->first_name." ".$to_pesan->last_name;
-
-      if (count($dta_server_version)>0) {
-          foreach ($dta_server_version as $version) {
-
-
-                $data_update = file_get_contents('http://wildantea.com/feeder-free-up/update_pesan.php?index_pesan='.$version->index);
-
-              
-                $data_update = json_decode($data_update);
-
-                  foreach ($data_update as $dt) {
-                    $this->insert('pesan',array('id' => $dt->id,'from_pesan' => 'wildan','to_email' => $to_pesan,'subject' => $dt->subject,'isi_pesan' => $dt->isi_pesan,'tgl_pesan' => $dt->tgl_pesan,'is_read' => 'N'));
-
-                  }
-             
-                }
-      }
-    }
-
      // Menu builder function, parentId 0 is the root
     function buildMenu($url,$parent, $menu)
     {
-      $jml_pesan = $this->fetch_custom_single("select count(id) as jml from pesan where is_read='N'");
-      $pesan_nav = "";
        $html = "";
        if (isset($menu['parents'][$parent]))
        {
@@ -543,14 +501,7 @@ class Database {
                   } else {
                     $html.="<i class='fa fa-circle-o'></i>";
                   }
-                  $html.=ucwords($menu['items'][$itemId]['page_name']);
-                  $pesan_nav = $menu['items'][$itemId]['nav_act'];
-                  if ($pesan_nav=='pesan') {
-                    $html.='<span class="pull-right-container">
-                      <span class="label label-primary pull-right">'.$jml_pesan->jml.'</span>
-                      </span>';
-                  }
-                  $html.="</a></li>";
+                  $html.=ucwords($menu['items'][$itemId]['page_name'])."</a></li>";
               }
 
               if(isset($menu['parents'][$itemId]))
@@ -618,7 +569,17 @@ $html .= "</ul></li>";
           return $new;
       }
 
-  public function run($data,$url, $type = 'json')
+
+  function get_dir($dir) {
+      $modul_dir = explode(DIRECTORY_SEPARATOR, $dir);
+     array_pop($modul_dir);
+     array_pop($modul_dir);
+
+     $modul_dir = implode(DIRECTORY_SEPARATOR, $modul_dir);
+     return $modul_dir.DIRECTORY_SEPARATOR."modul".DIRECTORY_SEPARATOR;
+  }
+
+    public function run($data,$url, $type = 'json')
   {
     $ch = curl_init();
 
@@ -743,7 +704,7 @@ $html .= "</ul></li>";
 
   }
 
-   function debug($var) {
+  function debug($var) {
     echo "<pre>";
     print_r($var);
 
@@ -771,37 +732,28 @@ $html .= "</ul></li>";
 
       return $url;
   }
-  
-  function get_dir($dir) {
-      $modul_dir = explode(DIRECTORY_SEPARATOR, $dir);
-     array_pop($modul_dir);
-     array_pop($modul_dir);
 
-     $modul_dir = implode(DIRECTORY_SEPARATOR, $modul_dir);
-     return $modul_dir.DIRECTORY_SEPARATOR."modul".DIRECTORY_SEPARATOR;
-  }
-
-
-    //submit form action json response 
-    public function action_response($error_message,$custom_response=array()) {
-        $json_response = array();
-        if ($error_message=='') {
-            $status['status'] = "good";
-            if (!empty($custom_response)) {
-           foreach ($custom_response as $key => $value) {
-              $status[$key] = $value;
-           }
-
-          }
-
-         } else {
-            $status['status'] = "error";
-            $status['error_message'] = $error_message;
-         }
-        array_push($json_response, $status);
-        echo json_encode($json_response);
-        exit();
+    /**
+     * $table name, $values [array_data]
+     */
+    public function insert_massal($table_name,$values) {
+        $column_name = array_keys($values[0]);
+        $column_name = implode(',',$column_name);
+    
+        $value_data = array();
+        foreach ($values as $data => $val) {
+        
+        $value_data[] = "('".implode("','",array_values($val))."')";
+        }
+        $string_value = implode(",",$value_data);
+    
+        $query = "insert into $table_name ($column_name) values ".$string_value;
+        
+    // echo $query;
+        $this->query($query);
     }
+
+
 
     function compressImage($ext,$uploadedfile,$path,$actual_image_name,$newwidth,$tinggi=null)
         {

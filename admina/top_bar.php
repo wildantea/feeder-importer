@@ -11,7 +11,7 @@
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
        <li class="dropdown messages-menu">
-        <?php $jumlah_pesan = $db->fetch_custom("select * from pesan where is_read='N'");?>
+        <?php $jumlah_pesan = $db->query("select * from pesan where is_read='N'");?>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
               <i class="fa fa-envelope-o"></i>
               <span class="label label-success"><?=$jumlah_pesan->rowCount();?></span>
@@ -23,7 +23,7 @@
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
                 <?php
-                $dt_msg = $db->fetch_custom('select * from pesan where is_read="N"');
+                $dt_msg = $db->query('select * from pesan where is_read="N"');
                 foreach ($dt_msg as $dt_ms) {
                   ?>
 

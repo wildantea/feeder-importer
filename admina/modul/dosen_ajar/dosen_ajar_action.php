@@ -8,10 +8,10 @@ require_once '../../lib/PHPExcel/IOFactory.php';
 switch ($_GET["act"]) {
 
   case 'delete_error':
-    $db->fetch_custom("delete from ajar_dosen where status_error=2 and kode_jurusan='".$_POST['id']."'");
+    $db->query("delete from ajar_dosen where status_error=2 and kode_jurusan='".$_POST['id']."'");
     break;
     case 'delete_all':
-    $db->fetch_custom("delete from ajar_dosen where kode_jurusan='".$_POST['id']."'");
+    $db->query("delete from ajar_dosen where kode_jurusan='".$_POST['id']."'");
     break;
     
   case 'import':

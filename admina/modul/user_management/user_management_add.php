@@ -91,7 +91,7 @@
                         <div class="col-lg-10">
                           <select name="id_group" data-placeholder="Pilih Group User ..." class="form-control chzn-select" tabindex="2" >
                <option value=""></option>
-               <?php foreach ($db->fetch_custom("select * from sys_group_users ") as $isi) {
+               <?php foreach ($db->query("select * from sys_group_users ") as $isi) {
                		echo "<option value='$isi->id'>$isi->level</option>";
                } ?>
               </select>
@@ -101,7 +101,7 @@
                         <label for="Group User" class="control-label col-lg-2">jurusan</label>
                         <div class="col-lg-10">
                           <select name="jurusan" data-placeholder="Pilih jurusan ..." class="form-control chzn-select" tabindex="2" >
-               <?php foreach ($db->fetch_custom("select * from jurusan order by nama_jurusan asc ") as $isi) {
+               <?php foreach ($db->query("select * from jurusan order by nama_jurusan asc ") as $isi) {
                   echo "<option value='$isi->kode_jurusan'>$isi->nama_jurusan</option>";
                } ?>
               </select>

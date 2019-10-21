@@ -21,7 +21,7 @@ $data = array(
 );
 $result = json_decode($db->run($data,$url));
 $token = $result->data->token;
-$data_sms = $db->fetch_custom("select * from jurusan");
+$data_sms = $db->query("select * from jurusan");
 foreach ($data_sms as $dts) {
 	$dts_sms[$dts->id_sms] = $dts->jenjang.' '.$dts->nama_jurusan;
 	$dts_jur[$dts->kode_jurusan] = $dts->id_sms;

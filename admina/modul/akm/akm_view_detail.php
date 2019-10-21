@@ -41,7 +41,7 @@
                         <label for="Jurusan" class="control-label col-lg-1">Semester</label>
                         <div class="col-lg-3">
                                  <select id="semester_up" name="semester_up" data-placeholder="Pilih Jurusan ..." class="form-control chzn-select" tabindex="2" required>
-               <?php foreach ($db->fetch_custom("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
+               <?php foreach ($db->query("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
  nilai_akm.semester=semester.semester where kode_jurusan='".$id_jur."' group by nilai_akm.semester order by nilai_akm.semester desc") as $isi) {
                   echo "<option value='$isi->semester'>$isi->semester $isi->nama_semester</option>";
                } ?>
@@ -83,7 +83,7 @@
                         <label for="Jurusan" class="control-label col-lg-1">Semester</label>
                         <div class="col-lg-3">
                           <select id="semester_valid" name="semester_valid" data-placeholder="Pilih Jurusan ..." class="form-control chzn-select" tabindex="2" required>
-               <?php foreach ($db->fetch_custom("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
+               <?php foreach ($db->query("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
  nilai_akm.semester=semester.semester where kode_jurusan='".$id_jur."' group by nilai_akm.semester order by nilai_akm.semester desc") as $isi) {
                   echo "<option value='$isi->semester'>$isi->semester $isi->nama_semester</option>";
                } ?>
@@ -130,7 +130,7 @@
                         <div class="col-lg-3">
                         <select id="sem_filter" data-placeholder="Pilih Semester ..." class="form-control chzn-select" tabindex="2">
                         <option value="all">Semua</option>
-               <?php foreach ($db->fetch_custom("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
+               <?php foreach ($db->query("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
  nilai_akm.semester=semester.semester where kode_jurusan='".$id_jur."' group by nilai_akm.semester order by nilai_akm.semester desc") as $isi) {
                   echo "<option value='$isi->semester'>$isi->semester $isi->nama_semester</option>";
                } ?>
@@ -230,7 +230,7 @@
                         <div class="col-lg-10">
                           <select  name="sem_delete" id="sem_delete"  class="form-control " tabindex="2" required>
 <option value="all">Semua Semester</option>
-<?php foreach ($db->fetch_custom("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
+<?php foreach ($db->query("select nilai_akm.semester,nama_semester from nilai_akm inner join semester on
  nilai_akm.semester=semester.semester where kode_jurusan='".$id_jur."' group by nilai_akm.semester") as $isi) {
  echo "<option value='$isi->semester'>$isi->semester $isi->nama_semester</option>";
                } ?>

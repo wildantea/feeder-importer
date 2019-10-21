@@ -35,7 +35,7 @@
                                       </thead>
                                         <tbody>
                                          <?php 
-			$dtb=$db->fetch_custom("select sys_menu.page_name,sys_menu.icon,sys_menu.urutan_menu,sys_menu.tampil,sys_menu.id from sys_menu ");
+			$dtb=$db->query("select sys_menu.page_name,sys_menu.icon,sys_menu.urutan_menu,sys_menu.tampil,sys_menu.id from sys_menu ");
 			$i=1;
 			foreach ($dtb as $isi) {
 				?><tr id="line_<?=$isi->id;?>">

@@ -167,20 +167,76 @@
                           <input type="text" name="ds_kel" value="<?=$data_edit->ds_kel;?>" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->
-<div class="form-group">
-                        <label for="Jenis Tinggal" class="control-label col-lg-2">Kecamatan</label>
-                        <div class="col-lg-10">
-                          <select name="id_wil" data-placeholder="Pilih Kecamatan..." class="form-control chzn-select" tabindex="2" >
-               <option value=""></option>
-               <?php foreach ($db->fetch_all("data_wilayah where id_level_wil=3") as $isi) {
-                echo $data_edit->id_wil;
+<?php
+          $provinsi = $db->fetch_custom_single("select dprov.id_wil as id_prov,dprov.nm_wil as provinsi, dkab.nm_wil as kab, dk.nm_wil as kec,dk.id_wil
+ from data_wilayah dk 
+inner join data_wilayah dkab
+on dk.id_induk_wilayah=dkab.id_wil
+inner join data_wilayah dprov
+on dkab.id_induk_wilayah=dprov.id_wil
+where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
+          ?>
+            <div class="form-group">
+                <label for="Provinsi" class="control-label col-lg-2">Provinsi</label>
+                <div class="col-lg-10">
+                    <select name="provinsi_provinsi"  id="provinsi_provinsi" data-placeholder="Pilih Provinsi..." class="form-control chzn-select" tabindex="2" required>
+                    <option value=""></option>
+                     <?php
+                     foreach ($db->query("select * from data_wilayah where id_level_wil=1") as $isi) {
+                      if ($provinsi->id_prov==$isi->id_wil) {
+                        echo "<option value='$isi->id_wil' selected>$isi->nm_wil</option>";
+                        } else {
+                        echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
+                        }
 
-                  if ($data_edit->id_wil==$isi->id_wil) {
-                    echo "<option value='$isi->id_wil' selected>$isi->nm_wil</option>";
-                  } else {
-                  echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
-                    }
-               } ?>
+                        } ?>
+                      </select>
+                  </div>
+              </div><!-- /.form-group -->
+              
+              <div class="form-group">
+                  <label for="Kabupaten" class="control-label col-lg-2">Kabupaten</label>
+                  <div class="col-lg-10">
+                  <?php
+                  $kabupaten = $db->fetch_custom_single("select dkab.id_wil as id_kab, dkab.nm_wil as kab, dk.nm_wil as kec,dk.id_wil
+ from data_wilayah dk 
+inner join data_wilayah dkab
+on dk.id_induk_wilayah=dkab.id_wil
+where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
+                  ?>
+                  <select name="id_kab" id="kabupaten_kabupaten" data-placeholder="Pilih Kabupaten ..." class="form-control chzn-select" tabindex="2" required>
+                    <option value=""></option>
+                   <?php
+
+                  
+                   foreach ($db->query("select * from data_wilayah where id_induk_wilayah=$provinsi->id_prov") as $isi) {
+                            if ($kabupaten->id_kab==$isi->id_wil) {
+                        echo "<option value='$isi->id_wil' selected>$isi->nm_wil</option>";
+                      } else {
+                        echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
+                        }
+
+                   } ?>
+                    </select>
+                  </div>
+              </div><!-- /.form-group -->
+
+<div class="form-group">
+                        <label for="Jenis Tinggal" class="control-label col-lg-2">Kecamatan <span style="color:#FF0000">*</span></label>
+                        <div class="col-lg-10">
+                          <select id="id_kec_tea" name="id_wil" data-placeholder="Pilih Kecamatan..." class="form-control chzn-select" tabindex="2" required="">
+               <option value=""></option>
+              <?php
+
+                  
+                   foreach ($db->query("select * from data_wilayah where id_induk_wilayah=$kabupaten->id_kab") as $isi) {
+                    if ($db->trimmer($data_edit->id_wil)==$db->trimmer($isi->id_wil)) {
+                        echo "<option value='$isi->id_wil' selected>$isi->nm_wil</option>";
+                      } else {
+                        echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
+                        }
+
+                   } ?>
               </select>
                         </div>
                       </div><!-- /.form-group -->
@@ -501,15 +557,21 @@
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
+                        <label for="biaya_masuk_kuliah" class="control-label col-lg-2">Biaya Masuk Kuliah</label>
+                        <div class="col-lg-10">
+                          <input type="number" name="biaya_masuk_kuliah" value="<?=$data_edit->biaya_masuk_kuliah;?>" class="form-control" > 
+                        </div>
+                      </div><!-- /.form-group -->
+<div class="form-group">
                         <label for="Jurusan" class="control-label col-lg-2">Prodi</label>
                         <div class="col-lg-10">
                           <select name="kode_jurusan" data-placeholder="Pilih Jurusan..." class="form-control chzn-select" tabindex="2" required>
 
                <?php 
 if ($_SESSION['level']==1) {
-  $jur = $db->fetch_custom("select * from jurusan");
+  $jur = $db->query("select * from jurusan");
 } else {
-  $jur = $db->fetch_custom("select * from jurusan where kode_jurusan='".$path_four."'");
+  $jur = $db->query("select * from jurusan where kode_jurusan='".$path_four."'");
 }
 foreach ($jur as $isi) {
                   if ($data_edit->kode_jurusan==$isi->kode_jurusan) {
@@ -536,4 +598,34 @@ foreach ($jur as $isi) {
                   
                 </section><!-- /.content -->
         
- 
+ <script type="text/javascript">
+                       $("#provinsi_provinsi").change(function(){
+
+                        $.ajax({
+                        type : "post",
+                        url : "<?=base_admin();?>modul/mahasiswa/get_kabupaten.php",
+                        data : {provinsi:this.value},
+                        success : function(data) {
+                            $("#kabupaten_kabupaten").html(data);
+                            $("#kabupaten_kabupaten").trigger("chosen:updated");
+
+                        }
+                    });
+
+                  });
+
+                    $("#kabupaten_kabupaten").change(function(){
+
+                        $.ajax({
+                        type : "post",
+                        url : "<?=base_admin();?>modul/mahasiswa/get_kec.php",
+                        data : {id_kab:this.value},
+                        success : function(data) {
+                            $("#id_kec_tea").html(data);
+                            $("#id_kec_tea").trigger("chosen:updated");
+
+                        }
+                    });
+
+                  });
+ </script>

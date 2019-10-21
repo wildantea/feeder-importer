@@ -107,7 +107,7 @@ $objPHPExcel->getActiveSheet()->getStyle('A1:E1')->getFill()
         $order_by = "order by kode_mk,nama_kelas ASC";
 
     
-        $temp_rec = $db->fetch_custom("select dwc.id_wil as id_wil, data_wilayah.nm_wil as provinsi,dw.nm_wil as kab,dwc.nm_wil as kecamatan from data_wilayah
+        $temp_rec = $db->query("select dwc.id_wil as id_wil, data_wilayah.nm_wil as provinsi,dw.nm_wil as kab,dwc.nm_wil as kecamatan from data_wilayah
 inner join data_wilayah dw on data_wilayah.id_wil=dw.id_induk_wilayah
 inner join data_wilayah dwc on dw.id_wil=dwc.id_induk_wilayah
 where data_wilayah.id_level_wil='1' $provinsi $kabupaten");

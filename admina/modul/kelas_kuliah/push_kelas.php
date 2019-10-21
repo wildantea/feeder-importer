@@ -62,7 +62,7 @@ $token = $result;
 	$id_sp = $config->id_sp;
 
 
-	$count = $db->fetch_custom("select * from kelas_kuliah where kode_jurusan='".$_GET['jurusan']."' and semester='".$_GET['sem']."' and status_error!=1 $matkul $kelas");
+	$count = $db->query("select * from kelas_kuliah where kode_jurusan='".$_GET['jurusan']."' and semester='".$_GET['sem']."' and status_error!=1 $matkul $kelas");
 	$jumlah = $count->rowCount();
 
 
@@ -83,7 +83,7 @@ $error_kelas= "";
 		$new_pu = new Manticorp\ProgressUpdater($options);
 	
 
-	$data = $db->fetch_custom("select kelas_kuliah.id as id_kelas,kelas_kuliah.*,jurusan.kode_jurusan,jurusan.id_sms from kelas_kuliah inner join jurusan on kelas_kuliah.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and kelas_kuliah.semester='".$_GET['sem']."' and status_error!=1 $matkul $kelas limit 0,$jumlah");
+	$data = $db->query("select kelas_kuliah.id as id_kelas,kelas_kuliah.*,jurusan.kode_jurusan,jurusan.id_sms from kelas_kuliah inner join jurusan on kelas_kuliah.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and kelas_kuliah.semester='".$_GET['sem']."' and status_error!=1 $matkul $kelas limit 0,$jumlah");
 
 			//let's push first page
 

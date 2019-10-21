@@ -48,7 +48,7 @@
                         <div class="col-lg-10">
                           <select data-placeholder="Pilih Modul" name="parent" class="form-control chzn-select" tabindex="2">
                             <option value="0">None</option>
-                            <?php foreach ($db->fetch_custom('select * from sys_menu where url=""') as $isi) {
+                            <?php foreach ($db->query('select * from sys_menu where url=""') as $isi) {
                               echo "<option value='$isi->id'>$isi->page_name</option>";
                             }
                             ?>
@@ -91,7 +91,7 @@
                         <div class="col-lg-10">
         <select id="album_table" data-placeholder="Pilih Table" onChange="get_album(this.value)" name="album_table" class="form-control chzn-select" tabindex="2">
                             <option value=""></option>
-                            <?php foreach ($db->fetch_custom('show table status') as $tb) {
+                            <?php foreach ($db->query('show table status') as $tb) {
                               echo "<option value='$tb->Name'>$tb->Name</option>";
                             }
                             ?>
@@ -108,7 +108,7 @@
                         <div class="col-lg-10">
                           <select id="main_table" data-placeholder="Pilih Table" onChange="fetch_table(this.value)" name="table" class="form-control chzn-select" tabindex="2">
                             <option value="">Pilih Table</option>
-                            <?php foreach ($db->fetch_custom('show table status') as $tb) {
+                            <?php foreach ($db->query('show table status') as $tb) {
                               echo "<option value='$tb->Name'>$tb->Name</option>";
                             }
                             ?>

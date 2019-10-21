@@ -27,7 +27,7 @@
                         <option value=""></option>
                           <?php 
 
-foreach ($db->fetch_custom("select sys_group_users.id, sys_group_users.level from sys_users inner join sys_group_users 
+foreach ($db->query("select sys_group_users.id, sys_group_users.level from sys_users inner join sys_group_users 
 on sys_users.id_group=sys_group_users.id
 group by sys_group_users.id") as $isi) {
 
@@ -71,7 +71,7 @@ group by sys_group_users.id") as $isi) {
                       </thead>
                       <tbody>
                         <?php 
-      $dtb=$db->fetch_custom("select sys_menu.type_menu,sys_menu_role.read_act,sys_menu_role.insert_act,sys_menu_role.update_act,sys_menu_role.delete_act, sys_menu.page_name,sys_menu.urutan_menu,sys_group_users.level,sys_menu_role.id from sys_menu_role inner join sys_menu on sys_menu_role.id_menu=sys_menu.id inner join sys_group_users on sys_menu_role.group_id=sys_group_users.id where sys_group_users.id=? order by urutan_menu asc",array('sys_group_users.id'=>$_GET
+      $dtb=$db->query("select sys_menu.type_menu,sys_menu_role.read_act,sys_menu_role.insert_act,sys_menu_role.update_act,sys_menu_role.delete_act, sys_menu.page_name,sys_menu.urutan_menu,sys_group_users.level,sys_menu_role.id from sys_menu_role inner join sys_menu on sys_menu_role.id_menu=sys_menu.id inner join sys_group_users on sys_menu_role.group_id=sys_group_users.id where sys_group_users.id=? order by urutan_menu asc",array('sys_group_users.id'=>$_GET
         ['user']));
       $i=1;
       foreach ($dtb as $isi) {

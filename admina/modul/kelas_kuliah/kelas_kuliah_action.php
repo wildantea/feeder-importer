@@ -9,13 +9,13 @@ require('../../lib/SpreadsheetReader.php');
 switch ($_GET["act"]) {
 
   case 'delete_error':
-    $db->fetch_custom("delete from kelas_kuliah where status_error=2 and kode_jurusan='".$_POST['id']."'");
+    $db->query("delete from kelas_kuliah where status_error=2 and kode_jurusan='".$_POST['id']."'");
     break;
     case 'delete_all':
        if ($_POST['sem']=='all') {
-      $db->fetch_custom("delete from kelas_kuliah where kode_jurusan='".$_POST['id']."'");
+      $db->query("delete from kelas_kuliah where kode_jurusan='".$_POST['id']."'");
     } else {
-      $db->fetch_custom("delete from kelas_kuliah where kode_jurusan='".$_POST['id']."' and semester='".$_POST['sem']."'");
+      $db->query("delete from kelas_kuliah where kode_jurusan='".$_POST['id']."' and semester='".$_POST['sem']."'");
     }
    
     break;
@@ -77,7 +77,7 @@ if ($values!="") {
 
   $query = "insert into kelas_kuliah (semester,kode_mk,nama_mk,nama_kelas,bahasan_case,tgl_mulai_koas,tgl_selesai_koas,kode_jurusan) values ".$values;
   //echo $query;
-  $db->fetch_custom($query);
+  $db->query($query);
 }
 
     unlink("../../../upload/kelas_kuliah/".$_FILES['semester']['name']);

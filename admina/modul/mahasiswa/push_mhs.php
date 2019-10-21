@@ -6,28 +6,11 @@ include "../../inc/config.php";
 
 include "../../lib/prosesupdate/ProgressUpdater.php";
 
-
-$config = $db->fetch_single_row('config_user','id',1);
-
-if ($config->live=='Y') {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/live.php?wsdl'; // gunakan live
-} else {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/sandbox.php?wsdl'; // gunakan sandbox
-}
-//untuk coba-coba
-// $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
-
+$url = $db->get_service_url('soap');
+$token = $db->get_token();
 $client = new nusoap_client($url, true);
 $proxy = $client->getProxy();
-
-
-
-# MENDAPATKAN TOKEN
-$username = $config->username;
-$password = $config->password;
-$result = $proxy->GetToken($username, $password);
-$token = $result;
-
+$config = $db->fetch_single_row('config_user','id',1);
 //$token = 'acdbbc82c3b29f99e9096dab1d5eafb4';
 
 
@@ -50,9 +33,7 @@ $token = $result;
 	$temp_result = array();
 
 
-$table1 = 'kelas_kuliah';
-
-	$arr_data = $db->fetch_custom("select mhs.*,jurusan.id_sms,jurusan.id_jenj_didik from mhs inner join jurusan on mhs.kode_jurusan=jurusan.kode_jurusan where mhs.kode_jurusan='".$_GET['jurusan']."' and mulai_smt='".$_GET['sem']."' and status_error!=1");
+	$arr_data = $db->query("select mhs.*,jurusan.id_sms,jurusan.id_jenj_didik from mhs inner join jurusan on mhs.kode_jurusan=jurusan.kode_jurusan where mhs.kode_jurusan='".$_GET['jurusan']."' and mulai_smt='".$_GET['sem']."' and status_error!=1");
 
 $options = array(
     'filename' => $_GET['jurusan'].'_progress.json',
@@ -109,6 +90,7 @@ $i=1;
                   'a_pernah_tk' => '1',
                   'mulai_smt' => $value->mulai_smt,
                   'id_pembiayaan' => $value->id_pembiayaan,
+                  'biaya_masuk_kuliah' => $value->biaya_masuk_kuliah,
                   'id_jalur_masuk' => $value->id_jalur_masuk
                 );
 
@@ -175,6 +157,7 @@ $i=1;
 					                  'a_pernah_paud' => '1',
 					                  'a_pernah_tk' => '1',
 					                   'id_pembiayaan' => $value->id_pembiayaan,
+					                   'biaya_masuk_kuliah' => $value->biaya_masuk_kuliah,
 					                  'mulai_smt' => $value->mulai_smt,
 					                   'id_jalur_masuk' => $value->id_jalur_masuk
 					                );

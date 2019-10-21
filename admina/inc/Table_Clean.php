@@ -52,7 +52,7 @@ class Table_Clean extends Database
 
     public function result_data($sql,$prepare_data=null)
     {
-        $result = $this->fetch_custom($sql,$prepare_data);
+        $result = $this->query($sql,$prepare_data);
         
         return $result;
 
@@ -60,7 +60,7 @@ class Table_Clean extends Database
 
     public function set_total_record($sql,$prepare_data=null)
     {
-        $result = $this->fetch_custom($sql,$prepare_data);
+        $result = $this->query($sql,$prepare_data);
         
         //total filtered default
         $this->record_total = $result->rowCount();
@@ -69,7 +69,7 @@ class Table_Clean extends Database
 
     public function set_total_filtered($sql,$prepare_data=null)
     {
-        $result = $this->fetch_custom($sql,$prepare_data);
+        $result = $this->query($sql,$prepare_data);
         
         //total filtered default
         $this->total_filtered = $result->rowCount();

@@ -31,7 +31,7 @@ switch ($path_act) {
     break;
       case "detail":
        $id_jur = $path_four;
-    $data_edit = $db->fetch_custom("select * from mhs inner join mhs_pt on mhs.id=mhs_pt.id_mhs","mhs.id",$path_id);
+    $data_edit = $db->query("select * from mhs inner join mhs_pt on mhs.id=mhs_pt.id_mhs","mhs.id",$path_id);
     include "mahasiswa_detail.php";
 
       case 'choose':

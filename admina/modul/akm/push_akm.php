@@ -13,7 +13,7 @@ $options = array(
 );
 
 $pu = new Manticorp\ProgressUpdater($options);
-$check = $db->fetch_custom("select *,nilai_akm.id as id_akm from nilai_akm inner join jurusan on nilai_akm.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and nilai_akm.semester='".$_GET['sem']."' and (valid=0 or valid=2)");
+$check = $db->query("select *,nilai_akm.id as id_akm from nilai_akm inner join jurusan on nilai_akm.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and nilai_akm.semester='".$_GET['sem']."' and (valid=0 or valid=2)");
 $jumlah_error = $check->rowCount();
 if ($jumlah_error>0) {
 	$msg = "Pastikan Anda Sudah Melakukan validasi AKM dan semua data valid";
@@ -62,7 +62,7 @@ $token = $result;
 
 	$id_sp = $config->id_sp;
 
-	$arr_data = $db->fetch_custom("select *,nilai_akm.id as id_akm from nilai_akm inner join jurusan on nilai_akm.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and nilai_akm.semester='".$_GET['sem']."' and status_error!=1");
+	$arr_data = $db->query("select *,nilai_akm.id as id_akm from nilai_akm inner join jurusan on nilai_akm.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and nilai_akm.semester='".$_GET['sem']."' and status_error!=1");
 
 
 

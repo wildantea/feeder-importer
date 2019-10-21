@@ -54,7 +54,7 @@ include "lib/nusoap/nusoap.php";
                                       </thead>
                                         <tbody>
                                          <?php 
-      $dtb=$db->fetch_custom("select config_user.username,config_user.password,config_user.url,config_user.port,config_user.kode_pt,config_user.live,config_user.id from config_user ");
+      $dtb=$db->query("select config_user.username,config_user.password,config_user.url,config_user.port,config_user.kode_pt,config_user.live,config_user.id from config_user ");
       $i=1;
 
 

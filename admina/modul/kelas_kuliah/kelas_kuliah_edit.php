@@ -74,7 +74,7 @@
 
                <?php 
                echo $path_four;
-$jur = $db->fetch_custom('select * from jurusan where kode_jurusan=?',array('kode_jur' => $path_four));
+$jur = $db->query('select * from jurusan where kode_jurusan=?',array('kode_jur' => $path_four));
 foreach ($jur as $isi) {
            echo "<option value='$isi->kode_jurusan' selected>$isi->jenjang $isi->nama_jurusan</option>";
                } ?>

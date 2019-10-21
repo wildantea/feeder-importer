@@ -1,8 +1,8 @@
 <?php
 include "../../inc/config.php";
-$tables = $db->fetch_custom("show columns from ".$_GET['table']);
-$tabled = $db->fetch_custom("show columns from ".$_GET['table']);
-$table = $db->fetch_custom("show columns from ".$_GET['table']);
+$tables = $db->query("show columns from ".$_GET['table']);
+$tabled = $db->query("show columns from ".$_GET['table']);
+$table = $db->query("show columns from ".$_GET['table']);
 ?>
 
 <div class="form-group">
@@ -50,7 +50,7 @@ $table = $db->fetch_custom("show columns from ".$_GET['table']);
 <div class="col-lg-10">
         <select id="foreign_album" data-placeholder="Pilih Table" onChange="get_foreign_album(this.value)" name="foreign_album" class="form-control chzn-select" tabindex="2">
         <?php
-$table = $db->fetch_custom("show table status where Name!=?",array('Name'=>$_GET['table']));
+$table = $db->query("show table status where Name!=?",array('Name'=>$_GET['table']));
          foreach ($table as $tb) {
           echo "<option value='$tb->Name'>$tb->Name</option>";
         }

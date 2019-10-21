@@ -64,12 +64,12 @@ $path_five = (isset($path['call_parts'][5]))?$path['call_parts'][5]:'';
 //simpan role url page user di array sesuai login session level
   $role_user=array();
   $role_act=array();
-foreach ($db->fetch_custom("select sys_menu.url from sys_menu inner join sys_menu_role on sys_menu.id=sys_menu_role.id_menu
+foreach ($db->query("select sys_menu.url from sys_menu inner join sys_menu_role on sys_menu.id=sys_menu_role.id_menu
     where sys_menu_role.group_id=? and sys_menu_role.read_act=?",array('sys_menu_role.group_id'=>$_SESSION['level'],'sys_menu_role.read_act'=>'Y')) as $role) {
   $role_user[]=$role->url;
 }
 //lebih detail detil crud role user
-foreach ($db->fetch_custom("select read_act,insert_act,update_act,delete_act from sys_menu inner join sys_menu_role on sys_menu.id=sys_menu_role.id_menu where sys_menu_role.group_id=? and sys_menu.url=?",array('sys_menu_role.group_id'=>$_SESSION['level'],'sys_menu.url'=>$path_url)) as $role) {
+foreach ($db->query("select read_act,insert_act,update_act,delete_act from sys_menu inner join sys_menu_role on sys_menu.id=sys_menu_role.id_menu where sys_menu_role.group_id=? and sys_menu.url=?",array('sys_menu_role.group_id'=>$_SESSION['level'],'sys_menu.url'=>$path_url)) as $role) {
   $role_act['up_act']=$role->update_act;
   $role_act['insert_act']=$role->insert_act;
   $role_act['del_act']=$role->delete_act;

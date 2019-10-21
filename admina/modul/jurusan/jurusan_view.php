@@ -48,7 +48,7 @@
                                       </thead>
                                         <tbody>
                                          <?php 
-      $dtb=$db->fetch_custom("select jurusan.kode_jurusan,jurusan.nama_jurusan,jurusan.id,status,jenjang from jurusan");
+      $dtb=$db->query("select jurusan.kode_jurusan,jurusan.nama_jurusan,jurusan.id,status,jenjang from jurusan");
       $i=1;
       foreach ($dtb as $isi) {
         ?><tr id="line_<?=$isi->id;?>">

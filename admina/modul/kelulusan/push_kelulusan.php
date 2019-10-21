@@ -56,7 +56,7 @@ $token = $result;
 
   $jur = $_GET['jurusan'];
 
-  $arr_data = $db->fetch_custom("select * from kelulusan where kode_jurusan='$jur' and status_error!='1'");
+  $arr_data = $db->query("select * from kelulusan where kode_jurusan='$jur' and status_error!='1'");
 
 $stageOptions = array(
     'name' => 'This AJAX process takes a long time',

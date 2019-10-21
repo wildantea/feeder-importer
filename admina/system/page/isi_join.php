@@ -2,9 +2,9 @@
 include "../../inc/config.php";
 $prev_table = $_GET['prev_tb'];
 
-$table = $db->fetch_custom("show table status where Name!=?",array('Name'=>$prev_table));
+$table = $db->query("show table status where Name!=?",array('Name'=>$prev_table));
 
-$prev = $db->fetch_custom("show columns from $prev_table");
+$prev = $db->query("show columns from $prev_table");
 
  ?>
   <div class="body">

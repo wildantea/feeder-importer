@@ -61,7 +61,7 @@
                   }
 
 
-$data = $db->fetch_custom("select * from sys_menu where type_menu='main' and id!=?",array('id'=>$data_edit->parent));
+$data = $db->query("select * from sys_menu where type_menu='main' and id!=?",array('id'=>$data_edit->parent));
 foreach ($data as $isi) {
                      echo "<option value='$isi->id'>$isi->page_name</option>";
                   }

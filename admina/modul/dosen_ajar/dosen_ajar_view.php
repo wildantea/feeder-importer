@@ -34,10 +34,10 @@
                                         <?php
 $i=1;
 if ($_SESSION['level']==1) {
-$data = $db->fetch_custom("select jurusan.nama_jurusan,count(ajar_dosen.id) as jumlah_dosen,jurusan.kode_jurusan,jenjang from jurusan left join ajar_dosen on jurusan.kode_jurusan=ajar_dosen.kode_jurusan
+$data = $db->query("select jurusan.nama_jurusan,count(ajar_dosen.id) as jumlah_dosen,jurusan.kode_jurusan,jenjang from jurusan left join ajar_dosen on jurusan.kode_jurusan=ajar_dosen.kode_jurusan
 group by jurusan.kode_jurusan");
 } else {
-    $data = $db->fetch_custom("select jurusan.nama_jurusan,count(ajar_dosen.id) as jumlah_dosen,jurusan.kode_jurusan,jenjang from jurusan left join ajar_dosen
+    $data = $db->query("select jurusan.nama_jurusan,count(ajar_dosen.id) as jumlah_dosen,jurusan.kode_jurusan,jenjang from jurusan left join ajar_dosen
 on jurusan.kode_jurusan=ajar_dosen.kode_jurusan
  where jurusan.kode_jurusan='".$_SESSION['jurusan']."' group by jurusan.kode_jurusan");
 }

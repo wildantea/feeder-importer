@@ -30,7 +30,7 @@
                         <select id="sem_filter" data-placeholder="Pilih Semester ..." class="form-control chzn-select" tabindex="2">
                         <option value="all">Semua</option>
              <?php 
-               $semester = $db->fetch_custom('select *,left(semester,4) as smt from semester where right(semester,1)!="3" order by semester desc');
+               $semester = $db->query('select *,left(semester,4) as smt from semester where right(semester,1)!="3" order by semester desc');
                     foreach ($semester as $isi) {
                       if ($isi->smt <= date('Y')) {
                   echo "<option value='".$isi->semester."'>$isi->smt ".$isi->nama_semester."</option>";      
@@ -51,7 +51,7 @@
         }  else {
          $jurusan_sms = "where kode_jurusan='".$path_id."'";
         }
-foreach ($db->fetch_custom("select * from jurusan $jurusan_sms") as $isi) {
+foreach ($db->query("select * from jurusan $jurusan_sms") as $isi) {
 echo "<option value='$isi->id_sms'>$isi->jenjang $isi->nama_jurusan</option>";
                                } ?>
                               </select>
@@ -97,7 +97,7 @@ echo "<option value='$isi->id_sms'>$isi->jenjang $isi->nama_jurusan</option>";
                         <div class="col-lg-10">
                           <select  name="sem_delete" id="sem_delete"  class="form-control " tabindex="2" required>
 <?php 
-               $semester = $db->fetch_custom('select *,left(semester,4) as smt from semester where right(semester,1) not in (0,3) order by semester desc');
+               $semester = $db->query('select *,left(semester,4) as smt from semester where right(semester,1) not in (0,3) order by semester desc');
                     foreach ($semester as $isi) {
                       if ($isi->smt <= date('Y')) {
                   echo "<option value='".$isi->semester."'>".$isi->nama_semester."</option>";      
@@ -118,7 +118,7 @@ echo "<option value='$isi->id_sms'>$isi->jenjang $isi->nama_jurusan</option>";
         }  else {
           echo '<option value="all">Semua</option>';
         }
-foreach ($db->fetch_custom("select * from jurusan $jurusan_sms") as $isi) {
+foreach ($db->query("select * from jurusan $jurusan_sms") as $isi) {
                                   echo "<option value='$isi->id_sms'>$isi->jenjang $isi->nama_jurusan</option>";
                                } ?>
                               </select>

@@ -68,7 +68,7 @@ $token = $result;
 	$id_sp = $config->id_sp;
 
 
-	$count = $db->fetch_custom("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas");
+	$count = $db->query("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas");
 	$jumlah = $count->rowCount();
 
 
@@ -101,7 +101,7 @@ $token = $result;
 		for ($i=0; $i <$total ; $i++) { 
 		if ($i==0) {
 
-			$data = $db->fetch_custom("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit $i,500");
+			$data = $db->query("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit $i,500");
 
 			//let's push first page
 			$stageOptions = array(
@@ -222,7 +222,7 @@ $token = $result;
 		} else if ($i == $total - 1) {
 		
       
-	 		$data = $db->fetch_custom("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit ".($i*500).",$bagi");
+	 		$data = $db->query("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit ".($i*500).",$bagi");
 			//let's push first page
 			$stageOptions = array(
 			    'name' => 'Page $i',
@@ -348,7 +348,7 @@ $token = $result;
   	  else if($i != $total - 1 && $i!=0) {
 			
 		
-	 		$data = $db->fetch_custom("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit ".($i*500).",500");
+	 		$data = $db->query("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit ".($i*500).",500");
 			//let's push first page
 			$stageOptions = array(
 			    'name' => 'Page $i',
@@ -502,7 +502,7 @@ $token = $result;
 		$new_pu = new Manticorp\ProgressUpdater($options);
 
 	
-	 	$data = $db->fetch_custom("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit 0,$jumlah");
+	 	$data = $db->query("select *,krs.id as id_krs from krs inner join jurusan on krs.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and krs.semester='".$_GET['sem']."' and status_error!=1 $query_matkul $query_kelas limit 0,$jumlah");
 			//let's push first page
 
 			$stageOptions = array(

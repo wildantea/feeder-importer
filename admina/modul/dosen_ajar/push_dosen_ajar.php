@@ -53,11 +53,11 @@ $token = $result;
 
 $table1 = 'kelas_kuliah';
 
-	$arr_data = $db->fetch_custom("select ajar_dosen.id as id_dosen_ajar,ajar_dosen.*,jurusan.kode_jurusan,jurusan.id_sms from ajar_dosen inner join jurusan on ajar_dosen.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and ajar_dosen.semester='".$_GET['sem']."' and status_error!=1 and nidn!=''");
+	$arr_data = $db->query("select ajar_dosen.id as id_dosen_ajar,ajar_dosen.*,jurusan.kode_jurusan,jurusan.id_sms from ajar_dosen inner join jurusan on ajar_dosen.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and ajar_dosen.semester='".$_GET['sem']."' and status_error!=1 and nidn!=''");
 
 	//print_r($arr_data);
 
-/*	$arr_data = $db->fetch_custom("select kelas_kuliah.*,jurusan.kode_jurusan from kelas_kuliah inner join jurusan on kelas_kuliah.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='705' and kelas_kuliah.semester='20141' limit 5,5");
+/*	$arr_data = $db->query("select kelas_kuliah.*,jurusan.kode_jurusan from kelas_kuliah inner join jurusan on kelas_kuliah.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='705' and kelas_kuliah.semester='20141' limit 5,5");
 */
 
 
@@ -159,7 +159,7 @@ $i=1;
 					
 					$sks_mk = $get_matkul['result']['sks_mk'];
 					
-					$check_count = $db->fetch_custom("select * from ajar_dosen where semester=? and kode_mk=? and nama_kelas=? and kode_jurusan=?",array('semester' => $value->semester,'kode_mk' => $value->kode_mk,'nama_kelas' => $value->nama_kelas,'kode_jurusan' => $kode_prodi));
+					$check_count = $db->query("select * from ajar_dosen where semester=? and kode_mk=? and nama_kelas=? and kode_jurusan=?",array('semester' => $value->semester,'kode_mk' => $value->kode_mk,'nama_kelas' => $value->nama_kelas,'kode_jurusan' => $kode_prodi));
 					if ($check_count->rowCount()>1) {
 						$sks_mk = $sks_mk/$check_count->rowCount();
 					} else {

@@ -5,7 +5,7 @@ $tb=$_GET['tb'];
 
 $prev_tb = $_GET['prev'];
 
-$on = $db->fetch_custom("show columns from $tb");
+$on = $db->query("show columns from $tb");
 
   ?>
 <div id="kanan_<?=$tb;?>">

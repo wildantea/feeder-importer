@@ -33,9 +33,9 @@
                                         <?php
 $i=1;
 if ($_SESSION['level']==1) {
-$data = $db->fetch_custom("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang from jurusan");
+$data = $db->query("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang from jurusan");
 } else {
-    $data = $db->fetch_custom("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang from jurusan where jurusan.kode_jurusan='".$_SESSION['jurusan']."' group by jurusan.kode_jurusan");
+    $data = $db->query("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang from jurusan where jurusan.kode_jurusan='".$_SESSION['jurusan']."' group by jurusan.kode_jurusan");
 }
                                         foreach ($data as $dt) {
                                           ?>

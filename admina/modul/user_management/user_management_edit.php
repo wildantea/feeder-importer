@@ -66,7 +66,7 @@
                         <div class="col-lg-10">
                           <select name="id_group" data-placeholder="Pilih Group User..." class="form-control chzn-select" tabindex="2" >
                <option value=""></option>
-             <?php foreach ($db->fetch_custom("select * from sys_group_users ") as $isi) {
+             <?php foreach ($db->query("select * from sys_group_users ") as $isi) {
 
                		if ($data_edit->id_group==$isi->id) {
                			echo "<option value='$isi->id' selected>$isi->level</option>";
@@ -82,7 +82,7 @@
                         <div class="col-lg-10">
                           <select name="jurusan" data-placeholder="Pilih Jurusan..." class="form-control chzn-select" tabindex="2" >
 
-             <?php foreach ($db->fetch_custom("select * from jurusan order by nama_jurusan asc") as $isi) {
+             <?php foreach ($db->query("select * from jurusan order by nama_jurusan asc") as $isi) {
 
                   if ($data_edit->kode_jurusan==$isi->kode_jurusan) {
                     echo "<option value='$isi->kode_jurusan' selected>$isi->nama_jurusan</option>";

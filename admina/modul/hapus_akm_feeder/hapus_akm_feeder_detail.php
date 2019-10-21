@@ -29,7 +29,7 @@
                         <div class="col-lg-5">
                         <select id="sem_filter" data-placeholder="Pilih Semester ..." class="form-control chzn-select" tabindex="2">
                         <option value="all">Semua</option>
-                <?php foreach ($db->fetch_custom("select *,left(semester,4) as tahun from semester where right(semester,1) not in (0) order by semester desc") as $isi) {
+                <?php foreach ($db->query("select *,left(semester,4) as tahun from semester where right(semester,1) not in (0) order by semester desc") as $isi) {
                                 if ($isi->tahun <= date('Y')) {
                                   echo "<option value='$isi->semester'>$isi->nama_semester</option>";
                                 }
@@ -51,7 +51,7 @@
         } else {
            echo '<option value="all">Semua</option>';
         }
-                               foreach ($db->fetch_custom("select * from jurusan $jurusan_sms") as $isi) {
+                               foreach ($db->query("select * from jurusan $jurusan_sms") as $isi) {
                                   echo "<option value='$isi->kode_jurusan'>$isi->jenjang $isi->nama_jurusan</option>";
                                } ?>
                               </select>

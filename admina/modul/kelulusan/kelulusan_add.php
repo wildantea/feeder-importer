@@ -43,7 +43,7 @@
                         <label for="Jenis Keluar" class="control-label col-lg-2">Jenis Keluar</label>
                         <div class="col-lg-10">
                           <select name="id_jenis_keluar" data-placeholder="Pilih Jenis Keluar ..." class="form-control chzn-select" tabindex="2" required>
-               <?php foreach ($db->fetch_custom("select * from jenis_keluar") as $isi) {
+               <?php foreach ($db->query("select * from jenis_keluar") as $isi) {
                   echo "<option value='$isi->id_jns_keluar'>$isi->ket_keluar</option>";
                } ?>
               </select>

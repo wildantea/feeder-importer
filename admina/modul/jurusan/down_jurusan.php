@@ -65,7 +65,7 @@ $token = $proxy->GetToken($username, $password);
 
 			$new_pu->nextStage($stageOptions);
 
-			$db->fetch_custom("truncate jurusan");
+			$db->query("truncate jurusan");
 			
 			foreach ($prodi['result'] as $data) {
 

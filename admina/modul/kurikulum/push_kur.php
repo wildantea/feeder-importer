@@ -6,28 +6,10 @@ include "../../inc/config.php";
 
 include "../../lib/prosesupdate/ProgressUpdater.php";
 
-
-$config = $db->fetch_single_row('config_user','id',1);
-
-if ($config->live=='Y') {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/live.php?wsdl'; // gunakan live
-} else {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/sandbox.php?wsdl'; // gunakan sandbox
-}
-//untuk coba-coba
-// $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
-
+$url = $db->get_service_url('soap');
+$token = $db->get_token();
 $client = new nusoap_client($url, true);
 $proxy = $client->getProxy();
-
-
-
-# MENDAPATKAN TOKEN
-$username = $config->username;
-$password = $config->password;
-$result = $proxy->GetToken($username, $password);
-$token = $result;
-
 //$token = 'acdbbc82c3b29f99e9096dab1d5eafb4';
 
 
@@ -53,10 +35,8 @@ $token = $result;
 	$error_msg_kur = array();
 	$in_mat_kurs = array();
 
-	$id_sp = $config->id_sp;
 
-
-	$arr_data = $db->fetch_custom("select kurikulum.*,jurusan.kode_jurusan,jurusan.id_sms,id_jenj_didik from kurikulum inner join jurusan on kurikulum.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and kurikulum.id='".$_GET['tahun']."'");
+	$arr_data = $db->query("select kurikulum.*,jurusan.kode_jurusan,jurusan.id_sms,id_jenj_didik from kurikulum inner join jurusan on kurikulum.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and kurikulum.id='".$_GET['tahun']."'");
 
 
 
@@ -118,7 +98,7 @@ $i=1;
 
 		$wajib = '';
 
-		$mats = $db->fetch_custom("select kurikulum.*,mat_kurikulum.*,mat_kurikulum.id as id_mat, jurusan.kode_jurusan,id_sms,id_jenj_didik from kurikulum 
+		$mats = $db->query("select kurikulum.*,mat_kurikulum.*,mat_kurikulum.id as id_mat, jurusan.kode_jurusan,id_sms,id_jenj_didik from kurikulum 
 inner join jurusan on kurikulum.kode_jurusan=jurusan.kode_jurusan 
 inner join mat_kurikulum on kurikulum.id=mat_kurikulum.id_kurikulum where id_kurikulum='$value->id' and mat_kurikulum.status_error!=1");
 		$options = array(
@@ -211,6 +191,7 @@ if ($jmlsks_mk>9) {
 		        'sks_prak' => $dt->sks_prak,
 		        'sks_prak_lap' => $dt->sks_prak_lap,
 		        'sks_sim' => $dt->sks_sim,
+		        'metode_pelaksanaan_kuliah' => $dt->metode_pelaksanaan_kuliah,
 			    'tgl_mulai_efektif' => $dt->tgl_mulai_efektif,
 				'tgl_akhir_efektif' => $dt->tgl_akhir_efektif,
 		        );
