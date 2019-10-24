@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `config_user` (
 -- Dumping data for table feeder_free_production.config_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `config_user` DISABLE KEYS */;
 INSERT INTO `config_user` (`id`, `username`, `password`, `url`, `port`, `id_sp`, `kode_pt`, `live`, `status_connected`, `nm_lemb`) VALUES
-	(1, 'usernamfeeder', 'passwordfeeder', 'localhost', '8082', '', 'kode_pt', 'N', 'N', '');
+	(1, 'usernamfeeder', 'passwordfeeder', 'localhost', '8082', '', 'kode_pt', 'Y', 'N', '');
 /*!40000 ALTER TABLE `config_user` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.data_transportasi
