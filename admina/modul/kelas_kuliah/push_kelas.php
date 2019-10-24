@@ -97,21 +97,20 @@ $error_kelas= "";
 
 			foreach ($data as $value) {
 
-		$kode_mk = $value->kode_mk;
+		$kode_mk = trim($value->kode_mk);
 
 		$semester = $value->semester;
-		$kelas = $value->nama_kelas;
-		$nama_mk = $value->nama_mk;
+		$kelas = trim($value->nama_kelas);
+		$nama_mk = trim($value->nama_mk);
 	
 		
 		$id_sms = $value->id_sms;
 
 
-		$filter_mk = "p.id_sms='".$id_sms."' and kode_mk='".$kode_mk."'";
+		$filter_mk = "p.id_sms='".$id_sms."' and trim(kode_mk)='".$kode_mk."'";
 
 		$temp_mk = $proxy->GetRecord($token,'mata_kuliah',$filter_mk);
 
-$filter_mk = "p.id_sms='".$id_sms."' and trim(kode_mk)='".$kode_mk."'";
 		$count_mk = $proxy->GetCountRecordset($token,'mata_kuliah',$filter_mk);
 
 		if ($count_mk['result']<2) {

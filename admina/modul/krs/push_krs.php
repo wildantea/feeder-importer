@@ -114,11 +114,11 @@ $token = $result;
 
 			foreach ($data as $value) {
 
-				$nim = $value->nim;
-				$kode_mk = $value->kode_mk;
-				$kelas = $value->nama_kelas;
+				$nim = trim($value->nim);
+				$kode_mk = trim($value->kode_mk);
+				$kelas = trim($value->nama_kelas);
 				$semester = $value->semester;
-				$kode_prodi = $value->kode_jurusan;
+				$kode_prodi = trim($value->kode_jurusan);
 
 		$id_sms = $value->id_sms;
 
@@ -233,9 +233,9 @@ $token = $result;
 			$pu->nextStage($stageOptions);
 
 			foreach ($data as $value) {
-				$nim = $value->nim;
-		$kode_mk = $value->kode_mk;
-		$kelas = $value->nama_kelas;
+				$nim = trim($value->nim);
+				$kode_mk = trim($value->kode_mk);
+				$kelas = trim($value->nama_kelas);
 		$semester = $value->semester;
 
 				$kode_prodi = $value->kode_jurusan;
@@ -360,9 +360,9 @@ $token = $result;
 
 			foreach ($data as $value) {
 
-			$nim = $value->nim;
-		$kode_mk = $value->kode_mk;
-		$kelas = $value->nama_kelas;
+				$nim = trim($value->nim);
+				$kode_mk = trim($value->kode_mk);
+				$kelas = trim($value->nama_kelas);
 		$semester = $value->semester;
 
 				$kode_prodi = $value->kode_jurusan;
@@ -515,9 +515,9 @@ $token = $result;
 
 			foreach ($data as $value) {
 
-	$nim = $value->nim;
-		$kode_mk = $value->kode_mk;
-		$kelas = $value->nama_kelas;
+				$nim = trim($value->nim);
+				$kode_mk = trim($value->kode_mk);
+				$kelas = trim($value->nama_kelas);
 		$semester = $value->semester;
 
 				$kode_prodi = $value->kode_jurusan;

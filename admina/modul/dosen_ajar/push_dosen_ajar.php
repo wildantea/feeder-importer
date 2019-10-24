@@ -89,14 +89,14 @@ $i=1;
 	foreach ($arr_data as $value) {
 
 		//print_r($value);
-		$nidn = $value->nidn;
-		$kode_mk = $value->kode_mk;
-		$kelas = $value->nama_kelas;
-		$ren_tm = $value->rencana_tatap_muka;
-		$rel_tm = $value->tatap_muka_real;
-		$semester = $value->semester;
+		$nidn = trim($value->nidn);
+		$kode_mk = trim($value->kode_mk);
+		$kelas = trim($value->nama_kelas);
+		$ren_tm = trim($value->rencana_tatap_muka);
+		$rel_tm = trim($value->tatap_muka_real);
+		$semester = trim($value->semester);
 		$id_sms = $value->id_sms;
-		$sks_ajar = $value->sks_ajar;
+		$sks_ajar = trim($value->sks_ajar);
 
 		$kode_prodi = $value->kode_jurusan;
 
@@ -130,7 +130,7 @@ $i=1;
 		
 
 		//Filter 
-		$filter_mk = "p.id_sms='".$id_sms."' and kode_mk='".$kode_mk."'";
+		$filter_mk = "p.id_sms='".$id_sms."' and trim(kode_mk)='".$kode_mk."'";
 		$temp_mk = $proxy->GetRecord($token,'mata_kuliah',$filter_mk);
 		if ($temp_mk['result']) {
 			$id_mk = $temp_mk['result']['id_mk'];
