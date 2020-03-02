@@ -90,6 +90,7 @@ $i=1;
             'sk_yudisium' => $value->sk_yudisium,
             'tgl_sk_yudisium' => $value->tgl_sk_yudisium,
             'ipk' => $value->ipk,
+            'smt_yudisium' => $value->semester,
             'no_seri_ijazah' => $value->no_seri_ijasah
                 );
       } else {
@@ -99,6 +100,7 @@ $i=1;
             'sk_yudisium' => '',
             'tgl_sk_yudisium' => '',
             'ipk' => '',
+            'smt_yudisium' => $value->semester,
             'no_seri_ijazah' => ''
                 );
       }

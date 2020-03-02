@@ -165,6 +165,7 @@ if ($val[1]!='') {
             'sks_total'=>filter_var($val[6], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
             'ipk'=>str_replace(",", ".", filter_var($val[7], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH)),
             'status_kuliah'=>filter_var($val[8], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+            'biaya_smt'=>filter_var($val[9], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
             'kode_jurusan' => $_POST['jurusan']
                 );
 
@@ -213,7 +214,7 @@ if (($sukses>0) || ($error_count>0)) {
 
  
 
-  $data = array("semester"=>$_POST["semester"],"nim"=>$_POST["nim"],"nama"=>$_POST["nama"],"ips"=>$_POST["ips"],"ipk"=>$_POST["ipk"],"sks_smt"=>$_POST["sks_smt"],"sks_total"=>$_POST["sks_total"],"kode_jurusan"=>$_POST["kode_jurusan"],"status_error"=>$_POST["status"],);
+  $data = array("semester"=>$_POST["semester"],"nim"=>$_POST["nim"],"nama"=>$_POST["nama"],"ips"=>$_POST["ips"],"ipk"=>$_POST["ipk"],"sks_smt"=>$_POST["sks_smt"],"sks_total"=>$_POST["sks_total"],"kode_jurusan"=>$_POST["kode_jurusan"],"status_error"=>$_POST["status"],"biaya_smt" => $_POST["biaya_smt"]);
 
 
 
@@ -235,7 +236,7 @@ if (($sukses>0) || ($error_count>0)) {
  
 
 
-   $data = array("semester"=>$_POST["semester"],"nim"=>$_POST["nim"],"nama"=>$_POST["nama"],"ips"=>$_POST["ips"],"ipk"=>$_POST["ipk"],"sks_smt"=>$_POST["sks_smt"],"sks_total"=>$_POST["sks_total"],"kode_jurusan"=>$_POST["kode_jurusan"],"status_kuliah"=>$_POST["status"],);
+   $data = array("semester"=>$_POST["semester"],"nim"=>$_POST["nim"],"nama"=>$_POST["nama"],"ips"=>$_POST["ips"],"ipk"=>$_POST["ipk"],"sks_smt"=>$_POST["sks_smt"],"sks_total"=>$_POST["sks_total"],"kode_jurusan"=>$_POST["kode_jurusan"],"status_kuliah"=>$_POST["status"],"biaya_smt" => $_POST["biaya_smt"]);
    
     $up = $db->update("nilai_akm",$data,"id",$_POST["id"]);
 

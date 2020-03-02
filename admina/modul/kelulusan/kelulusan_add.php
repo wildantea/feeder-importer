@@ -79,7 +79,13 @@
                         <div class="col-lg-10">
                           <input type="text" name="no_seri_ijasah" placeholder="No seri Ijazah" class="form-control" > 
                         </div>
-                      </div><!-- /.form-group -->       
+                      </div><!-- /.form-group -->  
+<div class="form-group">
+                        <label for="IPK" class="control-label col-lg-2">Semester Keluar</label>
+                        <div class="col-lg-10">
+                          <input type="text" name="semester" placeholder="20191" class="form-control" > 
+                        </div>
+                      </div><!-- /.form-group -->     
   <input type="hidden" name="jurusan" value="<?=$id_jur;?>">
                       
                       <div class="form-group">

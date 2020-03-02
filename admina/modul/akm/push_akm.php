@@ -101,7 +101,8 @@ $insert_data_akm = array();
 						  	'sks_smt' => $value->sks_smt,
 						  		'ipk' => $value->ipk,
 						  'sks_total' => $value->sks_total,
-						 'id_stat_mhs' => $value->status_kuliah
+						 'id_stat_mhs' => $value->status_kuliah,
+						 'biaya_smt' => $value->biaya_smt
 						);
 			$final_up = array('key' => $array_key, 'data' => $array_data
 				);
@@ -136,7 +137,8 @@ $insert_data_akm = array();
 						  	'sks_smt' => $value->sks_smt,
 						  		'ipk' => $value->ipk,
 						  'sks_total' => $value->sks_total,
-						 'id_stat_mhs' => $value->status_kuliah
+						 'id_stat_mhs' => $value->status_kuliah,
+						 'biaya_smt' => $value->biaya_smt
 						);
 					$final_up = array('key' => $array_key, 'data' => $array_data
 				);
@@ -151,7 +153,8 @@ $insert_data_akm = array();
 						  	'sks_smt' => $value->sks_smt,
 						  		'ipk' => $value->ipk,
 						  'sks_total' => $value->sks_total,
-						 'id_stat_mhs' => $value->status_kuliah
+						 'id_stat_mhs' => $value->status_kuliah,
+						 'biaya_smt' => $value->biaya_smt
 						);
 					$temp_result = $proxy->InsertRecord($token, 'kuliah_mahasiswa', json_encode($temp_data));
 

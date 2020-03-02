@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Server version:               10.1.13-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win32
--- HeidiSQL Version:             10.2.0.5599
+-- HeidiSQL Version:             10.2.0.5743
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -47,13 +47,8 @@ CREATE TABLE IF NOT EXISTS `ajar_dosen` (
   `keterangan` tinytext,
   PRIMARY KEY (`id`),
   KEY `kode_jurusan` (`kode_jurusan`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
--- Dumping data for table feeder_free_production.ajar_dosen: ~0 rows (approximately)
-/*!40000 ALTER TABLE `ajar_dosen` DISABLE KEYS */;
-INSERT INTO `ajar_dosen` (`id`, `semester`, `nidn`, `nama_dosen`, `kode_mk`, `nama_mk`, `nama_kelas`, `rencana_tatap_muka`, `tatap_muka_real`, `kode_jurusan`, `sks_ajar`, `status_error`, `keterangan`) VALUES
-	(1, '20191', '0023108302', 'Agung Wahana', 'KDA0009', '', 'A', 16, 16, '55201', NULL, 1, '');
-/*!40000 ALTER TABLE `ajar_dosen` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.config_user
 CREATE TABLE IF NOT EXISTS `config_user` (
@@ -73,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `config_user` (
 -- Dumping data for table feeder_free_production.config_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `config_user` DISABLE KEYS */;
 INSERT INTO `config_user` (`id`, `username`, `password`, `url`, `port`, `id_sp`, `kode_pt`, `live`, `status_connected`, `nm_lemb`) VALUES
-	(1, 'usernamfeeder', 'passwordfeeder', 'localhost', '8082', '', 'kode_pt', 'Y', 'N', '');
+	(1, 'usernamefeeder', 'passwordfeeder', 'localhost', '8082', '', 'kode_pt', 'Y', 'N', '');
 /*!40000 ALTER TABLE `config_user` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.data_transportasi
@@ -8365,11 +8360,8 @@ CREATE TABLE IF NOT EXISTS `jurusan` (
   PRIMARY KEY (`id`),
   KEY `kode_jurusan` (`kode_jurusan`),
   KEY `id_sms` (`id_sms`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=latin1;
 
--- Dumping data for table feeder_free_production.jurusan: ~64 rows (approximately)
-/*!40000 ALTER TABLE `jurusan` DISABLE KEYS */;
-/*!40000 ALTER TABLE `jurusan` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.kelas_kuliah
 CREATE TABLE IF NOT EXISTS `kelas_kuliah` (
@@ -8386,26 +8378,24 @@ CREATE TABLE IF NOT EXISTS `kelas_kuliah` (
   `tgl_selesai_koas` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `kode_jurusan` (`kode_jurusan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dumping data for table feeder_free_production.kelas_kuliah: ~0 rows (approximately)
-/*!40000 ALTER TABLE `kelas_kuliah` DISABLE KEYS */;
-/*!40000 ALTER TABLE `kelas_kuliah` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.kelulusan
 CREATE TABLE IF NOT EXISTS `kelulusan` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nim` varchar(50) NOT NULL,
   `kode_jurusan` varchar(50) NOT NULL,
-  `nama` varchar(250) NOT NULL,
+  `nama` varchar(250) DEFAULT NULL,
   `id_jenis_keluar` int(11) NOT NULL,
   `tanggal_keluar` date NOT NULL,
-  `sk_yudisium` varchar(150) NOT NULL,
-  `tgl_sk_yudisium` date NOT NULL,
+  `sk_yudisium` varchar(150) DEFAULT NULL,
+  `tgl_sk_yudisium` date DEFAULT NULL,
   `ipk` varchar(50) NOT NULL,
-  `no_seri_ijasah` varchar(150) NOT NULL,
+  `no_seri_ijasah` varchar(150) DEFAULT NULL,
   `status_error` int(11) NOT NULL DEFAULT '0',
-  `keterangan` tinytext NOT NULL,
+  `keterangan` tinytext,
+  `semester` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `kode_jurusan` (`kode_jurusan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -8691,11 +8681,7 @@ CREATE TABLE IF NOT EXISTS `krs` (
   `keterangan` tinytext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `kode_jurusan` (`kode_jurusan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Dumping data for table feeder_free_production.krs: ~0 rows (approximately)
-/*!40000 ALTER TABLE `krs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `krs` ENABLE KEYS */;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 -- Dumping structure for table feeder_free_production.kurikulum
 CREATE TABLE IF NOT EXISTS `kurikulum` (
@@ -8709,7 +8695,7 @@ CREATE TABLE IF NOT EXISTS `kurikulum` (
   `status_error` int(1) NOT NULL,
   `keterangan` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Dumping data for table feeder_free_production.kurikulum: ~0 rows (approximately)
 /*!40000 ALTER TABLE `kurikulum` DISABLE KEYS */;
@@ -8736,9 +8722,9 @@ CREATE TABLE IF NOT EXISTS `mat_kurikulum` (
   PRIMARY KEY (`id`),
   KEY `FK_mat_kurikulum_kurikulum` (`id_kurikulum`),
   CONSTRAINT `FK_mat_kurikulum_kurikulum` FOREIGN KEY (`id_kurikulum`) REFERENCES `kurikulum` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table feeder_free_production.mat_kurikulum: ~5 rows (approximately)
+-- Dumping data for table feeder_free_production.mat_kurikulum: ~0 rows (approximately)
 /*!40000 ALTER TABLE `mat_kurikulum` DISABLE KEYS */;
 /*!40000 ALTER TABLE `mat_kurikulum` ENABLE KEYS */;
 
@@ -8800,11 +8786,7 @@ CREATE TABLE IF NOT EXISTS `mhs` (
   `status_error` int(11) NOT NULL,
   `keterangan` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Dumping data for table feeder_free_production.mhs: ~0 rows (approximately)
-/*!40000 ALTER TABLE `mhs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mhs` ENABLE KEYS */;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=latin1;
 
 -- Dumping structure for table feeder_free_production.nilai
 CREATE TABLE IF NOT EXISTS `nilai` (
@@ -8823,11 +8805,7 @@ CREATE TABLE IF NOT EXISTS `nilai` (
   `nilai_angka` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `kode_jurusan` (`kode_jurusan`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
-
--- Dumping data for table feeder_free_production.nilai: ~0 rows (approximately)
-/*!40000 ALTER TABLE `nilai` DISABLE KEYS */;
-/*!40000 ALTER TABLE `nilai` ENABLE KEYS */;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
 -- Dumping structure for table feeder_free_production.nilai_akm
 CREATE TABLE IF NOT EXISTS `nilai_akm` (
@@ -8840,6 +8818,7 @@ CREATE TABLE IF NOT EXISTS `nilai_akm` (
   `sks_smt` int(11) DEFAULT NULL,
   `sks_total` int(11) DEFAULT NULL,
   `kode_jurusan` varchar(50) DEFAULT NULL,
+  `biaya_smt` varchar(50) DEFAULT NULL,
   `status_kuliah` varchar(1) DEFAULT NULL,
   `status_error` int(11) DEFAULT '0',
   `valid` int(11) DEFAULT '0',
@@ -8851,11 +8830,8 @@ CREATE TABLE IF NOT EXISTS `nilai_akm` (
   `keterangan` tinytext,
   PRIMARY KEY (`id`),
   KEY `kode_jurusan` (`kode_jurusan`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
--- Dumping data for table feeder_free_production.nilai_akm: ~0 rows (approximately)
-/*!40000 ALTER TABLE `nilai_akm` DISABLE KEYS */;
-/*!40000 ALTER TABLE `nilai_akm` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.pekerjaan
 CREATE TABLE IF NOT EXISTS `pekerjaan` (
@@ -8864,7 +8840,7 @@ CREATE TABLE IF NOT EXISTS `pekerjaan` (
   PRIMARY KEY (`id_pekerjaan`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='id_pekerjaan	nm_pekerjaan';
 
--- Dumping data for table feeder_free_production.pekerjaan: ~14 rows (approximately)
+-- Dumping data for table feeder_free_production.pekerjaan: ~0 rows (approximately)
 /*!40000 ALTER TABLE `pekerjaan` DISABLE KEYS */;
 INSERT INTO `pekerjaan` (`id_pekerjaan`, `nm_pekerjaan`) VALUES
 	(1, ' ');
@@ -9217,7 +9193,7 @@ CREATE TABLE IF NOT EXISTS `sys_system` (
 -- Dumping data for table feeder_free_production.sys_system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `sys_system` DISABLE KEYS */;
 INSERT INTO `sys_system` (`id`, `data`) VALUES
-	(1, 'eyJXZOyZWRpcmVjdCI6Ik4iLCJsYXN0X2xvZ2luIjoiMjAxOS0xMC0yMSJ9');
+	(1, 'eyJXZOyZWRpcmVjdCI6Ik4iLCJsYXN0X2xvZ2luIjoiMjAyMC0wMi0wMyJ9');
 /*!40000 ALTER TABLE `sys_system` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.sys_update
@@ -9227,16 +9203,19 @@ CREATE TABLE IF NOT EXISTS `sys_update` (
   `perubahan` text NOT NULL,
   `status_complete` enum('Y','N') NOT NULL DEFAULT 'N',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
--- Dumping data for table feeder_free_production.sys_update: ~4 rows (approximately)
+-- Dumping data for table feeder_free_production.sys_update: ~8 rows (approximately)
 /*!40000 ALTER TABLE `sys_update` DISABLE KEYS */;
 INSERT INTO `sys_update` (`id`, `version`, `perubahan`, `status_complete`) VALUES
 	(1, '2.0', 'Initial Update', 'Y'),
 	(2, '2.01', '<p>fist update</p>\r\n', 'Y'),
 	(3, '2.02', '<p>fixing index</p>\r\n', 'Y'),
 	(4, '2.03', '<p>just make sure everything ok</p>\r\n', 'Y'),
-	(5, '2.04', 'Updated Support feeder 3.0', 'Y');
+	(6, '2.04', '<p>notif install ulang home</p>\r\n', 'Y'),
+	(7, '2.05', '<p>trimming data&nbsp;</p>\r\n', 'Y'),
+	(8, '2.06', '<p>ubah template akm tambah biaya semester</p>\r\n', 'Y'),
+	(9, '2.07', '<p>fixing kelulusan and template akm</p>\r\n', 'Y');
 /*!40000 ALTER TABLE `sys_update` ENABLE KEYS */;
 
 -- Dumping structure for table feeder_free_production.sys_update_minor
@@ -9278,7 +9257,7 @@ CREATE TABLE IF NOT EXISTS `sys_users` (
 -- Dumping data for table feeder_free_production.sys_users: ~2 rows (approximately)
 /*!40000 ALTER TABLE `sys_users` DISABLE KEYS */;
 INSERT INTO `sys_users` (`id`, `first_name`, `last_name`, `username`, `password`, `email`, `date_created`, `foto_user`, `id_group`, `kode_jurusan`, `aktif`, `last_login`, `stat_act`) VALUES
-	(1, 'super', 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'wildannudin@gmail.com', '2015-01-26', '149020103226779.jpg', 1, NULL, 'Y', '2019-10-21', 'N'),
+	(1, 'super', 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'wildannudin@gmail.com', '2015-01-26', '149020103226779.jpg', 1, NULL, 'Y', '2020-03-02', 'N'),
 	(5, 'teknik', 'informatika', 'informatika', '270007185d0f4b290ded51f9345a7f29', 'informatika@kampus.com', '2016-02-27', '153964896515930.jpg', 2, 55201, 'Y', '2018-10-16', 'Y');
 /*!40000 ALTER TABLE `sys_users` ENABLE KEYS */;
 

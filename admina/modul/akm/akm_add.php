@@ -96,7 +96,12 @@
                         </div>
                       </div><!-- /.form-group -->
 
-
+<div class="form-group">
+                        <label for="SKS Total" class="control-label col-lg-2">Biaya Kuliah (semester)</label>
+                        <div class="col-lg-10">
+                          <input type="number" name="biaya_smt" placeholder="Biaya Kuliah (semester)" class="form-control">
+                        </div>
+                      </div><!-- /.form-group -->
                       <div class="form-group">
                         <label for="tags" class="control-label col-lg-2">&nbsp;</label>
                         <div class="col-lg-10">

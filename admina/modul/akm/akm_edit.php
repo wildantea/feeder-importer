@@ -114,7 +114,12 @@ foreach ($jur as $isi) {
 </select>
               </div>
                       </div><!-- /.form-group -->
-
+<div class="form-group">
+                        <label for="SKS Total" class="control-label col-lg-2">Biaya Kuliah (semester)</label>
+                        <div class="col-lg-10">
+                          <input type="number" name="biaya_smt" value="<?=$data_edit->biaya_smt;?>" class="form-control">
+                        </div>
+                      </div><!-- /.form-group -->
           <input type="hidden" name="jurusan" value="<?=$id_jur;?>">
                       <input type="hidden" name="id" value="<?=$data_edit->id;?>">
                       <div class="form-group">

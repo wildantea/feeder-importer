@@ -56,6 +56,7 @@ foreach ($data as $key => $val) {
                       'tgl_sk_yudisium'=>$val[5],
                       'ipk' => str_replace(",", ".", filter_var($val[6], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH)),
                       'no_seri_ijasah'=>filter_var($val[7], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+                      'semester'=>filter_var($val[8], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
                       'kode_jurusan' => $_POST['jurusan']
                     );
 
@@ -98,6 +99,7 @@ if (($sukses>0) || ($error_count>0)) {
   $data = array(
     "nim"=>$_POST["nim"],
     "nama"=>$_POST["nama"],
+    "semester"=>$_POST["semester"],
     "tanggal_keluar" => $_POST["tanggal_keluar"],
     "kode_jurusan" => $_POST["jurusan"],
     "id_jenis_keluar"=>$_POST["id_jenis_keluar"],
@@ -138,6 +140,7 @@ if (($sukses>0) || ($error_count>0)) {
   $data = array(
     "nim"=>$_POST["nim"],
     "nama"=>$_POST["nama"],
+    "semester"=>$_POST["semester"],
     "tanggal_keluar" => $_POST["tanggal_keluar"],
     "kode_jurusan" => $_POST["jurusan"],
     "id_jenis_keluar"=>$_POST["id_jenis_keluar"],

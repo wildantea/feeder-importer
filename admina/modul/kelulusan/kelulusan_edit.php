@@ -84,7 +84,12 @@
                           <input type="text" name="no_seri_ijasah" value="<?=$data_edit->no_seri_ijasah;?>" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->
-
+<div class="form-group">
+                        <label for="IPK" class="control-label col-lg-2">Semester Keluar</label>
+                        <div class="col-lg-10">
+                          <input type="text" name="semester" placeholder="<?=$data_edit->semester;?>" class="form-control" > 
+                        </div>
+                      </div><!-- /.form-group -->   
   <input type="hidden" name="jurusan" value="<?=$id_jur;?>">
                       <input type="hidden" name="id" value="<?=$data_edit->id;?>">
                       <div class="form-group">
