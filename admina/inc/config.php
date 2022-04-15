@@ -3,16 +3,16 @@ date_default_timezone_set('Asia/Jakarta');
 ini_set( "display_errors", true );
 define( "HOST", "localhost" );
 //nama database
-define( "DATABASE_NAME", "feeder_free_production" );
+define( "DATABASE_NAME", "feeder_importer" );
 define( "DB_USERNAME", "root" );
 
 define( "PORT", 3306);
 //password mysql
 define( "DB_PASSWORD", "" );
 //dir admin
-define( "DIR_ADMIN", "feeder-production/admina/");
+define( "DIR_ADMIN", "feeder-importer/admina/");
 //main directory
-define( "DIR_MAIN", "feeder-production/");
+define( "DIR_MAIN", "feeder-importer/");
 
 define ('SITE_ROOT', $_SERVER['DOCUMENT_ROOT']."/".DIR_MAIN);
 
@@ -24,7 +24,7 @@ require_once ('My_pagination.php');
 require_once ('url.php');
 require_once ('DTable.php');
 require_once ('Table_Clean.php');
-
+require_once ('feeder_function.php');
 $db=new Database("mysql");
 
 //postgre

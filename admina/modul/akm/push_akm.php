@@ -1,11 +1,6 @@
 <?php
-//include "inc/config.php";
-include "../../lib/nusoap/nusoap.php";
-
 include "../../inc/config.php";
-
 include "../../lib/prosesupdate/ProgressUpdater.php";
-
 $options = array(
     'filename' => $_GET['jurusan'].'_progress.json',
     'autoCalc' => true,
@@ -21,26 +16,8 @@ if ($jumlah_error>0) {
 	$pu->totallyComplete($msg);
 	exit();
 }
-$config = $db->fetch_single_row('config_user','id',1);
 
-if ($config->live=='Y') {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/live.php?wsdl'; // gunakan live
-} else {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/sandbox.php?wsdl'; // gunakan sandbox
-}
-//untuk coba-coba
-// $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
-
-$client = new nusoap_client($url, true);
-$proxy = $client->getProxy();
-
-
-
-# MENDAPATKAN TOKEN
-$username = $config->username;
-$password = $config->password;
-$result = $proxy->GetToken($username, $password);
-$token = $result;
+$token = get_token();
 
 //$token = 'acdbbc82c3b29f99e9096dab1d5eafb4';
 
@@ -60,14 +37,7 @@ $token = $result;
 	$data_id = array();
 	$error_id = array();
 
-	$id_sp = $config->id_sp;
-
 	$arr_data = $db->query("select *,nilai_akm.id as id_akm from nilai_akm inner join jurusan on nilai_akm.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and nilai_akm.semester='".$_GET['sem']."' and status_error!=1");
-
-
-
-
-
 
 $stageOptions = array(
     'name' => 'This AJAX process takes a long time',
@@ -75,116 +45,126 @@ $stageOptions = array(
     'totalItems' => $arr_data->rowCount(),
 );
 
-
 $pu->nextStage($stageOptions);
-
-
-
 $i=1;
-
 $insert_data_akm = array();
-
 	foreach ($arr_data as $value) {
-
 		$nim = $value->nim;
-		$filter_npm = "nipd like '%".$nim."%'";
-		$temp_npm = $proxy->GetRecord($token,'mahasiswa_pt',$filter_npm);
-		//var_dump($temp_npm);
-		if ($temp_npm['result']) {
-			$id_reg_pd = $temp_npm['result']['id_reg_pd'];
-			if ($_GET['method']=='up') {
-			$filter_akm = "id_reg_pd='".$id_reg_pd."' and id_smt='".$value->semester."'";
-			$temp_akm = $proxy->GetRecord($token,'kuliah_mahasiswa',$filter_akm);
-			$array_key = array('id_smt' => $value->semester, 'id_reg_pd' => $temp_npm['result']['id_reg_pd']);
-			$array_data = array(
-						  		'ips' => $value->ips,
-						  	'sks_smt' => $value->sks_smt,
-						  		'ipk' => $value->ipk,
-						  'sks_total' => $value->sks_total,
-						 'id_stat_mhs' => $value->status_kuliah,
-						 'biaya_smt' => $value->biaya_smt
+		$filter_pd = "trim(nim)='".$nim."'";
+			$data_req_mat = [
+				'act' => 'GetListRiwayatPendidikanMahasiswa',
+			    'token' => $token,
+			    'filter' => $filter_pd,
+			    'order' => "",
+			    'limit' => "",
+			    'offset' => ""
+
+			];
+		$temp_npm = service_request($data_req_mat);
+			if (!empty($temp_npm->data)) {
+				$id_reg_pd = $temp_npm->data[0]->id_registrasi_mahasiswa;
+				if ($_GET['method']=='up') {
+					$filter_akm = "id_registrasi_mahasiswa='".$id_reg_pd."' and id_semester='".$value->semester."'";
+					$data_req_akm = [
+						'act' => 'GetAktivitasKuliahMahasiswa',
+					    'token' => $token,
+					    'filter' => $filter_akm,
+					    'order' => "",
+					    'limit' => "",
+					    'offset' => ""
+
+					];
+					if (!empty(service_request($data_req_akm)->data)) {
+						$key_input = array(
+							'id_registrasi_mahasiswa' => $id_reg_pd,
+							'id_semester' => $value->semester
 						);
-			$final_up = array('key' => $array_key, 'data' => $array_data
-				);
-			$up_result = $proxy->UpdateRecord($token, 'kuliah_mahasiswa', json_encode($final_up));
+						$record = array(
+							'id_semester' => $value->semester,
+							  'id_registrasi_mahasiswa' => $id_reg_pd,
+							  		'ips' => $value->ips,
+							  	'sks_semester' => $value->sks_smt,
+							  		'ipk' => $value->ipk,
+							  'total_sks' => $value->sks_total,
+							 'id_status_mahasiswa' => $value->status_kuliah,
+							 'biaya_kuliah_smt' => $value->biaya_smt
+							);
+						  $data_dic = [
+						      'act' => 'UpdatePerkuliahanMahasiswa',
+						      'key' => $key_input,
+						        'token' => $token,
+						        'record' => $record,
 
-			if ($up_result['result']['error_desc']==NULL) {
-									++$sukses_count;
+						    ];
+						$up_result = service_request($data_dic);
+						if ($up_result->error_desc!='') {
+							++$error_count;
+							$error_msg[] = $up_result->error_desc;
+							$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=> $up_result->error_desc),'id',$value->id_akm);
+						} else {
+							++$sukses_count;
+							$db->update('nilai_akm',array('status_error'=>1,'keterangan'=>''),'id',$value->id_akm);
+						}
+					} else {
+						++$error_count;
+						$error_msg[] = "Error, Akm tidak ditemukan di Feeder";
+						$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=> "Error, Akm tidak ditemukan di Feeder"),'id',$value->id_akm);
+					}
+				$i++;
+		 		$pu->incrementStageItems(1, true);
 
-									$db->update('nilai_akm',array('status_error'=>1,'keterangan'=>''),'id',$value->id_akm);
-								} else {
-									++$error_count;
-									$error_msg[] = "<b>Error $nim</b>".$up_result['result']['error_desc'];
-									$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=>$up_result['result']['error_desc']),'id',$value->id_akm);
-								}
-			$i++;
-	 $pu->incrementStageItems(1, true);
+			} else {
 
-		} else {
+					$filter_akm = "id_registrasi_mahasiswa='".$id_reg_pd."' and id_semester='".$value->semester."'";
+					$data_req_akm = [
+						'act' => 'GetAktivitasKuliahMahasiswa',
+					    'token' => $token,
+					    'filter' => $filter_akm,
+					    'order' => "",
+					    'limit' => "",
+					    'offset' => ""
 
+					];
+					if (!empty(service_request($data_req_akm)->data)) {
+						++$error_count;
+						$error_msg[] = "Error, Akm sudah ada di Feeder";
+						$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=> "Error, Akm sudah ada di Feeder"),'id',$value->id_akm);
+					} else {
+						$record = array(
+							'id_semester' => $value->semester,
+							  'id_registrasi_mahasiswa' => $id_reg_pd,
+							  		'ips' => $value->ips,
+							  	'sks_semester' => $value->sks_smt,
+							  		'ipk' => $value->ipk,
+							  'total_sks' => $value->sks_total,
+							 'id_status_mahasiswa' => $value->status_kuliah,
+							 'biaya_kuliah_smt' => $value->biaya_smt
+							);
+						$data_dic = [
+					      'act' => 'InsertPerkuliahanMahasiswa',
+					        'token' => $token,
+					        'record' => $record,
+					    ];
+					    $temp_result = service_request($data_dic);
+						if ($temp_result->error_desc=='') {
+							++$sukses_count;
+							$db->update('nilai_akm',array('status_error'=>1,'keterangan'=>''),'id',$value->id_akm);
+						} else {
+							++$error_count;
+							$error_msg[] = $temp_result->error_desc;
+							$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=> $temp_result->error_desc),'id',$value->id_akm);
+						}
+					}
 
-		$filter_nim = "id_reg_pd='".$id_reg_pd."' and id_smt='".$value->semester."' and soft_delete='1'";
-		$check_delete = $proxy->GetRecord($token,'kuliah_mahasiswa',$filter_nim);
-
-		if ($check_delete['result']) {
-			$restore_data = array('id_reg_pd' => $check_delete['result']['id_reg_pd']);
-			$restore = $proxy->RestoreRecord($token,'kuliah_mahasiswa',json_encode($restore_data));
-
-
-			$array_key = array('id_smt' => $value->semester, 'id_reg_pd' => $check_delete['result']['id_reg_pd']);
-			$array_data = array(
-						  		'ips' => $value->ips,
-						  	'sks_smt' => $value->sks_smt,
-						  		'ipk' => $value->ipk,
-						  'sks_total' => $value->sks_total,
-						 'id_stat_mhs' => $value->status_kuliah,
-						 'biaya_smt' => $value->biaya_smt
-						);
-					$final_up = array('key' => $array_key, 'data' => $array_data
-				);
-			$temp_result = $proxy->UpdateRecord($token, 'kuliah_mahasiswa', json_encode($final_up));
-
-
-		} else {
-
-					$temp_data = array('id_smt' => $value->semester,
-						  'id_reg_pd' => $id_reg_pd,
-						  		'ips' => $value->ips,
-						  	'sks_smt' => $value->sks_smt,
-						  		'ipk' => $value->ipk,
-						  'sks_total' => $value->sks_total,
-						 'id_stat_mhs' => $value->status_kuliah,
-						 'biaya_smt' => $value->biaya_smt
-						);
-					$temp_result = $proxy->InsertRecord($token, 'kuliah_mahasiswa', json_encode($temp_data));
-
-		}
-
-
-				if ($temp_result['result']['error_desc']==NULL) {
-									++$sukses_count;
-
-									$db->update('nilai_akm',array('status_error'=>1,'keterangan'=>''),'id',$value->id_akm);
-								} else {
-									++$error_count;
-									$error_msg[] = "<b>Error, </b>".$temp_result['result']['error_desc'];
-									$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=>$temp_result['result']['error_desc']),'id',$value->id_akm);
-								}
-
-
-
-		}
+			}
 
 	} else {
-
 			++$error_count;
 			$error_msg[] = "<b>Error, mahasiswa dengan nim $nim</b> tidak ada di feeder";
 			$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=>"Error, mahasiswa dengan nim ini tidak ada di feeder"),'id',$value->id_akm);
 		}
 
-	 $pu->incrementStageItems(1, true);
-
-
+			 $pu->incrementStageItems(1, true);
 	}
 
 $msg = '';

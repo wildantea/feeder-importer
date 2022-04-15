@@ -1,9 +1,10 @@
-
-
+<?php 
+$data_edit = $db->fetch_single_row("config_user","id",1);
+?>
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                      Config Akun Feeder
+                     Setting Koneksi Importer ke Feeder
                     </h1>
                     <ol class="breadcrumb">
                         <li><a href="<?=base_index();?>"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -19,62 +20,38 @@
         <div class="box box-solid box-primary">
                                    <div class="box-header">
                                     <h3 class="box-title">Edit Config Akun Feeder</h3>
-                                    <div class="box-tools pull-right">
-                                        <button class="btn btn-info btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                                        <button class="btn btn-info btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
-                                    </div>
+                                    
                                 </div>
 
                   <div class="box-body">
+<div class="alert alert-info">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <strong>Untuk menghubungkan IMPORTER dengan NEO FEEDER, Silakan Masukan username, password Admin PT NEO FEEDER dibawah ini. Isi IP/Domain jika NEO FEEDER beda lokasi server dengan importer, biarkan url jika satu server/komputer</strong>
+        </div>
+
                                      <div class="alert alert-danger pass_salah" style="display:none">
           <button type="button" class="close" data-dismiss="alert">&times;</button>
           <strong><span class="isi_config_error"></span> </strong>
         </div>
                      <form id="update_config" method="post" class="form-horizontal" action="<?=base_admin();?>modul/config_akun_feeder/config_akun_feeder_action.php?act=up">
                       <div class="form-group">
-                        <label for="Username Feeder" class="control-label col-lg-2">Username Feeder</label>
+                        <label for="Username Feeder" class="control-label col-lg-2">Username Feeder Dikti</label>
                         <div class="col-lg-10">
-                          <input type="text" name="username" value="<?=$data_edit->username;?>" class="form-control" required> 
+                          <input type="text" name="username" value="<?=dec_data($data_edit->username);?>" class="form-control" required> 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
-                        <label for="Password Feeder" class="control-label col-lg-2">Password Feeder</label>
+                        <label for="Password Feeder" class="control-label col-lg-2">Password Feeder Dikti</label>
                         <div class="col-lg-10">
-                          <input type="text" name="password" value="<?=$data_edit->password;?>" class="form-control" required> 
+                          <input type="password" name="password" value="<?=dec_data($data_edit->password);?>" class="form-control" required> 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
 
                         <label for="URL Feeder" class="control-label col-lg-2">URL Feeder</label>
                         <div class="col-lg-10">
-                        <span style="color:#f00">Jika Feeder Dikti satu komputer dengan Importer isi localhost (tanpa http://), jika beda komputer, isi dengan ip address atau domain (tanpa http://)</span>
-                          <input type="text" name="url" value="<?=$data_edit->url;?>" class="form-control" required> 
-                        </div>
-                      </div><!-- /.form-group -->
-<div class="form-group">
-                        <label for="PORT" class="control-label col-lg-2">PORT</label>
-                        <div class="col-lg-10">
-                          <input type="text" name="port" value="<?=$data_edit->port;?>" class="form-control" required> 
-                        </div>
-                      </div><!-- /.form-group -->
-<div class="form-group">
-                        <label for="Kode PT" class="control-label col-lg-2">Kode PT</label>
-                        <div class="col-lg-10">
-                          <input type="text" name="kode_pt" value="<?=$data_edit->kode_pt;?>" class="form-control" required> 
-                        </div>
-                      </div><!-- /.form-group -->
-<div class="form-group">
-                        <label for="live" class="control-label col-lg-2">live</label>
-                        <div class="col-lg-10">
-                          <?php if ($data_edit->live=="Y") {
-      ?>
-      <input name="live" class="make-switch" type="checkbox" checked>
-      <?php
-    } else {
-      ?>
-      <input name="live" class="make-switch" type="checkbox">
-      <?php
-    }?>
+                        <span style="color:#f00">Jika Feeder Dikti satu komputer dengan Importer isi localhost, jika beda komputer, isi dengan ip address atau alamat domain</span>
+                          <input type="text" name="url" value="<?=$data_edit->url;?>" class="form-control" id="url" required> 
                         </div>
                       </div><!-- /.form-group -->
 
@@ -82,7 +59,6 @@
                       <div class="form-group">
                         <label for="tags" class="control-label col-lg-2">&nbsp;</label>
                         <div class="col-lg-10">
-                          <a onclick="window.history.back(-1)" class="btn btn-success btn-flat"><i class="fa fa-step-backward"></i> Kembali</a>
                            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
                     
                         </div>
@@ -95,9 +71,24 @@
 </div>
                   
                 </section><!-- /.content -->
-        
+   <script src="<?=base_admin();?>assets/login/js/jqueryform.js"></script>
+  <script src="<?=base_admin();?>assets/login/js/validate.js"></script>
 <script type="text/javascript">
+
   $(document).ready(function(){
+
+
+
+      $.validator.addMethod("myFunc", function(val) {
+        var match = val.match(/^(?:https?:)?(?:\/\/)?([^\/\?]+)/i);
+        var hostname = match && match[1];
+        url = hostname.replace(/:.*$/, "");
+        //console.log(match);
+        //alert(domain);
+        $("#url").val(url);
+        return true;
+      }, "Untuk Cetak Data Silakan Pilih Prodi");
+
     $("form#update_config").validate({
         errorClass: 'help-block',
         errorElement: 'span',
@@ -107,6 +98,14 @@
         unhighlight: function(element, errorClass, validClass) {
             $(element).parents('.form-group').removeClass('has-error').addClass('has-success');
         },
+        
+        rules: {
+          url: {
+            myFunc:true
+          //minlength: 2
+        },
+      },
+
             submitHandler: function(form) {
                $('#loadnya').show();
                    $(form).ajaxSubmit({
@@ -124,7 +123,7 @@
                                  $('.pass_salah').hide();
                                 $('.notif_top_up').fadeIn(1000);
                                  setTimeout(function () {
-                                window.history.back();
+                                window.location = '<?=base_index();?>';
                               }, 2000); //will call the function after 2 secs.
                                 //redirect jika berhasil login
                               }

@@ -74,17 +74,7 @@
                             </div><!-- /.box -->
                         </div>
                     </div>
-        <?php
-       foreach ($db->fetch_all("sys_menu") as $isi) {
-                      if ($path_url==$isi->url) {
-                          if ($role_act["insert_act"]=="Y") {
-                    ?>
-          <a href="<?=base_index();?>jurusan/tambah" class="btn btn-primary btn-flat"><i class="fa fa-plus"></i> Tambah</a>
-                          <?php
-                          } 
-                       } 
-}
-?>  
+      
                 </section><!-- /.content -->
         
 <script type="text/javascript">

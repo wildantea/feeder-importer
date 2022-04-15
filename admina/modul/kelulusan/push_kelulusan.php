@@ -1,10 +1,6 @@
 <?php
-include "../../lib/nusoap/nusoap.php";
-
 include "../../inc/config.php";
-
 include "../../lib/prosesupdate/ProgressUpdater.php";
-
 $options = array(
     'filename' => $_GET['jurusan'].'_progress.json',
     'autoCalc' => true,
@@ -12,29 +8,7 @@ $options = array(
 );
 
 $pu = new Manticorp\ProgressUpdater($options);
-$config = $db->fetch_single_row('config_user','id',1);
-
-if ($config->live=='Y') {
-  $url = 'http://'.$config->url.':'.$config->port.'/ws/live.php?wsdl'; // gunakan live
-} else {
-  $url = 'http://'.$config->url.':'.$config->port.'/ws/sandbox.php?wsdl'; // gunakan sandbox
-}
-//untuk coba-coba
-// $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
-
-$client = new nusoap_client($url, true);
-$proxy = $client->getProxy();
-
-
-
-# MENDAPATKAN TOKEN
-$username = $config->username;
-$password = $config->password;
-$result = $proxy->GetToken($username, $password);
-$token = $result;
-
-//$token = 'acdbbc82c3b29f99e9096dab1d5eafb4';
-
+$token = get_token();
 
   $id_sms = '';
   $id_mk = '';
@@ -50,10 +24,6 @@ $token = $result;
   $error_msg = array();
   $data_id = array();
   $error_id = array();
-
-
-  $id_sp = $config->id_sp;
-
   $jur = $_GET['jurusan'];
 
   $arr_data = $db->query("select * from kelulusan where kode_jurusan='$jur' and status_error!='1'");
@@ -72,65 +42,53 @@ $pu->nextStage($stageOptions);
 $i=1;
 
   foreach ($arr_data as $value) {
-
-
     $nim = $value->nim;
-    $filter_npm = "nipd like '%".$nim."%'";
-    $temp_npm = $proxy->GetRecord($token,'mahasiswa_pt',$filter_npm);
+    $filter_pd = "trim(nim)='".$nim."'";
+      $data_req_mat = [
+        'act' => 'GetListRiwayatPendidikanMahasiswa',
+          'token' => $token,
+          'filter' => $filter_pd,
+          'order' => "",
+          'limit' => "",
+          'offset' => ""
 
-    if ($temp_npm['result']) {
-     
-
-      $id_reg_pd = $temp_npm['result']['id_reg_pd'];
+      ];
+    $temp_npm = service_request($data_req_mat);
+    if (!empty($temp_npm->data)) {
+      $id_reg_pd = $temp_npm->data[0]->id_registrasi_mahasiswa;
       $array_key = array('id_reg_pd' => $id_reg_pd);
-       if ($value->id_jenis_keluar==1) {
-          $array_data = array(
-            'id_jns_keluar' => $value->id_jenis_keluar,
-            'tgl_keluar' => $value->tanggal_keluar,
-            'sk_yudisium' => $value->sk_yudisium,
-            'tgl_sk_yudisium' => $value->tgl_sk_yudisium,
-            'ipk' => $value->ipk,
-            'smt_yudisium' => $value->semester,
-            'no_seri_ijazah' => $value->no_seri_ijasah
-                );
+      $array_data = array(
+        'id_registrasi_mahasiswa' => $id_reg_pd,
+        'id_jenis_keluar' => $value->id_jenis_keluar,
+        'tanggal_keluar' => $value->tanggal_keluar,
+        'id_periode_keluar' => $value->semester,
+        'nomor_sk_yudisium' => $value->sk_yudisium,
+        'tanggal_sk_yudisium' => $value->tgl_sk_yudisium,
+        'ipk' => $value->ipk,
+        'nomor_ijazah' => $value->no_seri_ijasah
+            );
+      $data_dic = [
+          'act' => 'InsertMahasiswaLulusDO',
+            'token' => $token,
+            'record' => $array_data,
+        ];
+      $up_result = service_request($data_dic);
+      if ($up_result->error_desc=='') {
+          ++$sukses_count;
+          $db->update('kelulusan',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
       } else {
-          $array_data = array(
-            'id_jns_keluar' => $value->id_jenis_keluar,
-            'tgl_keluar' => $value->tanggal_keluar,
-            'sk_yudisium' => '',
-            'tgl_sk_yudisium' => '',
-            'ipk' => '',
-            'smt_yudisium' => $value->semester,
-            'no_seri_ijazah' => ''
-                );
+          ++$error_count;
+          $error_msg[] = $up_result->error_desc;
+          $db->update('kelulusan',array('status_error' => 2, 'keterangan'=> $up_result->error_desc),'id',$value->id);
       }
-           
-      $final_up = array('key' => $array_key, 'data' => $array_data
-        );
-      $up_result = $proxy->UpdateRecord($token, 'mahasiswa_pt', json_encode($final_up));
-      
-
-      if ($up_result['result']['error_desc']==NULL) {
-                  ++$sukses_count;
-                  $db->update('kelulusan',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
-                } else {
-                  ++$error_count;
-                  $error_msg[] = "<b>Error $nim </b>".$up_result['result']['error_desc'];
-                  $db->update('kelulusan',array('status_error' => 2, 'keterangan'=>$up_result['result']['error_desc']),'id',$value->id);
-                }         
-
     } else {
              ++$error_count;
                   $error_msg[] = "<b>Error Mahasiswa dengan nim $nim tidak ada di feeder</b>";
                   $db->update('kelulusan',array('status_error' => 2, 'keterangan'=>"Error mahasiswa ini tidak ada di feeder"),'id',$value->id);
     }
-
-
       $i++;
-   $pu->incrementStageItems(1, true);
-
- 
-          }
+      $pu->incrementStageItems(1, true);
+}
 
 
 

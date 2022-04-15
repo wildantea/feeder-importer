@@ -65,6 +65,8 @@ $values = "";
             preg_replace( '/[^[:print:]]/', '',filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH)).'","'.
       filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH).'","'.
       filter_var($val[6], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH).'","'.
+      filter_var($val[7], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH).'","'.
+      filter_var($val[8], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH).'","'.
       $_POST['kode_jurusan'].'"),';
               }
       }
@@ -75,7 +77,7 @@ $values = "";
 if ($values!="") {
   $values = rtrim($values,",");
 
-  $query = "insert into kelas_kuliah (semester,kode_mk,nama_mk,nama_kelas,bahasan_case,tgl_mulai_koas,tgl_selesai_koas,kode_jurusan) values ".$values;
+  $query = "insert into kelas_kuliah (semester,kode_mk,nama_mk,nama_kelas,bahasan_case,tgl_mulai_koas,tgl_selesai_koas,lingkup,mode_kuliah,kode_jurusan) values ".$values;
   //echo $query;
   $db->query($query);
 }
@@ -112,7 +114,9 @@ if (($sukses>0) || ($error_count>0)) {
     "kode_mk"=>$_POST["kode_mk"],
     "nama_mk"=>$_POST["nama_mk"],
     "nama_kelas"=>$_POST["nama_kelas"],
-    "kode_jurusan" => $_POST['jurusan']
+    "kode_jurusan" => $_POST['jurusan'],
+    "lingkup"=>$_POST["lingkup"],
+    "mode_kuliah"=>$_POST["mode_kuliah"]
     );
   
   
@@ -151,7 +155,9 @@ if (($sukses>0) || ($error_count>0)) {
     "kode_jurusan" => $_POST['jurusan'],
     "bahasan_case" => $_POST['bahasan_case'],
     "tgl_mulai_koas" => $_POST['tgl_mulai_koas'],
-    "tgl_selesai_koas" => $_POST['tgl_selesai_koas']
+    "tgl_selesai_koas" => $_POST['tgl_selesai_koas'],
+    "lingkup"=>$_POST["lingkup"],
+    "mode_kuliah"=>$_POST["mode_kuliah"]
     );
    
 

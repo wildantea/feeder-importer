@@ -1,7 +1,7 @@
 <?php
 session_start();
 include "../../inc/config.php";
-include "../../lib/nusoap/nusoap.php";
+
 
  function is_connected($url,$port)
       {
@@ -16,121 +16,84 @@ include "../../lib/nusoap/nusoap.php";
         }
 
       }
+
+function stringInsert($str,$insertstr,$pos)
+{
+    $str = substr($str, 0, $pos) . $insertstr . substr($str, $pos);
+    return $str;
+}
+
+function insert_data($data_array) {
+  global $db;
+  $salt = "XZO";
+  $array_data = array($data_array);
+  $dt = json_encode($data_array);
+  $encode_json = base64_encode($dt);
+  $json_after_salt = stringInsert($encode_json,$salt,3);
+
+  return $json_after_salt;
+}
 session_check();
 switch ($_GET["act"]) {
-  case "in":
-  
-  
-  
-  $data = array("username"=>$_POST["username"],"password"=>$_POST["password"],"url"=>$_POST["url"],"port"=>$_POST["port"],"kode_pt"=>$_POST["kode_pt"],);
-  
-  
-  
-   if(isset($_POST["live"])=="on")
-    {
-      $live = array("live"=>"Y");
-      $data=array_merge($data,$live);
-    } else { 
-      $live = array("live"=>"N");
-      $data=array_merge($data,$live);
-    }
-    $in = $db->insert("config_user",$data);
-    
-    if ($in=true) {
-      echo "good";
-    } else {
-      return false;
-    }
-    break;
-  case "delete":
-    
-    
-    
-    $db->delete("config_user","id",$_GET["id"]);
-    break;
   case "up":
+     //default port
+    $port = $db->fetch_single_row('config_user','id',1)->port;
 
-     
-
-   $data = array("username"=>$_POST["username"],"password"=>$_POST["password"],"url"=>$_POST["url"],"port"=>$_POST["port"],"kode_pt"=>$_POST["kode_pt"]);
-   
-   
-   
-
-    if(isset($_POST["live"])=="on")
-    {
-      $live = array("live"=>"Y");
-      $data=array_merge($data,$live);
-    } else { 
-      $live = array("live"=>"N");
-      $data=array_merge($data,$live);
-    }
-    
+      $file_headers = @get_headers('http://'.$_POST["url"].':'.$port.'/ws/live2.php');
 
 
-         function isValidMd5($result)
-        {
-             return preg_match('/^[a-f0-9]{32}$/i', $result);
-        }
-
-     
-        $url = 'http://'.$_POST["url"].':'.$_POST["port"].'/ws/live.php?wsdl'; // gunakan sandbox
-
-     
-            $file_headers = @get_headers('http://'.$_POST["url"].':'.$_POST["port"].'/ws/mahasiswa.php');
-
-
-      if (!is_connected($_POST["url"],$_POST["port"])) {
-
-
+      if (!is_connected($_POST["url"],$port)) {
               $status = 'Server PDDIKTI tidak aktif';
+      } else {
+           if($file_headers[0] == 'HTTP/1.1 404 Not Found') {
+              $status = 'Tidak menemukan PDDIKTI Server/Url Salah';
+            } else {
 
-          
+      $datas = array(
+        'act' => 'GetToken',
+        'username' => $_POST["username"],
+        'password' => $_POST["password"]
+      );
+      $result = service_request($datas,'http://'.$_POST["url"].':'.$port.'/ws/live2.php'); // gunakan sandbox);
+      if ($result->data) {
+         $token = $result->data->token;
+         //dump($token);
+         //get profil pt
+          $data_dic = array(
+            'act' => 'GetProfilPT',
+            'token' => $token,
+            'filter' => "",
+            'order' => "",
+            'limit' => 3,
+            'offset' => 0
+          );
+
+          $hasil = service_request($data_dic,'http://'.$_POST["url"].':'.$port.'/ws/live2.php');
+          if ($hasil->data) {
+              //dump($hasil->data);
+              $data = array(
+                "username"=> insert_data($_POST["username"]),
+                "password"=> insert_data($_POST["password"]),
+                "url"=>$_POST["url"],
+                "port"=>$port,
+                "kode_pt"=> $db->trimmer($hasil->data[0]->kode_perguruan_tinggi),
+                "id_sp" => $hasil->data[0]->id_perguruan_tinggi,
+                "live" => 'Y',
+              );
+          }
+
+         $status = 'good';
+
+         $up = $db->update("config_user",$data,"id",$_POST["id"]);
 
       } else {
-
-           if($file_headers[0] == 'HTTP/1.1 404 Not Found') {
-
-
-              $status = 'Tidak menemukan PDDIKTI Server/Url Salah';
-
-            } else {
-
-
-   
-   
-           //untuk coba-coba
-        // $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
-
-        $client = new nusoap_client($url, true);
-        $proxy = $client->getProxy();
-
-        # MENDAPATKAN TOKEN
-        $username = $_POST["username"];
-        $password = $_POST["password"];
-        $result = "";
-        $result = $proxy->GetToken($username, $password);
-        $token = $result;
-       
-        if (isValidMd5($result)) {
-            $filter_sp = "npsn='".$_POST['kode_pt']."' and soft_delete='0'";
-            $get_id_sp = $proxy->GetRecord($token,'satuan_pendidikan',$filter_sp);
-            if (empty($get_id_sp['result'])) {
-              $status = "Kode PT tidak ditemukan di feeder";
-            } else {
-              $status = 'good';
-              $data_sp = array('id_sp' => $get_id_sp['result']['id_sp']);
-              $db->update("config_user",$data_sp,"id",$_POST["id"]);
-            }
-        } else {
-           $status = "ERROR: username/password salah";
-        }
-
-    
-
-        }
+         $status = "ERROR: ".$result->error_desc;
+         //exit();
       }
-      $up = $db->update("config_user",$data,"id",$_POST["id"]);
+
+    }
+      
+}
 
       echo $status;
     break;

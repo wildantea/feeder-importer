@@ -33,16 +33,16 @@
                                         <?php
 $i=1;
 if ($_SESSION['level']==1) {
-$data = $db->query("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang from jurusan");
+$data = $db->query("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang,id_sms from jurusan");
 } else {
-    $data = $db->query("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang from jurusan where jurusan.kode_jurusan='".$_SESSION['jurusan']."' group by jurusan.kode_jurusan");
+    $data = $db->query("select jurusan.nama_jurusan,jurusan.kode_jurusan,jenjang,id_sms from jurusan where jurusan.kode_jurusan='".$_SESSION['jurusan']."' group by jurusan.kode_jurusan");
 }
                                         foreach ($data as $dt) {
                                           ?>
 <tr>
 <td><?=$i;?></td>
 <td>
-<a href='<?=base_index();?>hapus-kelas/choose/<?=$dt->kode_jurusan;?>'><?=$dt->nama_jurusan;?></a>
+<a href='<?=base_index();?>hapus-kelas/choose/<?=$dt->id_sms;?>'><?=$dt->nama_jurusan;?></a>
 </td>
 <td><?=$dt->jenjang;?></td>
 </tr>

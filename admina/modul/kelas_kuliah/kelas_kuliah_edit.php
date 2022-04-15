@@ -49,6 +49,52 @@
                           <input type="text" name="nama_kelas" value="<?=$data_edit->nama_kelas;?>" class="form-control" required> 
                         </div>
                       </div><!-- /.form-group -->
+
+<div class="form-group">
+                        <label for="lingkup" class="control-label col-lg-2">Lingkup</label>
+                        <div class="col-lg-2">
+                          <select name="lingkup" data-placeholder="Pilih lingkup..." class="form-control chzn-select" tabindex="2" required>
+
+               <?php 
+               $data_lingkup = array(
+                '1' => 'Internal',
+                '2' => 'External',
+                '3' => 'Campuran'
+              );
+foreach ($data_lingkup as $key => $val) {
+
+                  if ($data_edit->lingkup==$key) {
+                    echo "<option value='$key' selected>$val</option>";
+                  } else {
+                    echo "<option value='$key'>$val</option>";
+                  }
+               } ?>
+              </select>
+                        </div>
+                      </div><!-- /.form-group -->
+
+<div class="form-group">
+                        <label for="lingkup" class="control-label col-lg-2">Mode Kuliah</label>
+                        <div class="col-lg-2">
+                          <select name="mode_kuliah" data-placeholder="Pilih mode_kuliah..." class="form-control chzn-select" tabindex="2" required>
+
+               <?php 
+               $data_mode_kuliah = array(
+                'O' => 'Online',
+                'F' => 'Offline',
+                'M' => 'Campuran'
+              );
+foreach ($data_mode_kuliah as $key => $val) {
+
+                  if ($data_edit->mode_kuliah==$key) {
+                    echo "<option value='$key' selected>$val</option>";
+                  } else {
+                    echo "<option value='$key'>$val</option>";
+                  }
+               } ?>
+              </select>
+                        </div>
+                      </div><!-- /.form-group -->
 <div class="form-group">
                         <label for="Nama Kelas" class="control-label col-lg-2">Bahasan</label>
                         <div class="col-lg-10">

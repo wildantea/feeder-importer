@@ -1,17 +1,6 @@
 <?php
-//include "inc/config.php";
-include "../../lib/nusoap/nusoap.php";
-
 include "../../inc/config.php";
-
 include "../../lib/prosesupdate/ProgressUpdater.php";
-
-$url = $db->get_service_url('soap');
-$token = $db->get_token();
-$client = new nusoap_client($url, true);
-$proxy = $client->getProxy();
-//$token = 'acdbbc82c3b29f99e9096dab1d5eafb4';
-
 
 	$id_sms = '';
 	$id_mk = '';
@@ -61,37 +50,57 @@ $i=1;
 		$mulai_berlaku = $value->mulai_berlaku;
 		$kode_prodi = $value->kode_jurusan;
 
-		$filter_check = "id_sms='".$id_sms."' and id_jenj_didik='".$id_jenj_didik."' and id_smt='".$mulai_berlaku."' and soft_delete='0'";
-			$temp_check = $proxy->GetRecord($token,'kurikulum',$filter_check);
+		$filter_check = "id_prodi='".$id_sms."' and id_semester='".$mulai_berlaku."'";
+				$data_param = array(
+					'act' => 'GetListKurikulum',
+					'token' => get_token(),
+					'filter' => $filter_check
+				);
+				$temp_check = service_request($data_param);
 
-			if ($temp_check['result']) {
-			$id_kur = $temp_check['result']['id_kurikulum_sp'];
+
+
+			if (!empty($temp_check->data)) {
+			$id_kur = $temp_check->data[0]->id_kurikulum;
 			$error_msg_kur[] = "<b>Error Kurikulum ini Sudah Ada di Feeder</b>";
 			$db->update('kurikulum',array('status_error' => 2, 'keterangan'=>"Kurikulum sudah ada di Feeder"),'id',$value->id);
 				++$error_count_kur;
 			} else {
 					//var_dump($temp_kls['result']);
 			$temp_data = array(
-				'nm_kurikulum_sp' => $nama_kurikulum,
-				'jml_sks_wajib' => $jml_sks_wajib,
-				'jml_sks_pilihan' => $jml_sks_pilihan,
-				'jml_sks_lulus' => $jml_sks_wajib+$jml_sks_pilihan,
-				'id_smt' => $mulai_berlaku,
-				'id_jenj_didik' => $id_jenj_didik,
-				'id_sms' => $id_sms,
+				'nama_kurikulum' => $nama_kurikulum,
+				'jumlah_sks_wajib' => $jml_sks_wajib,
+				'jumlah_sks_pilihan' => $jml_sks_pilihan,
+				'jumlah_sks_lulus' => $jml_sks_wajib+$jml_sks_pilihan,
+				'id_semester' => $mulai_berlaku,
+				'id_prodi' => $id_sms,
 				);
 
-			$insert_kur = $proxy->InsertRecord($token, "kurikulum", json_encode($temp_data));
+				dump($temp_data);
 
-			if ($insert_kur['result']['error_desc']==NULL) {
-				$id_kur = $insert_kur['result']['id_kurikulum_sp'];
-				$db->update('kurikulum',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
-				++$sukses_count_kur;
-			} else {
-				$error_msg_kur[] = "<b>Error ".$insert_kur['result']['error_desc'];
-				$db->update('kurikulum',array('status_error' => 2, 'keterangan'=>"Error ".$insert_kur['result']['error_desc']),'id',$value->id);
-				++$error_count_kur;
-			}
+				$data_param = array(
+					'act' => 'InsertKurikulum',
+					'record' => $temp_data,
+					'token' => get_token()
+				);
+				$insert_kur = service_request($data_param);
+
+				if (is_object($insert_kur)) {
+					$value_data = addslashes($insert_kur->error_desc);
+					if ($value_data!='') {
+						$error_msg_kur[] = "<b>Error ".$value_data;
+						$db->update('kurikulum',array('status_error' => 2, 'keterangan'=>"Error ".$value_data),'id',$value->id);
+						++$error_count_kur;
+					} else {
+						$id_kur = $insert_kur->data->id_kurikulum;
+						$db->update('kurikulum',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
+						++$sukses_count_kur;
+					}
+				} else {
+					$error_msg_kur[] = "<b>Error ".$insert_kur;
+					$db->update('kurikulum',array('status_error' => 2, 'keterangan'=>"Error ".$insert_kur),'id',$value->id);
+					++$error_count_kur;
+				}
 			
 		}
 		$id_kurikulum = $id_kur;
@@ -141,92 +150,117 @@ if ($jmlsks_mk>9) {
 			$db->update('mat_kurikulum',array('status_error' => 2, 'keterangan'=>"Error Total Jumlah SKS tidak boleh 0"),'id',$dt->id_mat);
 			$error_msg[] = "Total Jumlah SKS tidak boleh 0";
 		} else {
-				$filter_check = "p.id_sms='".$dt->id_sms."' and p.id_jenj_didik='".$dt->id_jenj_didik."' and trim(p.kode_mk)='".trim($dt->kode_mk)."'";
-				$temp_check = $proxy->GetRecord($token,'mata_kuliah',$filter_check);
+				$filter_check = "id_prodi='".$dt->id_sms."' and trim(kode_mata_kuliah)='".trim($dt->kode_mk)."'";
+				//get matkul
+				$data_param = array(
+					'act' => 'GetDetailMataKuliah',
+					'token' => get_token(),
+					'filter' => $filter_check
+				);
+				$temp_check = service_request($data_param);
 
-			if ($temp_check['result']) {
-				$id_mk = $temp_check['result']['id_mk'];
-				$jmlsks_mk= $temp_check['result']['sks_mk'];
+			if (!empty($temp_check->data)) {
+				$id_mk = $temp_check->data[0]->id_matkul;
+				$jmlsks_mk= $temp_check->data[0]->sks_mata_kuliah;
 				++$error_count;
 				$error_msg[] = "Matakuliah $dt->kode_mk $dt->nama_mk sudah ada di Feeder";
 				$db->update('mat_kurikulum',array('status_error' => 2, 'keterangan'=>"Matakuliah ini sudah ada di Feeder"),'id',$dt->id_mat);
 				//check ke matakuliah kurikulum jika sudah ada pula
-				$filter_check_mat = "p.id_kurikulum_sp='".$id_kurikulum."' and p.id_mk='".$id_mk."'";
-				$temp_checks = $proxy->GetRecord($token,'mata_kuliah_kurikulum',$filter_check_mat);
+				$filter_check_mat = "id_kurikulum='".$id_kurikulum."' and id_matkul='".$id_mk."'";
+				//get matkul kurikulum
+				$data_param = array(
+					'act' => 'GetMatkulKurikulum',
+					'token' => get_token(),
+					'filter' => $filter_check_mat
+				);
+				$temp_checks = service_request($data_param);
 
-				if (empty($temp_checks['result'])) {
+				if (empty($temp_checks->data)) {
 					//insert to matkul kurikulum
 					$in_mat_kur = array(
-						'id_kurikulum_sp' => $id_kurikulum,
-						'id_mk' => $id_mk,
-						'smt' => $dt->semester,
-						'sks_mk' => $jmlsks_mk,
-						'sks_tm' =>$dt->sks_tm,
-					    'sks_prak' =>  $dt->sks_prak,
-				   		'sks_prak_lap' =>$dt->sks_prak_lap,
-						'sks_sim' => $dt->sks_sim,
-						'a_wajib' => $wajib_mat
+						'id_kurikulum' => $id_kurikulum,
+						'id_matkul' => $id_mk,
+						'semester' => $dt->semester,
+						'sks_mata_kuliah' => $jmlsks_mk,
+						'sks_tatap_muka' =>$dt->sks_tm,
+					    'sks_praktek' =>  $dt->sks_prak,
+				   		'sks_praktek_lapangan' =>$dt->sks_prak_lap,
+						'sks_simulasi' => $dt->sks_sim,
+						'apakah_wajib' => $wajib_mat
 						);
 
-					$insert_mat_kur = $proxy->InsertRecord($token, "mata_kuliah_kurikulum", json_encode($in_mat_kur));
+				$data_param = array(
+					'act' => 'InsertMatkulKurikulum',
+					'token' => get_token(),
+					'record' => $in_mat_kur
+				);
+				$insert_mat_kur = service_request($data_param);
 
-						if ($insert_mat_kur['result']['error_desc']==NULL) {
+						if ($insert_mat_kur->error_desc=='') {
 							++$sukses_count_mat;
 						} else {
 							++$error_count_mat;
-							$error_msg_mat[] = "Error, Matakuliah Kurikulum $dt->kode_mk ,".$insert_mat_kur['result']['error_desc'];
+							$error_msg_mat[] = "Error, Matakuliah Kurikulum $dt->kode_mk ,".$insert_mat_kur->error_desc;
 						}
 				} 
 
 			} else {
 					
 				$data = array(
-				'id_sms' => $dt->id_sms,
-				'id_jenj_didik' => $dt->id_jenj_didik,
-		        'kode_mk' => $dt->kode_mk,
-		        'nm_mk' => $dt->nama_mk,
-		        'jns_mk' => $wajib,
-		        'sks_mk' => $jmlsks_mk,
-		        'sks_tm' => $dt->sks_tm,
-		        'sks_prak' => $dt->sks_prak,
-		        'sks_prak_lap' => $dt->sks_prak_lap,
-		        'sks_sim' => $dt->sks_sim,
-		        'metode_pelaksanaan_kuliah' => $dt->metode_pelaksanaan_kuliah,
-			    'tgl_mulai_efektif' => $dt->tgl_mulai_efektif,
-				'tgl_akhir_efektif' => $dt->tgl_akhir_efektif,
+				'id_prodi' => $dt->id_sms,
+		        'kode_mata_kuliah' => $dt->kode_mk,
+		        'nama_mata_kuliah' => $dt->nama_mk,
+		        'id_jenis_mata_kuliah' => $wajib,
+		        'sks_mata_kuliah' => $jmlsks_mk,
+		        'sks_tatap_muka' => $dt->sks_tm,
+		        'sks_praktek' => $dt->sks_prak,
+		        'sks_praktek_lapangan' => $dt->sks_prak_lap,
+		        'sks_simulasi' => $dt->sks_sim,
+		        'metode_kuliah' => $dt->metode_pelaksanaan_kuliah,
+			    'tanggal_mulai_efektif' => $dt->tgl_mulai_efektif,
+				'tanggal_akhir_efektif' => $dt->tgl_akhir_efektif,
 		        );
 
 
+				$data_param = array(
+					'act' => 'InsertMataKuliah',
+					'token' => get_token(),
+					'record' => $data
+				);
+				$in_mat = service_request($data_param);
 
 				//insert matakuliah
-				$in_mat = $proxy->InsertRecord($token, "mata_kuliah", json_encode($data));
-				if ($in_mat['result']['error_desc']==NULL) {
-					$id_mk = $in_mat['result']['id_mk'];
+				if ($in_mat->error_desc=='') {
+					$id_mk = $in_mat->data->id_mk;
 					++$sukses_count;
 					$db->update('mat_kurikulum',array('status_error'=>1,'keterangan'=>''),'id',$dt->id_mat);
 						//mat kur for second access
 		        		$in_mat_kurs = array(
-						'id_kurikulum_sp' => $id_kurikulum,
-						'id_mk' => $id_mk,
-						'smt' => $dt->semester,
-						'sks_mk' => $jmlsks_mk,
-						'sks_tm' =>$dt->sks_tm,
-					    'sks_prak' =>  $dt->sks_prak,
-				   		'sks_prak_lap' =>$dt->sks_prak_lap,
-						'sks_sim' => $dt->sks_sim,
-						'a_wajib' => $wajib_mat
+						'id_kurikulum' => $id_kurikulum,
+						'id_matkul' => $id_mk,
+						'semester' => $dt->semester,
+						'sks_mata_kuliah' => $jmlsks_mk,
+						'sks_tatap_muka' =>$dt->sks_tm,
+					    'sks_praktek' =>  $dt->sks_prak,
+				   		'sks_praktek_lapangan' =>$dt->sks_prak_lap,
+						'sks_simulasi' => $dt->sks_sim,
+						'apakah_wajib' => $wajib_mat
 						);
-					$insert_mat_kur = $proxy->InsertRecord($token, "mata_kuliah_kurikulum", json_encode($in_mat_kurs));
-
-						if ($insert_mat_kur['result']['error_desc']==NULL) {
+					$data_param = array(
+						'act' => 'InsertMatkulKurikulum',
+						'token' => get_token(),
+						'record' => $in_mat_kurs
+					);
+					$insert_mat_kur = service_request($data_param);
+						if ($insert_mat_kur->error_desc=='') {
 							++$sukses_count_mat;
 						} else {
 							++$error_count_mat;
-							$error_msg_mat[] = "Error, Matakuliah Kurikulum $dt->kode_mk ,".$insert_mat_kur['result']['error_desc'];
+							$error_msg_mat[] = "Error, Matakuliah Kurikulum $dt->kode_mk ,".$insert_mat_kur->error_desc;
 						}
 				} else {
 					++$error_count_mat;
-					$error_msg_mat[] = "Error, ".$in_mat['result']['error_desc'];
+					$error_msg_mat[] = "Error, ".$in_mat->error_desc;
 				}
 
 

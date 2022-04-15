@@ -35,7 +35,7 @@ $("#tgl5").datepicker( {
                    $(form).ajaxSubmit({
                           type: "post",
                           url: $(this).attr('action'),
-                          data: $("#input_import").serialize(),
+                          //data: $("#input_import").serialize(),
                        //  enctype:  'multipart/form-data'
                         success: function(data){
                           $("#isi_informasi").html(data);

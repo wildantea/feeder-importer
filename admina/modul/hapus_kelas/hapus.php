@@ -1,95 +1,36 @@
 <?php
 include "../../inc/config.php";
-include "../../lib/nusoap/nusoap.php";
 
- $config = $db->fetch_single_row('config_user','id',1);
-
-
-if ($config->live=='Y') {
-  $url = 'http://'.$config->url.':'.$config->port.'/ws/live.php?wsdl'; // gunakan live
-} else {
-  $url = 'http://'.$config->url.':'.$config->port.'/ws/sandbox.php?wsdl'; // gunakan sandbox
-}
-
-
-  $client = new nusoap_client($url, true);
-  $proxy = $client->getProxy();
-
-
-
-  # MENDAPATKAN TOKEN
-  $username = $config->username;
-  $password = $config->password;
-  $result = $proxy->GetToken($username, $password);
-  $token = $result;
-
+$token = get_token();
+$url = $db->get_service_url('rest');
 
 
 
 switch ($_GET["act"]) {
   case 'delete_all':
-   $prodi = $db->fetch_single_row('jurusan','kode_jurusan',$_POST['id'])->kode_jurusan;
-   $filter_sp = "npsn='".$config->id_sp."'";
-	$get_id_sp = $proxy->GetRecord($token,'satuan_pendidikan',$filter_sp);
+  if ($_POST['jurusan']!='all') {
+       $id_sms = "p.id_sms='".$_POST['jurusan']."' and ";
+  } else {
+    $id_sms = "";
+  }
 
-	$id_sp = $get_id_sp['result']['id_sp'];
-
-  $filter_sms = "id_sp='".$id_sp."' and kode_prodi ilike '%".$prodi."%'";
-    $temp_sms = $proxy->GetRecord($token,'sms',$filter_sms);
-    if ($temp_sms['result']) {
-      $id_sms = $temp_sms['result']['id_sms'];
-    }
-  $filter_semester = "p.id_sms='".$id_sms."' and p.id_smt='".$_POST['sem']."'";
+   
+  $filter_semester = "$id_sms p.id_smt='".$_POST['sem']."'";
   $all_kelas = $proxy->GetRecordset($token,'kelas_kuliah',$filter_semester,'','','');
+  if ($all_kelas['result']) {
+    
+ 
       foreach($all_kelas['result'] as $id) {
         $id_kls = $id['id_kls'];
         //hapus dosen ajar
   $filter_dosen = "p.id_kls='".$id_kls."'";
     $temp_dosen = $proxy->GetRecordset($token,'ajar_dosen',$filter_dosen,'','','');
     foreach ($temp_dosen['result'] as $reg) {
-      $hapus_ajar = array(
-      'id_ajar' => $reg['id_ajar'],
-      );
-       $temp_res = $proxy->DeleteRecord($token, 'ajar_dosen', json_encode($hapus_ajar));
-     }
-
-  //hapus krs
-  $filter_nilai = "p.id_kls='".$id_kls."'";
-    $temp_sms = $proxy->GetRecordset($token,'nilai',$filter_nilai,'','','');
-    foreach ($temp_sms['result'] as $reg) {
-      $hapus = array(
-      'id_kls' => $reg['id_kls'],
-      'id_reg_pd'=>$reg['id_reg_pd']
-      );
-    //print_r($hapus);
-    $temp_result = $proxy->DeleteRecord($token, 'nilai', json_encode($hapus));
-
-   // print_r($temp_result);
-    
-    }
-  //hapus kelas 
-   $hapus = array(
-      'id_kls' => $id_kls,
-      );
-    //print_r($hapus);
-    $temp_result = $proxy->DeleteRecord($token, 'kelas_kuliah', json_encode($hapus));
-
-
-      }
-
-    break;
-  case "delete":
-  $id_kls = $_GET["id"];
-  //hapus dosen ajar
-  $filter_dosen = "p.id_kls='".$id_kls."'";
-    $temp_dosen = $proxy->GetRecordset($token,'ajar_dosen',$filter_dosen,'','','');
-    foreach ($temp_dosen['result'] as $reg) {
       $hapus_ajar[] = array(
       'id_ajar' => $reg['id_ajar'],
       );
+      
      }
-  $temp_res = $proxy->DeleteRecordset($token, 'ajar_dosen', json_encode($hapus_ajar));
-
 
   //hapus krs
   $filter_nilai = "p.id_kls='".$id_kls."'";
@@ -101,17 +42,85 @@ switch ($_GET["act"]) {
       );
     //print_r($hapus);
    
-
    // print_r($temp_result);
     
     }
- $temp_result = $proxy->DeleteRecordset($token, 'nilai', json_encode($hapus));
   //hapus kelas 
-   $hapus = array(
+   $hapus_kelas[] = array(
       'id_kls' => $id_kls,
       );
     //print_r($hapus);
-    $temp_result = $proxy->DeleteRecord($token, 'kelas_kuliah', json_encode($hapus));
+  
+
+      }
+    $temp_res = $proxy->DeleteRecordset($token, 'ajar_dosen', json_encode($hapus_ajar));
+    $temp_result = $proxy->DeleteRecordset($token, 'nilai', json_encode($hapus));
+    $temp_result = $proxy->DeleteRecordset($token, 'kelas_kuliah', json_encode($hapus));
+
+ }
+
+    break;
+  case "delete":
+  $id_kls = $_GET["id"];
+  //hapus dosen ajar
+              $temp_data_kelas = [
+                'act' => 'GetDosenPengajarKelasKuliah',
+                  'token' => $token,
+                  'filter' => "id_kelas_kuliah='$id_kls'",
+                  'order' => '',
+                  'limit' => '',
+                  'offset' => ''
+              ];
+
+        $temp_rec = json_decode($db->run($temp_data_kelas,$url));
+        if ($temp_rec->data) {
+          foreach ($temp_rec->data as $key) {
+                $temp_del_dosen = [
+                'act' => 'DeleteDosenPengajarKelasKuliah',
+                  'token' => $token,
+                  'key' => array('id_aktivitas_mengajar' => $key->id_aktivitas_mengajar)
+              ];
+
+                  $temp_del = json_decode($db->run($temp_del_dosen,$url));
+                  dump($temp_del);
+          }
+        }
+
+  //hapus GetKRSMahasiswa
+              $temp_data_kelas = [
+                'act' => 'GetKRSMahasiswa',
+                  'token' => $token,
+                  'filter' => "id_kelas='$id_kls'",
+                  'order' => '',
+                  'limit' => '',
+                  'offset' => ''
+              ];
+
+        $temp_rec = json_decode($db->run($temp_data_kelas,$url));
+        if ($temp_rec->data) {
+          foreach ($temp_rec->data as $key) {
+                $temp_del_dosen = [
+                'act' => 'DeletePesertaKelasKuliah',
+                  'token' => $token,
+                  'key' => array(
+                    'id_kelas_kuliah' => $key->id_kelas,
+                    'id_registrasi_mahasiswa' => $key->id_registrasi_mahasiswa)
+              ];
+
+                  $temp_del = json_decode($db->run($temp_del_dosen,$url));
+                  dump($temp_del);
+          }
+        }
+  //hapus kelas 
+    $temp_data_kelas = [
+      'act' => 'DeleteKelasKuliah',
+        'token' => $token,
+        'key' => array('id_kelas_kuliah' => $id_kls)
+    ];
+
+        $temp_del = json_decode($db->run($temp_data_kelas,$url));
+        dump($temp_del);
+
   break;
 
   case 'del_massal':
@@ -120,43 +129,70 @@ switch ($_GET["act"]) {
     if(!empty($data_id_array)) {
 
       foreach($data_id_array as $id_kls) {
+ //hapus dosen ajar
+              $temp_data_kelas = [
+                'act' => 'GetDosenPengajarKelasKuliah',
+                  'token' => $token,
+                  'filter' => "id_kelas_kuliah='$id_kls'",
+                  'order' => '',
+                  'limit' => '',
+                  'offset' => ''
+              ];
 
-        //hapus dosen ajar
-  $filter_dosen = "p.id_kls='".$id_kls."'";
-    $temp_dosen = $proxy->GetRecordset($token,'ajar_dosen',$filter_dosen,'','','');
-    foreach ($temp_dosen['result'] as $reg) {
-      $hapus_ajar[] = array(
-      'id_ajar' => $reg['id_ajar'],
-      );  
-     }
 
-$temp_res = $proxy->DeleteRecordset($token, 'ajar_dosen', json_encode($hapus_ajar));
-  //hapus krs
-  $filter_nilai = "p.id_kls='".$id_kls."'";
-    $temp_sms = $proxy->GetRecordset($token,'nilai',$filter_nilai,'','','');
-    foreach ($temp_sms['result'] as $reg) {
-      $hapus[] = array(
-      'id_kls' => $reg['id_kls'],
-      'id_reg_pd'=>$reg['id_reg_pd']
-      );
-    //print_r($hapus);
-   
-   // print_r($temp_result);
-    
-    }
- $temp_result = $proxy->DeleteRecordset($token, 'nilai', json_encode($hapus));
 
+        $temp_rec = json_decode($db->run($temp_data_kelas,$url));
+        if ($temp_rec->data) {
+          foreach ($temp_rec->data as $key) {
+                $temp_del_dosen = [
+                'act' => 'DeleteDosenPengajarKelasKuliah',
+                  'token' => $token,
+                  'key' => array('id_aktivitas_mengajar' => $key->id_aktivitas_mengajar)
+              ];
+
+                  $temp_del = json_decode($db->run($temp_del_dosen,$url));
+                  dump($temp_del);
+          }
+        }
+
+  //hapus GetKRSMahasiswa
+              $temp_data_krs = [
+                'act' => 'GetPesertaKelasKuliah',
+                  'token' => $token,
+                  'filter' => "id_kelas_kuliah='$id_kls'",
+                  'order' => '',
+                  'limit' => '',
+                  'offset' => ''
+              ];
+
+        $temp_rec_krs = service_request($temp_data_krs);
+        dump($temp_data_krs);
+           dump($temp_rec_krs);
+        if (!empty($temp_rec_krs->data)) {
+          foreach ($temp_rec_krs->data as $key_dt) {
+                $temp_del_krs = [
+                'act' => 'DeletePesertaKelasKuliah',
+                  'token' => $token,
+                  'key' => array(
+                    'id_kelas_kuliah' => $key_dt->id_kelas_kuliah,
+                    'id_registrasi_mahasiswa' => $key_dt->id_registrasi_mahasiswa)
+              ];
+                dump($temp_del_krs);
+                  $temp_del = json_decode($db->run($temp_del_krs,$url));
+                  dump($temp_del);
+          }
+        }
   //hapus kelas 
-   $hapus = array(
-      'id_kls' => $id_kls,
-      );
-    //print_r($hapus);
-    $temp_result = $proxy->DeleteRecord($token, 'kelas_kuliah', json_encode($hapus));
+    $temp_data_kelas = [
+      'act' => 'DeleteKelasKuliah',
+        'token' => $token,
+        'key' => array('id_kelas_kuliah' => $id_kls)
+    ];
 
-
+        $temp_del = json_decode($db->run($temp_data_kelas,$url));
+        dump($temp_del);
       }
- $hapus_ajar = array();
-$hapus = array();
+
     }
     break;
 

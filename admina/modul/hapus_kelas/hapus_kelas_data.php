@@ -1,128 +1,147 @@
 <?php
-//include "inc/config.php";
-include "../../lib/nusoap/nusoap.php";
-
 include "../../inc/config.php";
-
 include "../../lib/prosesupdate/ProgressUpdater.php";
-
-
 $semester = '';
 $kode_mk = '';
+$requestData= $_REQUEST;
+
+$sSearch = $requestData['search']['value'];
+
+$iStart = $requestData['start'];
+$iLength = $requestData['length'];
+
+$temp_limit = $iLength;
+$temp_offset = $iStart?$iStart : 0;
 if (isset($_POST['semester'])) {
   
   if ($_POST['semester']=='all') {
     $semester = '';
   } else {
-    $semester = "and p.id_smt='".$_POST['semester']."'";
+    $semester = "and id_semester='".$_POST['semester']."'";
   }
 
   if ($_POST['kode_mk']=='all') {
     $kode_mk = '';
   } else {
-    $kode_mk = "and p.id_mk='".$_POST['kode_mk']."'";
+    $kode_mk = "and id_matkul='".$_POST['kode_mk']."'";
   }
 
+  $jurusan = "id_prodi='".$_POST['jurusan']."'";
 }
 
+$filter_kelas = "$jurusan $semester $kode_mk";
 
-$config = $db->fetch_single_row('config_user','id',1);
-
-if ($config->live=='Y') {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/live.php?wsdl'; // gunakan live
-} else {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/sandbox.php?wsdl'; // gunakan sandbox
+$token = get_token();
+	if ($sSearch) {
+		$filter_kelas .= "and kode_mata_kuliah like '%".$sSearch."%'";
 }
-//untuk coba-coba
-// $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
 
-$client = new nusoap_client($url, true);
-$proxy = $client->getProxy();
-
-
-# MENDAPATKAN TOKEN
-$username = $config->username;
-$password = $config->password;
-$result = $proxy->GetToken($username, $password);
-$token = $result;
-
-	$id_sp = $config->id_sp;
-
-$id_sms = '';
+$filter_kelas = trim($filter_kelas);
 
 
 
-		$requestData= $_REQUEST;
-
-		$sSearch = $requestData['search']['value'];
-		
-		//$Data = $this->input->get('columns');
-		//$orders = $requestData['order'];
-		//$temp_order = 
-
-
-		$iStart = $requestData['start'];
-		$iLength = $requestData['length'];
-
-		$temp_limit = $iLength;
-		$temp_offset = $iStart?$iStart : 0;
-
-		$filter = '';
-
-		$kode_prodi = $requestData['jurusan'];
-
-		$prodi = $db->fetch_single_row('jurusan','kode_jurusan',$kode_prodi);
-		$id_sms = $prodi->id_sms;
-		$filter_kelas = "p.id_sms='".$id_sms."' $semester $kode_mk";
-
-		$temp_total = $proxy->GetCountRecordset($token,"kelas_kuliah",$filter_kelas);
-
-		$totalData = $temp_total['result'];
-		//var_dump($temp_total);
 		//$totalData = $temp_total['result'];
 
 		if ($semester!='') {
-			$order_by = "nm_kls ASC";
+			$order_by = "nama_kelas_kuliah ASC";
 		} else {
-			$order_by = "id_smt DESC";
+			$order_by = "id_semester DESC";
 		}
 
-		$totalFiltered = $totalData;
-		$temp_rec = $proxy->GetRecordset($token,"kelas_kuliah", $filter_kelas,$order_by, $temp_limit,$temp_offset);
-		//var_dump($temp_rec);
-		$temp_error_code = $temp_rec['error_code'];
-		$temp_error_desc = $temp_rec['error_desc'];
 
-		if (($temp_error_code==0) && ($temp_error_desc=='')) {
+		
+		$temp_data_kelas = [
+			'act' => 'GetDetailKelasKuliah',
+		    'token' => $token,
+		    'filter' => $filter_kelas,
+		    'order' => '',
+		    'limit' => $temp_limit,
+		    'offset' => $temp_offset
+
+		];
+		$temp_rec = service_request($temp_data_kelas);
+		//print_r($temp_rec);
+
+		$dosen_name = array();
+		$jml_siswa = array();
+		if ($temp_rec->data) {
+					foreach ($temp_rec->data as $dt) {
+				  $id_kelas[] = $dt->id_kelas_kuliah;
+				}
+
+
+				$in_id_kelas = "'" . implode("','", $id_kelas) . "'";
+				//jumlah pengajar
+				$count_kelas = [
+					'act' => 'ExportDataMengajarDosen',
+				    'token' => $token,
+				    'filter' => "id_kelas_kuliah in($in_id_kelas)",
+				];
+				$temp_recs = service_request($count_kelas);
+				if ($temp_recs->data) {
+					foreach ($temp_recs->data as $count) {
+				    	$dosen_name[$count->id_kelas_kuliah] = '- '.$count->nama_dosen."<br>";
+					}
+				}
+
+				//jumlah mahasiswa kelas
+				$count_kelas_mhs = [
+					'act' => 'GetKRSMahasiswa',
+				    'token' => $token,
+				    'filter' => "id_kelas in($in_id_kelas)",
+				];
+				/*dump($count_kelas_mhs);
+				exit();*/
+				$temp_recs_mhs = service_request($count_kelas_mhs);
+			    foreach ($temp_recs_mhs->data as $key => $dt) {
+			      $data[$dt->id_kelas][] = $dt;
+			      $jml_siswa[$dt->id_kelas] = count($data[$dt->id_kelas]);
+			    }
+		}
+
+
+
+
+		        $temp_count_mk = [
+              'act' => 'GetCountKelasKuliah',
+                'token' => $token,
+                'filter' => $filter_kelas
+            ];
+        $temp_count = service_request($temp_count_mk);
+        $jumlah = 0;
+       // dump($temp_count);
+        if(!empty($temp_count->data)) {
+          $jumlah = $temp_count->data;
+        }
+
+		//print_r($count_kelas);
+
+		$totalData = $jumlah;
+		$totalFiltered = $totalData;
+
+
 			$temp_data = array();
 			$i=0;
-			foreach ($temp_rec['result'] as $key) {
+							foreach ($temp_rec->data as $key) {
+
 				$temps = array();
 
-				$filter_kelas_nilai = "p.id_kls='".$key['id_kls']."'";
-				$jumlah_peserta = $proxy->GetCountRecordset($token,"nilai",$filter_kelas_nilai);
-				$jumlah = $jumlah_peserta['result'];
-
-				$filter_ajar_dosen = "p.id_kls='".$key['id_kls']."'";
-				$jumlah_pengajar = $proxy->GetCountRecordset($token,"ajar_dosen",$filter_ajar_dosen);
-				$jumlah_dosen = $jumlah_pengajar['result'];
-
-
-				$filter_mat = "id_mk='".$key['id_mk']."'";
-				$data_mat = $proxy->GetRecord($token,'mata_kuliah',$filter_mat);
-				$kode_mk = '';
-				if ($data_mat['result']) {
-					$kode_mk = $data_mat['result']['kode_mk'];
-					$nama_mk = $data_mat['result']['nm_mk'];
+				$temps[] = ++$i+$temp_offset." <input type='checkbox'  class='deleteRow' value='".$key->id_kelas_kuliah."'/>";
+				$temps[] = $key->id_semester;
+				$temps[] = $key->kode_mata_kuliah;
+				$temps[] = $key->nama_mata_kuliah;
+				$temps[] = $key->nama_kelas_kuliah;
+				if (in_array($key->id_kelas_kuliah, array_keys($jml_siswa))) {
+					$temps[] = $jml_siswa[$key->id_kelas_kuliah];
+				} else {
+					$temps[] = 0;
 				}
-				$temps[] = ++$i+$temp_offset." <input type='checkbox'  class='deleteRow' value='".$key['id_kls']."'/>";
-				$temps[] = $key['id_smt'];
-				$temps[] = $kode_mk;
-				$temps[] = $nama_mk;
-				$temps[] = $key['nm_kls'];
-				$temps[] = $jumlah;
-				$temps[] = $jumlah_dosen;
-				$temps[] = $key['id_kls'];
+				if (in_array($key->id_kelas_kuliah, array_keys($dosen_name))) {
+					$temps[] = $dosen_name[$key->id_kelas_kuliah];
+				} else {
+					$temps[] = '';
+				}
+				$temps[] = $key->id_kelas_kuliah;
 				
 				$temp_data[] = $temps;
 			}
@@ -133,4 +152,3 @@ $id_sms = '';
 									'data' => $temp_data
 				);
 			echo json_encode($temp_output);
-}

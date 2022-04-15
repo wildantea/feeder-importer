@@ -1,32 +1,7 @@
 <?php
-//include "inc/config.php";
-include "../../lib/nusoap/nusoap.php";
-
 include "../../inc/config.php";
-
 include "../../lib/prosesupdate/ProgressUpdater.php";
-
-
-$config = $db->fetch_single_row('config_user','id',1);
-
-if ($config->live=='Y') {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/live.php?wsdl'; // gunakan live
-} else {
-	$url = 'http://'.$config->url.':'.$config->port.'/ws/sandbox.php?wsdl'; // gunakan sandbox
-}
-//untuk coba-coba
-// $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
-
-$client = new nusoap_client($url, true);
-$proxy = $client->getProxy();
-
-
-$table1 = 'kelas_kuliah';
-# MENDAPATKAN TOKEN
-$username = $config->username;
-$password = $config->password;
-$result = $proxy->GetToken($username, $password);
-$token = $result;
+$token = get_token();
 
 //$token = 'acdbbc82c3b29f99e9096dab1d5eafb4';
 
@@ -57,9 +32,6 @@ $token = $result;
 	if ($_GET['kelas']!='all') {
 		$kelas  = "and nama_kelas='".$_GET['kelas']."'";
 	}
-	
-	
-	$id_sp = $config->id_sp;
 
 
 	$count = $db->query("select * from kelas_kuliah where kode_jurusan='".$_GET['jurusan']."' and semester='".$_GET['sem']."' and status_error!=1 $matkul $kelas");
@@ -97,206 +69,120 @@ $error_kelas= "";
 
 			foreach ($data as $value) {
 
+				$id_matkul = "";
+
 		$kode_mk = trim($value->kode_mk);
 
 		$semester = $value->semester;
 		$kelas = trim($value->nama_kelas);
 		$nama_mk = trim($value->nama_mk);
-	
+		$sanitize_mk = addslashes($value->nama_mk);
 		
 		$id_sms = $value->id_sms;
 
 
-		$filter_mk = "p.id_sms='".$id_sms."' and trim(kode_mk)='".$kode_mk."'";
+		$filter_mk = "id_prodi='".$id_sms."' and trim(kode_mata_kuliah)='".$kode_mk."'";
+			$data_req_mat = [
+				'act' => 'GetListMataKuliah',
+			    'token' => $token,
+			    'filter' => $filter_mk,
+			    'order' => "",
+			    'limit' => "",
+			    'offset' => ""
 
-		$temp_mk = $proxy->GetRecord($token,'mata_kuliah',$filter_mk);
+			];
+		$temp_mk = service_request($data_req_mat);
 
-		$count_mk = $proxy->GetCountRecordset($token,'mata_kuliah',$filter_mk);
+		//dump($temp_mk);
 
-		if ($count_mk['result']<2) {
-			$temp_mk = $proxy->GetRecord($token,'mata_kuliah',$filter_mk);
-			if ($temp_mk['result']) {
-				$id_mk = $temp_mk['result']['id_mk'];
-				$sks_mk = $temp_mk['result']['sks_mk'];
-				$sks_tm = $temp_mk['result']['sks_tm'];
-				if ($temp_mk['result']['sks_prak']=="") {
-					$sks_prak = 0;
-				} else {
-					$sks_prak = $temp_mk['result']['sks_prak'];
-				}
-
-				if ($temp_mk['result']['sks_prak_lap']=="") {
-					$sks_prak_lap = 0;
-				} else {
-					$sks_prak_lap = $temp_mk['result']['sks_prak_lap'];
-				}
-
-				if ($temp_mk['result']['sks_tm']=="") {
-					$sks_tm = 0;
-				} else {
-					$sks_tm = $temp_mk['result']['sks_tm'];
-				}
-
-
-				if ($temp_mk['result']['sks_sim']=="") {
-					$sks_sim = 0;
-				} else {
-					$sks_sim = $temp_mk['result']['sks_sim'];
-				}
-
-
+		if (!empty($temp_mk->data)) {
+			if (count($temp_mk->data)<2) {
+				$id_matkul = $temp_mk->data[0]->id_matkul;
 			} else {
-					$filter_mk = "trim(kode_mk)='".$kode_mk."'";
-					$temp_mk = $proxy->GetRecord($token,'mata_kuliah',$filter_mk);
-					if ($temp_mk['result']) {
-							$id_mk = $temp_mk['result']['id_mk'];
-							$sks_mk = $temp_mk['result']['sks_mk'];
-							$sks_tm = $temp_mk['result']['sks_tm'];
-							if ($temp_mk['result']['sks_prak']=="") {
-								$sks_prak = 0;
-							} else {
-								$sks_prak = $temp_mk['result']['sks_prak'];
-							}
+				
+				$filter_mk2 = "id_prodi='".$id_sms."' and trim(kode_mata_kuliah)='".$kode_mk."' and nama_mata_kuliah like E'%$sanitize_mk%'";
+				$filter_mk = "id_prodi='".$id_sms."' and trim(kode_mata_kuliah)='".$kode_mk."'";
+					$data_req_mat = [
+						'act' => 'GetListMataKuliah',
+					    'token' => $token,
+					    'filter' => $filter_mk2,
+					    'order' => "",
+					    'limit' => "",
+					    'offset' => ""
 
-							if ($temp_mk['result']['sks_prak_lap']=="") {
-								$sks_prak_lap = 0;
-							} else {
-								$sks_prak_lap = $temp_mk['result']['sks_prak_lap'];
-							}
-
-							if ($temp_mk['result']['sks_tm']=="") {
-								$sks_tm = 0;
-							} else {
-								$sks_tm = $temp_mk['result']['sks_tm'];
-							}
-
-
-							if ($temp_mk['result']['sks_sim']=="") {
-								$sks_sim = 0;
-							} else {
-								$sks_sim = $temp_mk['result']['sks_sim'];
-							}
-					} else {
-						$error_mk = "Kode MK $kode_mk tidak ditemukan di Feeder";
-					}
-					
+					];
+				$temp_mks = service_request($data_req_mat);
+				if(!empty($temp_mks->data)) {
+					$id_matkul = $temp_mks->data[0]->id_matkul;
+				}
 			}
-			
 		} else {
-			$sanitize_mk = addslashes($dt->nama_mk);
-			$filter_mk2 = "p.id_sms='".$id_sms."' and trim(kode_mk)='".$kode_mk."' and nm_mk like E'%$sanitize_mk%'";
-			$temp_mk = $proxy->GetRecord($token,'mata_kuliah',$filter_mk2);
+				$filter_mk = "trim(kode_mata_kuliah)='".$kode_mk."'";
+					$data_req_mat = [
+						'act' => 'GetListMataKuliah',
+					    'token' => $token,
+					    'filter' => $filter_mk,
+					    'order' => "",
+					    'limit' => "",
+					    'offset' => ""
 
-			if ($temp_mk['result']) {
-				$id_mk = $temp_mk['result']['id_mk'];
-				$sks_mk = $temp_mk['result']['sks_mk'];
-				$sks_tm = $temp_mk['result']['sks_tm'];
-				if ($temp_mk['result']['sks_prak']=="") {
-					$sks_prak = 0;
+					];
+				$temp_mks = service_request($data_req_mat);
+				if(!empty($temp_mks->data)) {
+					$id_matkul = $temp_mks->data[0]->id_matkul;
 				} else {
-					$sks_prak = $temp_mk['result']['sks_prak'];
-				}
+					$filter_mk2 = "trim(kode_mata_kuliah)='".$kode_mk."' and nama_mata_kuliah like E'%$sanitize_mk%'";
+					$data_req_mat = [
+						'act' => 'GetListMataKuliah',
+					    'token' => $token,
+					    'filter' => $filter_mk2,
+					    'order' => "",
+					    'limit' => "",
+					    'offset' => ""
 
-				if ($temp_mk['result']['sks_prak_lap']=="") {
-					$sks_prak_lap = 0;
-				} else {
-					$sks_prak_lap = $temp_mk['result']['sks_prak_lap'];
-				}
-
-				if ($temp_mk['result']['sks_tm']=="") {
-					$sks_tm = 0;
-				} else {
-					$sks_tm = $temp_mk['result']['sks_tm'];
-				}
-
-
-				if ($temp_mk['result']['sks_sim']=="") {
-					$sks_sim = 0;
-				} else {
-					$sks_sim = $temp_mk['result']['sks_sim'];
-				}
-
-
-			} else {
-					$sanitize_mk = addslashes($dt->nama_mk);
-					$filter_mk2 = "trim(kode_mk)='".$kode_mk."' and nm_mk like E'%$sanitize_mk%'";
-					$temp_mk = $proxy->GetRecord($token,'mata_kuliah',$filter_mk2);
-					
-					if ($temp_mk['result']) {
-							$id_mk = $temp_mk['result']['id_mk'];
-							$sks_mk = $temp_mk['result']['sks_mk'];
-							$sks_tm = $temp_mk['result']['sks_tm'];
-							if ($temp_mk['result']['sks_prak']=="") {
-								$sks_prak = 0;
-							} else {
-								$sks_prak = $temp_mk['result']['sks_prak'];
-							}
-
-							if ($temp_mk['result']['sks_prak_lap']=="") {
-								$sks_prak_lap = 0;
-							} else {
-								$sks_prak_lap = $temp_mk['result']['sks_prak_lap'];
-							}
-
-							if ($temp_mk['result']['sks_tm']=="") {
-								$sks_tm = 0;
-							} else {
-								$sks_tm = $temp_mk['result']['sks_tm'];
-							}
-
-
-							if ($temp_mk['result']['sks_sim']=="") {
-								$sks_sim = 0;
-							} else {
-								$sks_sim = $temp_mk['result']['sks_sim'];
-							}
-					} else {
-						$error_mk = "Kode MK $kode_mk tidak ditemukan di Feeder";
+					];
+					$temp_mkss = service_request($data_req_mat);
+					if(!empty($temp_mkss->data)) {
+						$id_matkul = $temp_mkss->data[0]->id_matkul;
 					}
-					
-			}
-
-/*			$error_mk = "Kode MK $kode_mk lebih dari satu di feeder. silakan hapus atau rename salah satu Kode MK ini di Feeder";*/
+				}
 		}
 
-if ($id_mk!="" && $error_mk=="" && $error_kelas=="") {
-				$temp_data = array(
-					'id_sms' => $id_sms,
-					'id_smt' => $value->semester,
-					'id_mk' => $id_mk,
-					'nm_kls' => $value->nama_kelas,
-					'sks_mk' => $sks_mk,
-					'sks_tm' => $sks_tm,
-				    'sks_prak' => $sks_prak,
-			   		'sks_prak_lap' => $sks_prak_lap,
-					'sks_sim' => $sks_sim,
-					'bahasan_case' => $value->bahasan_case,
-					'tgl_mulai_koas' => $value->tgl_mulai_koas,
-					'tgl_selesai_koas' => $value->tgl_selesai_koas 
-					);
-
-	$temp_result = $proxy->InsertRecord($token, $table1, json_encode($temp_data));
-
-	
-	if ($temp_result['result']['error_desc']==NULL) {
-		$sukses_count++;
-		$db->update('kelas_kuliah',array('status_error'=>1,'keterangan'=>''),'id',$value->id_kelas);
-	} else {
+		if ($id_matkul!="") {
+			$temp_data = array(
+					'id_prodi' => $value->id_sms,
+					'id_semester' => $value->semester,
+					'id_matkul' => $id_matkul,
+					'nama_kelas_kuliah' => $value->nama_kelas,
+					'bahasan' => $value->bahasan_case,
+					'lingkup' => $value->lingkup,
+					'mode' => $value->mode_kuliah,
+					'tanggal_mulai_efektif' => $value->tgl_mulai_koas,
+					'tanggal_akhir_efektif' => $value->tgl_selesai_koas 
+			);
+			$param = [
+				'act' => 'InsertKelasKuliah',
+			    'token' => $token,
+			    'record' => $temp_data
+			];
+			$temp_result = service_request($param);	
+			if ($temp_result->error_desc=='') {
+				$sukses_count++;
+				$db->update('kelas_kuliah',array('status_error'=>1,'keterangan'=>''),'id',$value->id_kelas);
+			} else {
 				++$error_count;
-				$db->update('kelas_kuliah',array('status_error' => 2, 'keterangan'=>"Error ".$temp_result['result']['error_desc']),'id',$value->id_kelas);
-				$error_msg[] = "Error ".$temp_result['result']['error_desc'];
+				$db->update('kelas_kuliah',array('status_error' => 2, 'keterangan'=>"Error ".$temp_result->error_desc),'id',$value->id_kelas);
+				$error_msg[] = "Error, ".$temp_result->error_desc;
 			}
 
 		} else {
 				++$error_count;
-				$db->update('kelas_kuliah',array('status_error' => 2, 'keterangan'=>"Error $error_kelas $error_mk"),'id',$value->id_kelas);
-				$error_msg[] = "Error $error_kelas $error_mk";
+				$db->update('kelas_kuliah',array('status_error' => 2, 'keterangan'=>"Kode Matakuliah tidak ditemukan di Feeder"),'id',$value->id_kelas);
+				$error_msg[] = "Error Kode Matakuliah tidak ditemukan di Feeder";
 		}
 
-	$new_pu->incrementStageItems(1, true);
-		$id_mk = "";
-		$error_mk = "";
-
+		$new_pu->incrementStageItems(1, true);
+		$id_matkul = "";
 		}
 
 $msg = '';

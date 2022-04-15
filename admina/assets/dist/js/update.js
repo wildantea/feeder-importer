@@ -13,7 +13,7 @@ $(document).ready(function(){
                    $(form).ajaxSubmit({
                           type:"post",
                           url: $(this).attr('action'),
-                          data: $("form#update").serialize(),
+                          //data: $("form#update").serialize(),
                         success: function(data){
                           console.log(data);
                           $('#loadnya').hide();

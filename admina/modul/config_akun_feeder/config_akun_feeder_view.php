@@ -14,9 +14,6 @@
 
       }
 //include "inc/config.php";
-include "lib/nusoap/nusoap.php";
-
-
   //    foreach ($dtb as $isi) {
 
 ?>
@@ -54,83 +51,29 @@ include "lib/nusoap/nusoap.php";
                                       </thead>
                                         <tbody>
                                          <?php 
-      $dtb=$db->query("select config_user.username,config_user.password,config_user.url,config_user.port,config_user.kode_pt,config_user.live,config_user.id from config_user ");
+      $isi=$db->fetch_custom_single("select config_user.username,config_user.password,config_user.url,config_user.port,config_user.kode_pt,config_user.live,config_user.id from config_user ");
+
+      //dump($isi);
+
       $i=1;
+      $token = check_token();
+
+     //dump($token);
 
 
-function isValidMd5($result)
-{
-     return preg_match('/^[a-f0-9]{32}$/i', $result);
-}
-
-      foreach ($dtb as $isi) {
-
-    
-
-        $url = 'http://'.$isi->url.':'.$isi->port.'/ws/live.php?wsdl'; // gunakan sandbox
-
-     
-            $file_headers = @get_headers('http://'.$isi->url.':'.$isi->port.'/ws/mahasiswa.php');
-
-            if (!is_connected($isi->url,$isi->port)) {
-
-
-              $status = '<button type="button" class="btn btn-warning btn-xs">Not Connected</button>';
-
-              $error_server = "Server PDDIKTI tidak aktif";
-              $error_url = "";
-              $error = "";
-         
-
-      
-
-      } else {
-
-                      if($file_headers[0] == 'HTTP/1.1 404 Not Found') {
-
-              $error = "";
-              $error_url = "Tidak menemukan PDDIKTI Server/Url Salah";
-              $error_server = "";
-              $status = '<button type="button" class="btn btn-warning btn-xs">Not Connected</button>';
-
-            } else {
-
-
-        $error_server = "";
-   
-           //untuk coba-coba
-        // $url = 'http://pddikti.uinsgd.ac.id:8082/ws/live.php?wsdl'; // gunakan live bila
-
-        $client = new nusoap_client($url, true);
-        $proxy = $client->getProxy();
-
-        # MENDAPATKAN TOKEN
-        $username = $isi->username;
-        $password = $isi->password;
-        $result = "";
-        $result = $proxy->GetToken($username, $password);
-
-
-
-        if (isValidMd5($result)) {
+        if ($token['status']=='1') {
             $status = '<button type="button" class="btn btn-success btn-xs">Connected</button>';
-            $error = "";
         } else {
-          $status = '<button type="button" class="btn btn-warning btn-xs">Not Connected</button>';
-            $error = $result;
+          $status = '<button type="button" class="btn btn-danger btn-xs">'.$token['error'].'</button>';
         }
-        
-        $error_url = "";
 
-
-            }
-      }
+           
         ?><tr id="line_<?=$isi->id;?>">
-        <td><?=$isi->username;?></td>
+        <td><?=dec_data($isi->username);?></td>
 <td><?=$isi->url;?></td>
 <td><?=$isi->port;?></td>
 <td><?=$isi->kode_pt;?></td>
-<td> <?=$status;?> <?=$error_server;?> <?=$error_url;?> <?=$error;?></td>
+<td> <?=$status;?></td>
 
         <td>
         <?=($role_act["up_act"]=="Y")?'<a href="'.base_index().'config-akun-feeder/edit/'.$isi->id.'" class="btn btn-primary btn-flat"><i class="fa fa-pencil"></i></a>':"";?>  
@@ -138,7 +81,7 @@ function isValidMd5($result)
         </tr>
         <?php
         $i++;
-      }
+      
 
       ?>
                                         </tbody>

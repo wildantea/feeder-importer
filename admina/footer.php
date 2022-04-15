@@ -1,7 +1,8 @@
  </div> <!--content wrapper -->
  <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <b>Version</b> 2.0
+          <?php
+ goto rVeHD; rVeHD: $version = $db->fetch_custom_single("\x73\x65\x6c\145\x63\164\x20\x76\145\x72\x73\x69\157\x6e\x20\x66\162\157\155\40\x73\x79\x73\137\165\160\144\x61\164\x65\x20\x6f\x72\x64\x65\162\x20\x62\x79\40\151\x64\40\x64\x65\x73\x63"); goto ZbNjw; ZbNjw: echo "\x3c\142\x3e\x56\x65\x72\x73\151\x6f\x6e\74\57\142\76\x20{$version->version}"; goto o_B8d; o_B8d: ?>
         </div>
         <strong>Copyright &copy; 2014-2015 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
       </footer>

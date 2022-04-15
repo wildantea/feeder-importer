@@ -1,19 +1,10 @@
 <?php
-//include "inc/config.php";
-include "../../lib/nusoap/nusoap.php";
-
 include "../../inc/config.php";
-
 include "../../lib/prosesupdate/ProgressUpdater.php";
-
-$url = $db->get_service_url('soap');
-$token = $db->get_token();
-$client = new nusoap_client($url, true);
-$proxy = $client->getProxy();
-$config = $db->fetch_single_row('config_user','id',1);
-//$token = 'acdbbc82c3b29f99e9096dab1d5eafb4';
-
-
+$token = get_token();
+//config feeder
+$config_feeder = $db->fetch_single_row('config_user','id',1);
+$id_sp = $config_feeder->id_sp;
 	$id_sms = '';
 	$id_mk = '';
 	$id_reg_ptk = '';
@@ -61,139 +52,193 @@ $i=1;
 			  return ($var !== NULL && $var !== FALSE && $var !== '');
 			}
 
+function insertBiodataArray($biodata)
+{
+    $biodatas = [
+        "nama_mahasiswa" => $biodata->nm_pd,
+        "jenis_kelamin" => $biodata->jk,
+        "tempat_lahir" => $biodata->tmpt_lahir,
+        "tanggal_lahir" => $biodata->tgl_lahir,
+        "id_agama" => $biodata->id_agama,
+        "nik" => $biodata->nik,
+        "nisn" => $biodata->nisn,
+        "kewarganegaraan" => $biodata->kewarganegaraan,
+        "jalan" => $biodata->jln,
+        "dusun" => $biodata->nm_dsn,
+        "rt" => $biodata->rt,
+        "rw" => $biodata->rw,
+        "kelurahan" => $biodata->ds_kel,
+        "kode_pos" => $biodata->kode_pos,
+        "id_wilayah" => $biodata->id_wil,
+        "id_jenis_tinggal" => $biodata->id_jns_tinggal,
+        "id_alat_transportasi" => $biodata->id_alat_transport,
+        "telepon" => $biodata->no_tel_rmh,
+        "handphone" => $biodata->no_hp,
+        "email" => $biodata->email,
+        "penerima_kps" => $biodata->a_terima_kps,
+        "nomor_kps" => $biodata->no_kps,
+        "nik_ayah" => $biodata->nik_ayah,
+        "nama_ayah" => $biodata->nm_ayah,
+        "tanggal_lahir_ayah" => $biodata->tgl_lahir_ayah,
+        "id_pendidikan_ayah" => $biodata->id_jenjang_pendidikan_ayah,
+        "id_pekerjaan_ayah" => $biodata->id_pekerjaan_ayah,
+        "id_penghasilan_ayah" => $biodata->id_penghasilan_ayah,
+        "nik_ibu" => $biodata->nik_ibu,
+        "nama_ibu_kandung" => $biodata->nm_ibu_kandung,
+        "id_pendidikan_ibu" => $biodata->id_jenjang_pendidikan_ibu,
+        "id_pekerjaan_ibu" => $biodata->id_pekerjaan_ibu,
+        "id_penghasilan_ibu" => $biodata->id_penghasilan_ibu,
+        "npwp" => $biodata->npwp,
+        "nama_wali" => $biodata->nm_wali,
+        "tanggal_lahir_wali" => $biodata->tgl_lahir_wali,
+        "id_pendidikan_wali" => $biodata->id_jenjang_pendidikan_wali,
+        "id_pekerjaan_wali" => $biodata->id_pekerjaan_wali,
+        "id_penghasilan_wali" => $biodata->id_penghasilan_wali,
+        "id_kebutuhan_khusus_mahasiswa" => 0,
+        "id_kebutuhan_khusus_ayah" => 0,
+        "id_kebutuhan_khusus_ibu" => 0
+    ];
+    return $biodatas;
+}
+function insertRegPdArray($biodata,$additional_data)
+{
+    global $id_sp;
+    global $id_pt_array;
+    global $id_prodi_array;
+    $biodatas = [
+        "id_mahasiswa" => $additional_data['id_mahasiswa'],
+        "nim" => $biodata->nipd,
+        "id_jenis_daftar" => $biodata->id_jns_daftar,
+        "id_jalur_daftar" => $biodata->id_jalur_masuk,
+        "id_periode_masuk" => $biodata->mulai_smt,
+        "tanggal_daftar" => $biodata->tgl_masuk_sp,
+        "id_perguruan_tinggi" => $id_sp,
+        "id_prodi" => $biodata->id_sms, 
+        "id_bidang_minat" => null,
+        "id_pembiayaan" => $biodata->id_pembiayaan,
+        "biaya_masuk"  => $biodata->biaya_masuk_kuliah
+    ];
 
+    if ($biodata->id_jns_daftar!='1') {
+        $array_pindah = array(
+            "sks_diakui" => $biodata->sks_diakui,
+            "id_perguruan_tinggi_asal" => $additional_data['id_sp']
+        );
+       	$array_pindah["id_prodi_asal"] = $additional_data['id_sms'];
+        $biodatas = array_merge($biodatas,$array_pindah);
+    }
+    return $biodatas;
+}
 
+    $id_pt_array = array();
+    if (!empty($check_array_kode_pt)) {
+
+    }
 	foreach ($arr_data as $value) {
+		$id_pt = "";
+		$id_prodi = "";
 
 		$id_sms = $value->id_sms;
-		$id_pds = "p.nm_pd='".$value->nm_pd."' and p.tgl_lahir='".$value->tgl_lahir."' and p.nm_ibu_kandung='".$value->nm_ibu_kandung."'";
-		$id_pd = $proxy->GetRecord($token,'mahasiswa',$id_pds);
-		if (empty($id_pd['result'])) {
-			$data_mhs = $db->convert_obj_to_array($value);
-        	unset($data_mhs['id']);
-        	unset($data_mhs['nipd']);
-        	unset($data_mhs['id_jalur_masuk']);
-	
-			$data_mhs = array_filter($data_mhs, 'myFilter');
-	   	$temp_result = $proxy->InsertRecord($token, 'mahasiswa', json_encode($data_mhs));
 
-        	if ($temp_result['result']['error_desc']=="") {
-        	  	$id_pd = $temp_result['result']['id_pd'];
-			$data_insert_mhs_pt = array(
-				  'id_sms' => $id_sms,
-                  'id_pd' => $id_pd,
-                  'id_sp' => $config->id_sp,
-                  'id_jns_daftar' => $value->id_jns_daftar,
-                  'nipd' => $value->nipd,
-                  'tgl_masuk_sp' => $value->tgl_masuk_sp,
-                  'a_pernah_paud' => '1',
-                  'a_pernah_tk' => '1',
-                  'mulai_smt' => $value->mulai_smt,
-                  'id_pembiayaan' => $value->id_pembiayaan,
-                  'biaya_masuk_kuliah' => $value->biaya_masuk_kuliah,
-                  'id_jalur_masuk' => $value->id_jalur_masuk
-                );
+		if ($value->id_jns_daftar!='1') {
+	            $param = [
+	                'act' => 'GetAllPT',
+	                'token' => $token,
+	                'filter' => "kode_perguruan_tinggi='$value->kode_pt_asal'"
+	            ];
+	        $check_exist = service_request($param);
+	        if (!empty($check_exist->data)) {
+	                $id_pt = $check_exist->data[0]->id_perguruan_tinggi;
+	        }
 
-         		$insert_mhs_pt =  $proxy->InsertRecord($token, 'mahasiswa_pt', json_encode($data_insert_mhs_pt));
+		    if ($id_pt!='') { 
+	            $param = [
+	                'act' => 'GetAllProdi',
+	                'token' => $token,
+	                'filter' => "kode_perguruan_tinggi='$value->kode_pt_asal' and kode_program_studi='$value->kode_prodi_asal'",
+	                'order' => "",
+	                'limit' => "",
+	                'offset' => ""
+	            ];
+		        $check_exist = service_request($param);
+		        if (!empty($check_exist->data)) {
+		                $id_prodi = $check_exist->data[0]->id_prodi;
+		        }
+		    }
+		}
+		$filter_pd = "nama_mahasiswa='" . trim(strtoupper($value->nm_pd)) . "' and tanggal_lahir='".tgl_indo_angka($value->tgl_lahir)."' and nama_ibu_kandung='".$value->nm_ibu_kandung."'";
+		$data_param = array(
+			'act' => 'GetBiodataMahasiswa',
+			'token' => get_token(),
+			'filter' => $filter_pd
+		);
+		$id_pd = service_request($data_param);
 
-        		if ($insert_mhs_pt['result']['error_desc']==NULL) {
-							++$sukses_count;
-							$db->update('mhs',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
-						} 
-						else {
-								$hapus = array(     
-								'id_pd'=>$id_pd
-								);
-								$temp_result = $proxy->DeleteRecord($token, 'mahasiswa', json_encode($hapus));
-								++$error_count;
-								$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error".$insert_mhs_pt['result']['error_desc']),'id',$value->id);
-								$error_msg[] = "<b>Error </b>".$insert_mhs_pt['result']['error_desc'];
-						}
-
-          } 
-
-          	else {
+		if (empty($id_pd->data)) {
+        	$data_mhs = insertBiodataArray($value);
+		    $data_dic = [
+		        "act" => "InsertBiodataMahasiswa",
+		        "token" => $token,
+		        "record" => $data_mhs
+		    ];
+			$temp_result = service_request($data_dic);
+        	if ($temp_result->error_desc=="") {
+        		$id_mahasiswa = $temp_result->data->id_mahasiswa;
+        	  	$data_insert_mhs_pt = insertRegPdArray($value,array('id_sp' => $id_pt,'id_sms' => $id_prodi,'id_mahasiswa' => $id_mahasiswa));
+			    $data_dic = [
+			        "act" => "InsertRiwayatPendidikanMahasiswa",
+			        "token" => $token,
+			        "record" => $data_insert_mhs_pt
+			    ];
+				$insert_mhs_pt = service_request($data_dic);
+        		if ($insert_mhs_pt->error_desc=='') {
+					++$sukses_count;
+					$db->update('mhs',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
+				} else {
+					++$error_count;
+					$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error, ".$insert_mhs_pt->error_desc),'id',$value->id);
+					$error_msg[] = "<b>Error </b>".$insert_mhs_pt->error_desc;
+				}
+          	} else {
             	++$error_count;
-							$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error".$temp_result['result']['error_desc']),'id',$value->id);
-							$error_msg[] = "<b>Error </b>".$temp_result['result']['error_desc'];
+				$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error, ".$temp_result->error_desc),'id',$value->id);
+				$error_msg[] = "<b>Error </b>".$temp_result->error_desc;
 
             }
 
-
-
-
-
-        } 
-        else {
-
-							$check_nim_exists = "p.id_sp='".$config->id_sp."' and p.id_pd='".$id_pd['result']['id_pd']."'";
-							$check_nim_exist = $proxy->GetRecord($token,'mahasiswa_pt',$check_nim_exists);
-							if (empty($check_nim_exist['result'])) { 
-									$hapus = array(     
-										'id_pd'=>$id_pd['result']['id_pd']
-									);
-
-									//print_r($hapus);
-									$hapus=$proxy->DeleteRecord($token, 'mahasiswa', json_encode($hapus));
-
-									//print_r($hapus);
-
-								$data_mhs = $db->convert_obj_to_array($value);
-					        	unset($data_mhs['id']);
-					        	unset($data_mhs['nipd']);
-						
-								$data_mhs = array_filter($data_mhs, 'myFilter');
-						       	$temp_result = $proxy->InsertRecord($token, 'mahasiswa', json_encode($data_mhs));
-
-					        	if ($temp_result['result']['error_desc']=="") {
-					        	  	$id_pd = $temp_result['result']['id_pd'];
-								$data_insert_mhs_pt = array(
-									  'id_sms' => $id_sms,
-					                  'id_pd' => $id_pd,
-					                  'id_sp' => $config->id_sp,
-					                  'id_jns_daftar' => $value->id_jns_daftar,
-					                  'nipd' => $value->nipd,
-					                  'tgl_masuk_sp' => $value->tgl_masuk_sp,
-					                  'a_pernah_paud' => '1',
-					                  'a_pernah_tk' => '1',
-					                   'id_pembiayaan' => $value->id_pembiayaan,
-					                   'biaya_masuk_kuliah' => $value->biaya_masuk_kuliah,
-					                  'mulai_smt' => $value->mulai_smt,
-					                   'id_jalur_masuk' => $value->id_jalur_masuk
-					                );
-
-					         		$insert_mhs_pt =  $proxy->InsertRecord($token, 'mahasiswa_pt', json_encode($data_insert_mhs_pt));
-
-					        		if ($insert_mhs_pt['result']['error_desc']==NULL) {
-												++$sukses_count;
-												$db->update('mhs',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
-											} 
-											else {
-													$hapus = array(     
-													'id_pd'=>$id_pd
-													);
-													$temp_result = $proxy->DeleteRecord($token, 'mahasiswa', json_encode($hapus));
-													++$error_count;
-													$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error".$insert_mhs_pt['result']['error_desc']),'id',$value->id);
-													$error_msg[] = "<b>Error </b>".$insert_mhs_pt['result']['error_desc'];
-											}
-
-					          } 
-
-					          	else {
-					            	++$error_count;
-												$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error".$temp_result['result']['error_desc']),'id',$value->id);
-												$error_msg[] = "<b>Error </b>".$temp_result['result']['error_desc'];
-
-					            }
-
-
-							} else {
-									++$error_count;
-									$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error, Mahasiswa Ini Sudah Ada di Feeder"),'id',$value->id);
-									$error_msg[] = "<b>Error </b>Mahasiswa Ini Sudah Ada di Feeder";
-							}
+        } else {
+			$filter_nim = "id_mahasiswa='".$id_pd->data[0]->id_mahasiswa."' and nim='".$value->nipd."'";
+			$data_param = array(
+				'act' => 'GetListRiwayatPendidikanMahasiswa',
+				'token' => get_token(),
+				'filter' => $filter_nim
+			);
+			$check_nim_exist = service_request($data_param);
+			if (empty($check_nim_exist->data)) { 
+	        	$id_mahasiswa = $id_pd->data[0]->id_mahasiswa;
+				$data_insert_mhs_pt = insertRegPdArray($value,array('id_sp' => $id_pt,'id_sms' => $id_prodi,'id_mahasiswa' => $id_mahasiswa));
+			    $data_dic = [
+			        "act" => "InsertRiwayatPendidikanMahasiswa",
+			        "token" => $token,
+			        "record" => $data_insert_mhs_pt
+			    ];
+				$insert_mhs_pt = service_request($data_dic);
+				//dump($data_dic);
+				//dump($insert_mhs_pt);
+        		if ($insert_mhs_pt->error_desc=='') {
+					++$sukses_count;
+					$db->update('mhs',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
+				} else {
+					++$error_count;
+					$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error, ".$insert_mhs_pt->error_desc),'id',$value->id);
+					$error_msg[] = "<b>Error </b>".$insert_mhs_pt->error_desc;
 				}
+			} else {
+					++$error_count;
+					$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error, Mahasiswa Ini Sudah Ada di Feeder"),'id',$value->id);
+					$error_msg[] = "<b>Error </b>Mahasiswa Ini Sudah Ada di Feeder";
+			}
+		}
 
  	$pu->incrementStageItems(1, true);
 	}

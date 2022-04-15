@@ -324,13 +324,14 @@ where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
 <div class="form-group">
                         <label for="Jenis Pendaftaran" class="control-label col-lg-2">Jenis Pendaftaran</label>
                         <div class="col-lg-10">
-                          <select name="id_jns_daftar" data-placeholder="Pilih Jenis Pendaftaran ..." class="form-control chzn-select" tabindex="2" >
+                          <select name="id_jns_daftar" id="id_jns_daftar" data-placeholder="Pilih Jenis Pendaftaran ..." class="form-control chzn-select" tabindex="2" >
                <option value=""></option>
-               <?php foreach ($db->fetch_all("jenis_pendaftaran") as $isi) {
+               <?php foreach ($db->query("select * from jenis_pendaftaran where id_jns_daftar in(1,2,11,12,13,14,15)") as $isi) {
                 if ($isi->id_jns_daftar==$data_edit->id_jns_daftar) {
                   echo "<option value='$isi->id_jns_daftar' selected>$isi->nm_jns_daftar</option>";
-                }
+                } else {
                   echo "<option value='$isi->id_jns_daftar'>$isi->nm_jns_daftar</option>";
+                }
                } ?>
               </select>
                         </div>
@@ -556,6 +557,34 @@ where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
               </select>
                         </div>
                       </div><!-- /.form-group -->
+
+<?php
+if ($data_edit->id_jns_daftar!=1) {
+  $show = "";
+} else {
+  $show = "style='display:none'";
+}
+?>
+<div class="form-group" id="show_sks_diakui" <?=$show;?>>
+                        <label for="Email" class="control-label col-lg-2">Jumlah Sks di akui</label>
+                        <div class="col-lg-1">
+                          <input type="text" id="sks_diakui" name="sks_diakui" value="<?=$data_edit->sks_diakui;?>" class="form-control"> 
+                        </div>
+                      </div><!-- /.form-group -->
+
+<div class="form-group" id="show_asal_pt" <?=$show?>>
+                        <label for="Jenis Pendaftaran" class="control-label col-lg-2">Kode PT Asal</label>
+                        <div class="col-lg-3">
+                          <input type="text" id="kode_pt_asal" name="kode_pt_asal" value="<?=$data_edit->kode_pt_asal;?>" class="form-control"> 
+                        </div>
+                      </div><!-- /.form-group -->
+<div class="form-group" id="show_asal_prodi" <?=$show?>>
+                        <label for="Jenis Pendaftaran" class="control-label col-lg-2">Kode Prodi Asal</label>
+                         <div class="col-lg-3">
+                          <input type="text" id="kode_prodi_asal" name="kode_prodi_asal" value="<?=$data_edit->kode_prodi_asal;?>" class="form-control"> 
+                        </div>
+                      </div><!-- /.form-group -->
+
 <div class="form-group">
                         <label for="biaya_masuk_kuliah" class="control-label col-lg-2">Biaya Masuk Kuliah</label>
                         <div class="col-lg-10">
