@@ -47,6 +47,12 @@ $data_edit = $db->fetch_single_row("config_user","id",1);
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
+                        <label for="Password Feeder" class="control-label col-lg-2">PORT</label>
+                        <div class="col-lg-10">
+                          <input type="port" name="port" value="<?=$data_edit->port;?>" class="form-control" required> 
+                        </div>
+                      </div><!-- /.form-group -->
+<div class="form-group">
 
                         <label for="URL Feeder" class="control-label col-lg-2">URL Feeder</label>
                         <div class="col-lg-10">

@@ -37,7 +37,7 @@ session_check();
 switch ($_GET["act"]) {
   case "up":
      //default port
-    $port = $db->fetch_single_row('config_user','id',1)->port;
+    $port = $_POST['port'];
 
       $file_headers = @get_headers('http://'.$_POST["url"].':'.$port.'/ws/live2.php');
 
