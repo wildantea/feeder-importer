@@ -95,11 +95,22 @@
               </select>
                         </div>
                       </div><!-- /.form-group -->
-
+<div class="form-group">
+                        <label for="Penghasilan" class="control-label col-lg-2">Jenis Pembiayaan</label>
+                        <div class="col-lg-10">
+                          <select name="id_pembiayaan" data-placeholder="Jenis Pembiayaan..." class="form-control chzn-select" tabindex="2" required="">
+               <option value=""></option>
+               <?php foreach ($db->fetch_all("pembiayaan") as $isi) {
+                  echo "<option value='$isi->id_pembiayaan'>$isi->nm_pembiayaan</option>";
+                    
+               } ?>
+              </select>
+                        </div>
+                      </div><!-- /.form-group -->
 <div class="form-group">
                         <label for="SKS Total" class="control-label col-lg-2">Biaya Kuliah (semester)</label>
                         <div class="col-lg-10">
-                          <input type="number" name="biaya_smt" placeholder="Biaya Kuliah (semester)" class="form-control">
+                          <input type="number" name="biaya_smt" placeholder="Biaya Kuliah (semester)" class="form-control" required>
                         </div>
                       </div><!-- /.form-group -->
                       <div class="form-group">

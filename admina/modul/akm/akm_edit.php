@@ -115,6 +115,22 @@ foreach ($jur as $isi) {
               </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
+                        <label for="Penghasilan" class="control-label col-lg-2">Jenis Pembiayaan</label>
+                        <div class="col-lg-10">
+                          <select name="id_pembiayaan" data-placeholder="Jenis Pembiayaan..." class="form-control chzn-select" tabindex="2" >
+               <option value=""></option>
+               <?php foreach ($db->fetch_all("pembiayaan") as $isi) {
+
+                  if ($data_edit->id_pembiayaan==$isi->id_pembiayaan) {
+                    echo "<option value='$isi->id_pembiayaan' selected>$isi->nm_pembiayaan</option>";
+                  } else {
+                  echo "<option value='$isi->id_pembiayaan'>$isi->nm_pembiayaan</option>";
+                    }
+               } ?>
+              </select>
+                        </div>
+                      </div><!-- /.form-group -->
+<div class="form-group">
                         <label for="SKS Total" class="control-label col-lg-2">Biaya Kuliah (semester)</label>
                         <div class="col-lg-10">
                           <input type="number" name="biaya_smt" value="<?=$data_edit->biaya_smt;?>" class="form-control">

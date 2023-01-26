@@ -82,6 +82,27 @@ class Database {
  
     }
 
+    public function fetch_custom( $sql,$data=null) {
+        if ($data!==null) {
+        $dat=array_values($data);
+        }
+        $sel = $this->pdo->prepare( $sql );
+        try{ 
+            if ($data!==null) {
+                $sel->execute($dat);
+            } else {
+               $sel->execute();
+            }
+            $sel->setFetchMode( PDO::FETCH_OBJ );
+            return $sel;
+        } 
+        catch(PDOException $exception){ 
+            $this->setErrorMessage($exception->getMessage());
+            return false;
+        }
+ 
+    }
+
         /**
      * [getErrorMessage return string throw exception
      * @return string return string error

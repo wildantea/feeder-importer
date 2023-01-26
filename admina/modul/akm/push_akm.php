@@ -87,7 +87,8 @@ $insert_data_akm = array();
 							  		'ipk' => $value->ipk,
 							  'total_sks' => $value->sks_total,
 							 'id_status_mahasiswa' => $value->status_kuliah,
-							 'biaya_kuliah_smt' => $value->biaya_smt
+							 'biaya_kuliah_smt' => $value->biaya_smt,
+							 'id_pembiayaan' => $value->id_pembiayaan
 							);
 						  $data_dic = [
 						      'act' => 'UpdatePerkuliahanMahasiswa',
@@ -138,7 +139,8 @@ $insert_data_akm = array();
 							  		'ipk' => $value->ipk,
 							  'total_sks' => $value->sks_total,
 							 'id_status_mahasiswa' => $value->status_kuliah,
-							 'biaya_kuliah_smt' => $value->biaya_smt
+							 'biaya_kuliah_smt' => $value->biaya_smt,
+							 'id_pembiayaan' => $value->id_pembiayaan
 							);
 						$data_dic = [
 					      'act' => 'InsertPerkuliahanMahasiswa',

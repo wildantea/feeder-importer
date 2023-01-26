@@ -182,7 +182,13 @@ function insertRegPdArray($biodata,$additional_data)
 		        "record" => $data_mhs
 		    ];
 			$temp_result = service_request($data_dic);
-        	if ($temp_result->error_desc=="") {
+			//dump($temp_result);
+        	if (isset($temp_result->code)) {
+        		$value_data = addslashes($temp_result->message);
+        		++$error_count;
+				$db->update('mhs',array('status_error' => 2, 'keterangan'=>"Error, ".$value_data),'id',$value->id);
+				$error_msg[] = "<b>Error </b>".$value_data;
+    		} elseif ($temp_result->error_desc=="") {
         		$id_mahasiswa = $temp_result->data->id_mahasiswa;
         	  	$data_insert_mhs_pt = insertRegPdArray($value,array('id_sp' => $id_pt,'id_sms' => $id_prodi,'id_mahasiswa' => $id_mahasiswa));
 			    $data_dic = [
