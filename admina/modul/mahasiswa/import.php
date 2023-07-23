@@ -31,7 +31,7 @@
                      <div class="form-group">
                         <label for="nim" class="control-label col-lg-2">&nbsp;</label>
                         <div class="col-lg-10">
-                           <a href="<?=base_url();?>upload/sample/sample_mhs_baru.xlsx" class="btn btn-success btn-flat"><i class="fa fa-cloud-download"></i> Download Contoh Template XLS</a>
+                           <a href="<?=base_url();?>upload/sample/template_baru_mahasiswa.xlsx" class="btn btn-success btn-flat"><i class="fa fa-cloud-download"></i> Download Contoh Template XLS</a>
                         </div>
                       </div><!-- /.form-group -->
                       <div class="form-group">

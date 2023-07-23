@@ -101,6 +101,7 @@ $token = get_token();
 
 			];
 			$temp_kls = service_request($data_req_kelas);
+				
 				if (!empty($temp_kls->data)) {
 					$id_kls = $temp_kls->data[0]->id_kelas_kuliah;
 					$data_krs = array(
@@ -113,7 +114,7 @@ $token = get_token();
 				        'record' => $data_krs,
 				    ];
 					$temp_result = service_request($data_dic_krs);
-					//dump($temp_result);
+
 					if ($temp_result->error_desc=='') {
 						++$sukses_count;
 						$db->update('krs',array('status_error'=>1,'keterangan'=>''),'id',$value->id_krs);
@@ -124,7 +125,7 @@ $token = get_token();
 					}
 				} else {
 					++$error_count;
-					$error_msg[] = $temp_result->error_desc;
+					//$error_msg[] = $temp_kls->error_desc;
 					$db->update('krs',array('status_error' => 2, 'keterangan'=> 'Pastikan Kelas Sudah Dibuat'),'id',$value->id_krs);
 				}
 			} else {

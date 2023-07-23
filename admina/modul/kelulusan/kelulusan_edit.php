@@ -87,7 +87,7 @@
 <div class="form-group">
                         <label for="IPK" class="control-label col-lg-2">Semester Keluar</label>
                         <div class="col-lg-10">
-                          <input type="text" name="semester" placeholder="<?=$data_edit->semester;?>" class="form-control" > 
+                          <input type="text" name="semester" value="<?=$data_edit->semester;?>" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->   
   <input type="hidden" name="jurusan" value="<?=$id_jur;?>">

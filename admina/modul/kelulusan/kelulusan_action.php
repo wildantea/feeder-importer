@@ -148,8 +148,6 @@ if (($sukses>0) || ($error_count>0)) {
     "tgl_sk_yudisium"=>$_POST["tgl_sk_yudisium"],"ipk"=>$_POST["ipk"],"no_seri_ijasah"=>$_POST["no_seri_ijasah"]
 
     );
-   
-   
 
     
     $up = $db->update("kelulusan",$data,"id",$_POST["id"]);
