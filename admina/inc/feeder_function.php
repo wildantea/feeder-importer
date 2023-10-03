@@ -103,6 +103,10 @@ function convert_ascii($string)
   function dec_data($data) {
   $replace_encode = substr_replace($data, '', 3 , 3);
   $decode = base64_decode($replace_encode);
+  // Bug saat password feeder terdapat special character di akhir string sehingga menyebabkan base64_decode tidak menutup string.
+  if(substr($decode, -1) !== '"') {
+    $decode = $decode.'"';
+  }
   $json_sys = json_decode($decode);
   return $json_sys;
 }
