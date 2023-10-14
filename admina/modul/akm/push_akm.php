@@ -50,7 +50,8 @@ $i=1;
 $insert_data_akm = array();
 	foreach ($arr_data as $value) {
 		$nim = $value->nim;
-		$filter_pd = "trim(nim)='".$nim."'";
+		$id_sms = $value->id_sms;
+		$filter_pd = "trim(nim)='".$nim."' and id_prodi='".$id_sms."'";
 			$data_req_mat = [
 				'act' => 'GetListRiwayatPendidikanMahasiswa',
 			    'token' => $token,

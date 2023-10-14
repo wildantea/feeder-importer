@@ -76,7 +76,7 @@ $token = get_token();
 
 		$id_sms = $value->id_sms;
 
-		$filter_pd = "trim(nim)='".$nim."'";
+		$filter_pd = "trim(nim)='".$nim."' and id_prodi='".$id_sms."'";
 			$data_req_mat = [
 				'act' => 'GetListRiwayatPendidikanMahasiswa',
 			    'token' => $token,

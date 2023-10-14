@@ -26,7 +26,7 @@ $token = get_token();
   $error_id = array();
   $jur = $_GET['jurusan'];
 
-  $arr_data = $db->query("select * from kelulusan where kode_jurusan='$jur' and status_error!='1'");
+  $arr_data = $db->query("select * from kelulusan inner join jurusan on kelulusan.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and status_error!='1'");
 
 $stageOptions = array(
     'name' => 'This AJAX process takes a long time',
@@ -43,7 +43,8 @@ $i=1;
 
   foreach ($arr_data as $value) {
     $nim = $value->nim;
-    $filter_pd = "trim(nim)='".$nim."'";
+    $id_sms = $value->id_sms;
+    $filter_pd = "trim(nim)='".$nim."' and id_prodi='".$id_sms."'";
       $data_req_mat = [
         'act' => 'GetListRiwayatPendidikanMahasiswa',
           'token' => $token,
