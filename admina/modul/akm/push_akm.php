@@ -65,7 +65,7 @@ $insert_data_akm = array();
 			if (!empty($temp_npm->data)) {
 				$id_reg_pd = $temp_npm->data[0]->id_registrasi_mahasiswa;
 				if ($_GET['method']=='up') {
-					$filter_akm = "id_registrasi_mahasiswa='".$id_reg_pd."' and id_semester='".$value->semester."'";
+					$filter_akm = "id_prodi='$id_sms' and id_registrasi_mahasiswa='".$id_reg_pd."' and id_semester='".$value->semester."'";
 					$data_req_akm = [
 						'act' => 'GetAktivitasKuliahMahasiswa',
 					    'token' => $token,
@@ -81,15 +81,15 @@ $insert_data_akm = array();
 							'id_semester' => $value->semester
 						);
 						$record = array(
-							'id_semester' => $value->semester,
-							  'id_registrasi_mahasiswa' => $id_reg_pd,
-							  		'ips' => $value->ips,
-							  	'sks_semester' => $value->sks_smt,
-							  		'ipk' => $value->ipk,
-							  'total_sks' => $value->sks_total,
-							 'id_status_mahasiswa' => $value->status_kuliah,
-							 'biaya_kuliah_smt' => $value->biaya_smt,
-							 'id_pembiayaan' => $value->id_pembiayaan
+								'id_semester' => $value->semester,
+								'id_registrasi_mahasiswa' => $id_reg_pd,
+								'ips' => $value->ips,
+								'sks_semester' => $value->sks_smt,
+								'ipk' => $value->ipk,
+								'total_sks' => $value->sks_total,
+								'id_status_mahasiswa' => $value->status_kuliah,
+								'biaya_kuliah_smt' => $value->biaya_smt,
+								'id_pembiayaan' => $value->id_pembiayaan
 							);
 						  $data_dic = [
 						      'act' => 'UpdatePerkuliahanMahasiswa',
@@ -117,7 +117,7 @@ $insert_data_akm = array();
 
 			} else {
 
-					$filter_akm = "id_registrasi_mahasiswa='".$id_reg_pd."' and id_semester='".$value->semester."'";
+					$filter_akm = "id_prodi='$id_sms' and id_registrasi_mahasiswa='".$id_reg_pd."' and id_semester='".$value->semester."'";
 					$data_req_akm = [
 						'act' => 'GetAktivitasKuliahMahasiswa',
 					    'token' => $token,
@@ -133,15 +133,15 @@ $insert_data_akm = array();
 						$db->update('nilai_akm',array('status_error' => 2, 'keterangan'=> "Error, Akm sudah ada di Feeder"),'id',$value->id_akm);
 					} else {
 						$record = array(
-							'id_semester' => $value->semester,
-							  'id_registrasi_mahasiswa' => $id_reg_pd,
-							  		'ips' => $value->ips,
-							  	'sks_semester' => $value->sks_smt,
-							  		'ipk' => $value->ipk,
-							  'total_sks' => $value->sks_total,
-							 'id_status_mahasiswa' => $value->status_kuliah,
-							 'biaya_kuliah_smt' => $value->biaya_smt,
-							 'id_pembiayaan' => $value->id_pembiayaan
+								'id_semester' => $value->semester,
+								'id_registrasi_mahasiswa' => $id_reg_pd,
+								'ips' => $value->ips,
+								'sks_semester' => $value->sks_smt,
+								'ipk' => $value->ipk,
+								'total_sks' => $value->sks_total,
+								'id_status_mahasiswa' => $value->status_kuliah,
+								'biaya_kuliah_smt' => $value->biaya_smt,
+								'id_pembiayaan' => $value->id_pembiayaan
 							);
 						$data_dic = [
 					      'act' => 'InsertPerkuliahanMahasiswa',
