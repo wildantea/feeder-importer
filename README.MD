@@ -5,7 +5,7 @@
 ![alt text](img/feeder_importer.png)
 
 ## Installation
-* Install Xampp php 7.2 https://drive.google.com/file/d/14xHODtW0Rp5KKlmc4xymImwiwwMTihCF/view?usp=sharing
+* Install Xampp php 8.2 https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/xampp-windows-x64-8.2.12-0-VS16-installer.exe
 * Buat Folder Baru di C:/xampp/htdocs/feeder-importer
 * Copy Semua File Ke directory baru tersebut
 * Buka phpmyadmin http://localhost/phpmyadmin, lalu buat database baru misal : feeder_importer
