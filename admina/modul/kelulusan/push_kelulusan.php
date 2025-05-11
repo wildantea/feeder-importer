@@ -26,7 +26,7 @@ $token = get_token();
   $error_id = array();
   $jur = $_GET['jurusan'];
 
-  $arr_data = $db->query("select * from kelulusan inner join jurusan on kelulusan.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and status_error!='1'");
+  $arr_data = $db->query("select kelulusan.*,id_sms from kelulusan inner join jurusan on kelulusan.kode_jurusan=jurusan.kode_jurusan where jurusan.kode_jurusan='".$_GET['jurusan']."' and status_error!='1'");
 
 $stageOptions = array(
     'name' => 'This AJAX process takes a long time',
@@ -63,6 +63,7 @@ $i=1;
         'id_jenis_keluar' => $value->id_jenis_keluar,
         'tanggal_keluar' => $value->tanggal_keluar,
         'id_periode_keluar' => $value->semester,
+        'keterangan' => $value->ket,
         'nomor_sk_yudisium' => $value->sk_yudisium,
         'tanggal_sk_yudisium' => $value->tgl_sk_yudisium,
         'ipk' => $value->ipk,

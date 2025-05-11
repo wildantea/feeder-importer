@@ -1,10 +1,10 @@
 <?php
 session_start();
+$time_start = microtime(true); 
 include "../../inc/config.php";
 session_check();
 
- /** PHPExcel_IOFactory */
-require_once '../../lib/PHPExcel/IOFactory.php';
+require('../../lib/SpreadsheetReader.php');
 
 switch ($_GET["act"]) {
    case 'delete_error':
@@ -31,47 +31,40 @@ switch ($_GET["act"]) {
 
             } else {
               move_uploaded_file($_FILES["semester"]["tmp_name"], "../../../upload/krs/".$_FILES['semester']['name']);
-              $semester = array("semester"=>$_FILES["semester"]["name"]);
-
             }
-
-
-$objPHPExcel = PHPExcel_IOFactory::load("../../../upload/krs/".$_FILES['semester']['name']);
-
-$data = $objPHPExcel->getActiveSheet()->toArray();
-
-
 
 $error_count = 0;
 $error = array();
 $sukses = 0;
 
-foreach ($data as $key => $val) {
+  $Reader = new SpreadsheetReader("../../../upload/krs/".$_FILES['semester']['name']);
+  foreach ($Reader as $key => $val)
+  {
 
     if ($key>0) {
 
-      if ($val[1]!='') {
+      if ($val[0]!='') {
           
-               if ($val[5]=='') {
+               if ($val[4]=='') {
                 $nama_kelas = "01";
               } else {
-                $nama_kelas = filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH);
+                $nama_kelas = filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH);
               }
 
-              $check = $db->check_exist('krs',array('nim'=>filter_var($val[1], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'kode_mk' => filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'semester'=>filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'nama_kelas'=>filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH)));
+              $check = $db->check_exist('krs',array('nim'=>filter_var($val[0], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'kode_mk' => filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'semester'=>filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'nama_kelas'=>filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH)));
               if ($check==true) {
                 $error_count++;
-                $error[] = $val[1]." ".$val[4]." Sudah Ada";
+                $error[] = $val[0]." ".$val[3]." Sudah Ada";
               } else {
                 $sukses++;
 
               $data = array(
-                        'nim'=>filter_var($val[1], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-                        'nama' => filter_var($val[2], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-                        'semester'=>filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-                        'kode_mk'=>filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-                        'nama_mk' => filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-                        'nama_kelas'=>filter_var($val[6], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+                        'nim'=>filter_var($val[0], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+                        'nama' => filter_var($val[1], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+                        'semester'=>filter_var($val[2], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+                        'kode_mk'=>filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+                        'nama_mk' => filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+                        'nama_kelas'=>filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
                         'kode_jurusan' => $_POST['jurusan']
                             );
 

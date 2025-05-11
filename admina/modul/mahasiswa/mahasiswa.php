@@ -45,7 +45,18 @@ switch ($path_act) {
       break;
     break;
   default:
+  //check if prodi kampus not downloaded yet
+  $kampus = $db->fetch_custom("select id_sp from satuan_pendidikan");
+  if ($kampus->rowCount()>0) {
     include "mahasiswa_view.php";
+  } else {
+    echo '<div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-warning"></i> Alert!</h4>
+                Silakan download dulu data prodi kampus di menu master data -> data prodi kampus
+              </div>';
+  }
+    
     break;
 }
 

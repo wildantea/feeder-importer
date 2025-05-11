@@ -86,6 +86,14 @@
                           <input type="text" name="semester" placeholder="20191" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->     
+
+<div class="form-group">
+                        <label for="Bulan Akhir Bimbingan" class="control-label col-lg-2">Keterangan</label>
+                        <div class="col-lg-10">
+                          <input type="text" id="ket" name="ket" class="form-control" > 
+                        </div>
+                      </div><!-- /.form-group -->  
+
   <input type="hidden" name="jurusan" value="<?=$id_jur;?>">
                       
                       <div class="form-group">

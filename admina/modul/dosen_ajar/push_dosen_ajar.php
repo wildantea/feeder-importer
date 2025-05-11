@@ -159,8 +159,9 @@ $i=1;
 							  	'sks_substansi_total' => $sks_mk,
 					  	 		'rencana_minggu_pertemuan' => $ren_tm,
 					  	 		'realisasi_minggu_pertemuan' => $rel_tm,
-					  	 		'id_jenis_evaluasi' => 1
+					  	 		'id_jenis_evaluasi' => $value->id_jenis_evaluasi
 					  	 	);
+					  	 	
 						  	$data_dic = [
 						      'act' => 'InsertDosenPengajarKelasKuliah',
 						        'token' => $token,

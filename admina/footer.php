@@ -132,7 +132,7 @@ filebrowserFlashUploadUrl: '<?=base_admin();?>assets/plugins/kcfinder/upload.php
      <script src="<?=base_admin();?>assets/plugins/switch/bootstrap-switch.min.js" type="text/javascript"></script>
       <!--switch button -->
      <script src="<?=base_admin();?>assets/plugins/chosen/chosen.jquery.min.js" type="text/javascript"></script>
-
+ <script src="<?=base_admin();?>assets/plugins/select2/js/select2.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">
     $(function(){

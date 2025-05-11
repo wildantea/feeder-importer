@@ -89,7 +89,15 @@
                         <div class="col-lg-10">
                           <input type="text" name="semester" value="<?=$data_edit->semester;?>" class="form-control" > 
                         </div>
-                      </div><!-- /.form-group -->   
+                      </div><!-- /.form-group --> 
+
+<div class="form-group">
+                        <label for="Bulan Akhir Bimbingan" class="control-label col-lg-2">Keterangan</label>
+                        <div class="col-lg-10">
+                          <input type="text" id="ket" name="ket" value="<?=$db->trimmer($data_edit->ket);?>"  class="form-control" > 
+                        </div>
+                      </div><!-- /.form-group -->  
+
   <input type="hidden" name="jurusan" value="<?=$id_jur;?>">
                       <input type="hidden" name="id" value="<?=$data_edit->id;?>">
                       <div class="form-group">

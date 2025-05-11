@@ -76,6 +76,7 @@
      <!--switch button -->
        <link href="<?=base_admin();?>assets/plugins/chosen/chosen.min.css" rel="stylesheet" type="text/css" />
          <link href="<?=base_admin();?>assets/plugins/chosen/chosen-bootstrap.css" rel="stylesheet" type="text/css" />
+          <link href="<?=base_admin();?>assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
    <!--fancy box -->
      <link href="<?=base_admin();?>assets/plugins/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
 <?php }?>

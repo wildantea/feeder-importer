@@ -57,24 +57,34 @@
 <select name="jns_mk" class="form-control" tabindex="2" required>
 
  <?php
- $stat = array(
-  'W' => "Wajib Nasional",
-  'A' => "Wajib Program Studi",
-  'B' => "Pilihan",
-  'C' => "Peminatan",
-  'S' => "Tugas Akhir / Skripsi"
-  );
- foreach ($stat as $key => $value) {
-    if ($data_edit->jns_mk==$key) {
-      echo "<option value='$data_edit->jns_mk' selected>".$value."</option>";
+foreach ($db->fetch_custom("select * from jenis_mk") as $key) {
+    if ($data_edit->jns_mk==$key->id_jns_mk) {
+      echo "<option value='$key->id_jns_mk' selected>".$key->nm_jns_mk."</option>";
     } else {
-      echo "<option value='$key'>".$value."</option>";
+      echo "<option value='$key->id_jns_mk'>".$key->nm_jns_mk."</option>";
     }
  }
 
 ?>
 </select>
 
+                        </div>
+                      </div><!-- /.form-group -->
+
+<div class="form-group">
+                        <label for="Pendidikan Ayah" class="control-label col-lg-2">Kelompok Matakuliah</label>
+                        <div class="col-lg-10">
+                          <select name="kelompok_mk" data-placeholder="Pilih Kelompok Matakuliah..." class="form-control chzn-select" tabindex="2" >
+               <option value=""></option>
+               <?php foreach ($db->fetch_all("kelompok_mk") as $isi) {
+
+                  if ($data_edit->kelompok_mk==$isi->id_kel_mk) {
+                    echo "<option value='$isi->id_kel_mk' selected>$isi->nm_kel_mk</option>";
+                  } else {
+                  echo "<option value='$isi->id_kel_mk'>$isi->nm_kel_mk</option>";
+                    }
+               } ?>
+              </select>
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
@@ -101,6 +111,13 @@
                           <input type="text" name="sks_sim" value="<?=$data_edit->sks_sim;?>" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->
+
+<div class="form-group">
+  <label for="Semester" class="control-label col-lg-2">Metode Pembelajaran</label>
+  <div class="col-lg-10">
+    <input type="text" id="metode_pelaksanaan_kuliah" name="metode_pelaksanaan_kuliah" value="<?=$data_edit->metode_pelaksanaan_kuliah;?>" class="form-control" > 
+  </div>
+</div><!-- /.form-group -->
 <div class="form-group">
                         <label for="Semester" class="control-label col-lg-2">Semester</label>
                         <div class="col-lg-10">

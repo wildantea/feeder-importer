@@ -3,7 +3,7 @@ date_default_timezone_set('Asia/Jakarta');
 ini_set( "display_errors", true );
 define( "HOST", "localhost" );
 //nama database
-define( "DATABASE_NAME", "feeder_importer" );
+define( "DATABASE_NAME", "importer_free" );
 define( "DB_USERNAME", "root" );
 
 define( "PORT", 3306);

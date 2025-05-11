@@ -1,2 +1,98 @@
 <?php
- goto mkQDe; mkQDe: include "\x2e\56\57\x2e\56\x2f\151\x6e\143\57\x63\157\x6e\x66\x69\x67\56\160\150\160"; goto VjJJQ; Afrio: function is_connected() { if (!($sock = @fsockopen("\x31\60\x33\x2e\x31\x38\x33\56\67\x34\56\61\60\66", 80))) { return false; } else { return true; } } goto EC9P5; VjJJQ: require_once "\56\x2e\57\x2e\x2e\57\154\x69\x62\57\x64\x55\156\172\151\x70\x32\56\151\x6e\x63\x2e\x70\150\x70"; goto Afrio; EC9P5: function service_url($param) { global $db; $data = $db->fetch_single_row("\x73\x79\163\137\x73\x79\x73\164\x65\155", "\x69\144", 2); $replace_encode = substr_replace($data->data, '', 3, 3); $decode = base64_decode($replace_encode); $json = json_decode($decode); $result = $json->{$param}; return $result; } goto AJPZ8; AJPZ8: if (is_connected()) { $check_latest_version = $db->fetch_custom_single("\x73\145\x6c\x65\x63\x74\x20\x76\145\x72\163\151\157\x6e\40\146\162\157\x6d\40\x73\171\x73\x5f\x75\160\144\x61\164\x65\40\167\x68\145\x72\x65\x20\x73\x74\141\x74\165\163\137\x63\157\x6d\x70\x6c\145\164\145\x3d\x27\x59\x27\40\x6f\162\x64\x65\x72\40\142\x79\x20\x69\144\x20\x64\x65\163\x63\40\154\x69\x6d\151\164\x20\x31"); $check_kode_pt = $db->fetch_single_row("\143\x6f\x6e\146\151\147\137\165\x73\x65\x72", "\151\144", 1)->kode_pt; $check_count = file_get_contents("\150\x74\x74\x70\x3a\57\x2f" . service_url("\143\x68\x65\143\153\137\166\x65\162\163\x69\x6f\x6e") . "\77\x6b\x6f\x64\x65\137\x70\164\x3d" . $check_kode_pt . "\46\x6c\157\x63\x61\154\137\x6c\x61\163\164\75" . $check_latest_version->version . "\x26\x64\141\164\145\75" . date("\131\55\155\x2d\x64\x48\72\x69\x3a\x73")); $dta_server_version = json_decode($check_count); if (count($dta_server_version) > 0) { foreach ($dta_server_version as $version) { $data_update = file_get_contents("\150\x74\164\160\x3a\x2f\x2f" . service_url("\144\x61\164\141\137\165\x70\x64\x61\x74\x65") . "\77\x76\145\x72\163\151\x6f\156\x3d" . $version->version . "\46\x6b\157\x64\x65\137\x70\164\75" . $check_kode_pt); $data_update = json_decode($data_update); $sukses = 0; $success = array(); $create = ''; foreach ($data_update as $dt) { if ($dt->type_update == "\144\x61\x74\x61") { file_put_contents(SITE_ROOT . "\165\160\154\x6f\x61\144\57" . $dt->nama_file, fopen("\x68\164\x74\x70\72\57\57" . service_url("\144\x61\x74\x61\x5f\x75\x70\x64\141\x74\145\137\146\151\x6c\145") . $version->version . "\57" . $dt->nama_file, "\x72")); $zip = new dUnzip2(SITE_ROOT . "\165\x70\x6c\x6f\x61\144\57" . $dt->nama_file); $zip->debug = 0; $zip->unzipAll(SITE_ROOT); $zip->__destroy(); unlink(SITE_ROOT . "\x75\x70\x6c\157\x61\144\57" . $dt->nama_file); $sukses++; } elseif ($dt->type_update == "\163\161\x6c") { $dbs = file_get_contents("\x68\164\x74\x70\x3a\57\x2f" . service_url("\144\x61\164\141\137\x75\160\144\x61\x74\145\x5f\x66\x69\x6c\145") . $version->version . "\x2f" . $dt->nama_file); $sql = ''; foreach (explode("\x3b\xa", $dbs) as $query) { $sql = trim($query); if ($sql) { $db->fetch_custom($sql); } } $sukses++; } } $db->insert("\163\171\163\x5f\x75\160\144\141\x74\x65", array("\x76\145\162\163\151\x6f\x6e" => $version->version, "\163\164\x61\x74\x75\x73\x5f\143\x6f\x6d\160\154\145\x74\x65" => "\131", "\x70\145\162\x75\x62\141\x68\x61\x6e" => $version->perubahan)); } if ($sukses > 0) { $msg = "\x3c\x64\151\x76\x20\143\154\x61\163\x73\x3d\x22\141\x6c\x65\162\164\x20\141\x6c\145\162\164\x2d\x77\141\x72\156\151\156\x67\x20\x61\154\145\x72\164\55\144\151\163\155\x69\163\163\151\142\x6c\145\x22\x20\x72\157\x6c\x65\x3d\x22\x61\x6c\x65\x72\x74\42\x20\x3e\12\x20\x20\40\x20\x20\40\x20\40\40\40\40\40\x3c\142\165\x74\x74\x6f\156\40\x74\x79\x70\145\x3d\x22\x62\x75\164\164\157\x6e\x22\x20\143\x6c\141\x73\x73\75\42\143\x6c\157\163\145\x22\40\144\141\164\x61\55\x64\x69\163\155\x69\163\x73\x3d\x22\x61\x6c\x65\x72\164\x22\x20\x61\162\x69\141\55\x68\x69\x64\x64\145\156\75\42\164\162\165\x65\x22\x3e\xc3\227\74\57\142\x75\164\164\157\x6e\x3e\xa\x20\40\x20\x20\x20\40\40\x20\40\40\x20\x20\40\x20\x20\40\x3c\x66\157\x6e\164\40\143\157\154\x6f\x72\x3d\42\43\x33\143\x37\66\63\x64\x22\76\x46\x65\x65\x64\145\162\40\111\x6d\160\157\x72\164\145\162\40\x62\x65\x72\x68\x61\163\151\x6c\40\x64\x69\40\x55\160\x64\x61\164\145\74\x2f\146\x6f\x6e\x74\x3e\x3c\142\162\40\x2f\76"; $msg .= "\74\57\x64\151\166\76\12\x20\40\x20\x20\40\x20\40\x20\40\40\x20\40\40\x20\x3c\x2f\x64\151\166\76"; } echo $msg; } else { echo "\x41\x70\x6c\x69\153\141\x73\151\x20\x4d\x61\x73\151\150\40\124\145\x72\x62\141\162\165"; } } else { echo "\120\141\x73\164\x69\x6b\x61\156\x20\101\156\144\141\x20\x54\145\162\153\157\156\x65\153\163\151\x20\x6b\145\x20\x49\156\164\x65\x72\156\145\164"; } goto KB3FG; KB3FG: ?>
+include "../../inc/config.php";
+require_once "../../lib/dUnzip2.inc.php";
+
+function is_connected()
+{
+  if(!$sock = @fsockopen('103.183.74.106', 80))
+  {
+     return false;
+  }
+  else
+  {
+      return true;
+  }
+
+
+} 
+function service_url($param) {
+  global $db;
+  $data = $db->fetch_single_row('sys_system','id',2);
+  $replace_encode = substr_replace($data->data, '', 3 , 3);
+  $decode = base64_decode($replace_encode);
+  $json = json_decode($decode);
+  // dump($json);
+  $result = $json->$param;
+
+  return $result;
+}
+
+if (is_connected()) {
+    
+$check_latest_version = $db->fetch_custom_single("select version from sys_update where status_complete='Y' order by id desc limit 1");
+
+$check_kode_pt = $db->fetch_single_row('config_user','id',1)->kode_pt;
+
+$check_count = file_get_contents('http://'.service_url('check_version').'?kode_pt='.$check_kode_pt.'&local_last='.$check_latest_version->version.'&date='.date('Y-m-dH:i:s'));
+
+$dta_server_version = json_decode($check_count);
+
+
+if (count($dta_server_version)>0) {
+
+    foreach ($dta_server_version as $version) {
+          $data_update = file_get_contents('http://'.service_url('data_update').'?version='.$version->version.'&kode_pt='.$check_kode_pt);
+
+          $data_update = json_decode($data_update);
+
+
+          $sukses=0;
+          $success=array();
+          $create = "";
+            foreach ($data_update as $dt) {
+
+              if ($dt->type_update=='data') {
+                file_put_contents(SITE_ROOT."upload/".$dt->nama_file, fopen('http://'.service_url('data_update_file').$version->version.'/'.$dt->nama_file, 'r'));
+                $file = SITE_ROOT."upload/".$dt->nama_file;
+                $zip = new dUnzip2(SITE_ROOT."upload/".$dt->nama_file);
+                $zip->debug = 0; // debug?
+                $zip->unzipAll(SITE_ROOT);
+                $zip->__destroy();
+                unlink(SITE_ROOT."upload/".$dt->nama_file);
+                $sukses++;
+
+              } elseif ($dt->type_update=='sql') {
+                   $dbs = file_get_contents('http://'.service_url('data_update_file').$version->version.'/'.$dt->nama_file);
+                    $sql = '';
+                    foreach (explode(";\n", $dbs) as $query) {
+                        $sql = trim($query);
+                        
+                        if($sql) {
+                            $db->fetch_custom($sql);
+                        } 
+                    }
+                    $sukses++;
+              }
+
+            }
+       
+           $db->insert('sys_update',array('version' => $version->version,'status_complete' => 'Y','perubahan' => $version->perubahan));
+          }
+
+                if (($sukses>0)) {
+            $msg =  "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\" >
+            <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>
+                <font color=\"#3c763d\">Feeder Importer berhasil di Update</font><br />";
+                $msg .= "</div>
+              </div>";
+          }
+            
+            echo $msg;
+} else {
+  echo "Aplikasi Masih Terbaru";
+}
+
+} else {
+  echo "Pastikan Anda Terkoneksi ke Internet";
+}
+?>

@@ -1,11 +1,10 @@
 <?php
 session_start();
+$time_start = microtime(true); 
 include "../../inc/config.php";
 session_check();
 
-  /** PHPExcel_IOFactory */
-require_once '../../lib/PHPExcel/IOFactory.php';
-
+require('../../lib/SpreadsheetReader.php');
 
 switch ($_GET["act"]) {
     case 'del_massal':
@@ -17,7 +16,8 @@ switch ($_GET["act"]) {
          }
     }
     break;
-  case 'import':
+
+ case 'import':
      if (!is_dir("../../../upload/matakuliah")) {
               mkdir("../../../upload/matakuliah");
             }
@@ -29,33 +29,25 @@ switch ($_GET["act"]) {
               exit();
 
             } else {
-              move_uploaded_file($_FILES["semester"]["tmp_name"], "../../../upload/matakuliah/".$_FILES['semester']['name']);
-              $semester = array("semester"=>$_FILES["semester"]["name"]);
-
+              $upl = move_uploaded_file($_FILES["semester"]["tmp_name"], "../../../upload/matakuliah/".$_FILES['semester']['name']);
             }
 
-
-      $objPHPExcel = PHPExcel_IOFactory::load("../../../upload/matakuliah/".$_FILES['semester']['name']);
       $error_count = 0;
       $error = array();
       $sukses = 0;
-      foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-          $highestRow         = $worksheet->getHighestRow(); // e.g. 10
-          $highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
-        $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+      $values = array();
 
+  $Reader = new SpreadsheetReader("../../../upload/matakuliah/".$_FILES['semester']['name']);
+  foreach ($Reader as $key => $val)
+  {
 
-          for ($row = 2; $row <= $highestRow; ++ $row) {
-          $val=array();
-        for ($col = 0; $col < $highestColumnIndex; ++ $col) {
-         $cell = $worksheet->getCellByColumnAndRow($col, $row);
-         $val[] = $cell->getValue();
+    if ($key>0) {
 
-        }
-
-        if ($val[0]!='') {
-
-          $check = $db->check_exist('mat_kurikulum',array('kode_mk' => filter_var($val[0], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'id_kurikulum' => $_POST['id_kur']));
+      if ($val[0]!='') {
+          $check = $db->check_exist('mat_kurikulum',array(
+            'kode_mk' =>$db->trimmer($val[0]),
+            'id_kurikulum'=>$_POST['id_kur'],
+          ));
           if ($check==true) {
             $error_count++;
             $error[] = $val[0]." Sudah Ada";
@@ -74,9 +66,9 @@ switch ($_GET["act"]) {
             "tgl_mulai_efektif"=>$db->trimmer($val[8]),
             "tgl_akhir_efektif"=>$db->trimmer($val[9]),
             "semester"=>$db->trimmer($val[10]),
+            "kelompok_mk"=>$db->trimmer($val[11]),
             "kode_jurusan" =>$_POST["jurusan"]
             );
-
         }
 
       }
@@ -87,13 +79,17 @@ switch ($_GET["act"]) {
 
 if (!empty($data)) {
   $db->insert_massal('mat_kurikulum',$data);
+  echo $db->getErrorMessage();
 }
 
-          unlink("../../../upload/matakuliah/".$_FILES['semester']['name']);
+unlink("../../../upload/matakuliah/".$_FILES['semester']['name']);
           $msg = '';
-      if (($sukses>0) || ($error_count>0)) {
+$time_end = microtime(true);
+$execution_time = ($time_end - $time_start);
+
+     if (($sukses>0) || ($error_count>0)) {
         $msg =  "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\" >
-        <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>
+        <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">Ã—</button>
             <font color=\"#3c763d\">".$sukses." data Matakuliah baru berhasil di import</font><br />
             <font color=\"#ce4844\" >".$error_count." data tidak bisa ditambahkan </font>";
             if (!$error_count==0) {
@@ -159,11 +155,10 @@ if (!empty($data)) {
     "sks_prak_lap"=>$_POST["sks_prak_lap"],
     "sks_sim"=>$_POST["sks_sim"],
     "semester"=>$_POST["semester"],
+    "metode_pelaksanaan_kuliah" => $_POST["metode_pelaksanaan_kuliah"],
+    "kelompok_mk"=>$_POST["kelompok_mk"],
     "kode_jurusan"=>$_POST["kode_jurusan"]);
-   
-   
-   
-
+  
     
     $up = $db->update("mat_kurikulum",$data,"id",$_POST["id"]);
     if ($up=true) {

@@ -3,11 +3,18 @@ session_start();
 include "../../inc/config.php";
 session_check();
 
- /** PHPExcel_IOFactory */
-require_once '../../lib/PHPExcel/IOFactory.php';
+require('../../lib/SpreadsheetReader.php');
 
 switch ($_GET["act"]) {
-
+   case 'del_massal':
+    $data_ids = $_REQUEST['data_ids'];
+    $data_id_array = explode(",", $data_ids);
+    if(!empty($data_id_array)) {
+        foreach($data_id_array as $id) {
+          $db->delete("nilai","id",$id);
+         }
+    }
+    break;
    case 'delete_error':
     $db->query("delete from nilai where status_error=2 and kode_jurusan='".$_POST['id']."'");
     break;
@@ -32,52 +39,52 @@ switch ($_GET["act"]) {
 
             } else {
               move_uploaded_file($_FILES["semester"]["tmp_name"], "../../../upload/nilai/".$_FILES['semester']['name']);
-              $semester = array("semester"=>$_FILES["semester"]["name"]);
 
             }
-
-
-$objPHPExcel = PHPExcel_IOFactory::load("../../../upload/nilai/".$_FILES['semester']['name']);
-
-
-$data = $objPHPExcel->getActiveSheet()->toArray();
 
 
 $error_count = 0;
 $error = array();
 $sukses = 0;
 
-
-
-foreach ($data as $key => $val) {
+  $Reader = new SpreadsheetReader("../../../upload/nilai/".$_FILES['semester']['name']);
+  foreach ($Reader as $key => $val)
+  {
 
     if ($key>0) {
 
-if ($val[1]!='') {
+      if ($val[0]!='') {
   
-      if ($val[6]=='') {
+      if ($val[5]=='') {
       $nama_kelas = "01";
     } else {
-      $nama_kelas =filter_var($val[6], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH);
+      $nama_kelas =filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH);
     }
 
     if ($val[7]!='') {
-        $check = $db->check_exist('nilai',array('nim'=>filter_var($val[1], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'kode_mk' => filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'semester'=>filter_var($val[6], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),'nama_kelas'=>$nama_kelas));
+        $check = $db->check_exist('nilai',
+          array(
+            'nim'=> filter_var($val[0], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+            'kode_mk' => filter_var($val[2], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+            'semester'=>filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+            'nama_kelas'=>$nama_kelas
+          )
+        );
     if ($check==true) {
       $error_count++;
-      $error[] = $val[1]." ".$val[3]." Sudah Ada";
+      $error[] = $val[0]." ".$val[2]." Sudah Ada";
     } else {
       $sukses++;
     $data = array(
-      'semester' => filter_var($val[5], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-      'nim' => trim(filter_var($val[1], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH)),
-      'nama' => filter_var($val[2], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-      'kode_mk' =>  filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-      'nama_mk' => filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+      'semester' => filter_var($val[4], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+      'nim' => trim(filter_var($val[0], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH)),
+      'nama' => filter_var($val[1], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+      'kode_mk' =>  filter_var($val[2], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+      'nama_mk' => filter_var($val[3], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
       'nama_kelas' => trim($nama_kelas),
-      'nilai_huruf' =>filter_var($val[7], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-      'nilai_indek' => filter_var($val[8], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
-      'nilai_angka' => filter_var($val[9], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+      'nilai_huruf' =>filter_var($val[6], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+      'nilai_indek' => filter_var($val[7], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
+      'nilai_angka' => filter_var($val[8], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW|FILTER_FLAG_STRIP_HIGH),
       'kode_jurusan' => $_POST['jurusan']
       );
       $in = $db->insert('nilai',$data);
@@ -137,7 +144,7 @@ if (($sukses>0) || ($error_count>0)) {
     
     
     
-    $db->delete("nilai","id",$_GET["id"]);
+    $db->delete("nilai","id",$_POST["id"]);
     break;
   case "up":
    $data = array("nim"=>$_POST["nim"],"nama"=>$_POST["nama"],"kode_mk"=>$_POST["kode_mk"],"nama_mk"=>$_POST["nama_mk"],"nama_kelas"=>$_POST["nama_kelas"],"semester"=>$_POST["semester"],"kode_jurusan"=>$_POST["kode_jurusan"],"nilai_huruf"=>$_POST["nilai_huruf"],"nilai_indek"=>$_POST["nilai_indek"],"nilai_angka"=>$_POST["nilai_angka"]);

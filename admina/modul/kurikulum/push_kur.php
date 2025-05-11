@@ -76,7 +76,7 @@ $i=1;
 				'id_prodi' => $id_sms,
 				);
 
-				dump($temp_data);
+				//dump($temp_data);
 
 				$data_param = array(
 					'act' => 'InsertKurikulum',
@@ -217,6 +217,7 @@ if ($jmlsks_mk>9) {
 		        'sks_praktek_lapangan' => $dt->sks_prak_lap,
 		        'sks_simulasi' => $dt->sks_sim,
 		        'metode_kuliah' => $dt->metode_pelaksanaan_kuliah,
+		        'id_kelompok_mata_kuliah' => $dt->kelompok_mk,
 			    'tanggal_mulai_efektif' => $dt->tgl_mulai_efektif,
 				'tanggal_akhir_efektif' => $dt->tgl_akhir_efektif,
 		        );
@@ -228,10 +229,11 @@ if ($jmlsks_mk>9) {
 					'record' => $data
 				);
 				$in_mat = service_request($data_param);
+				//dump($in_mat);
 
 				//insert matakuliah
 				if ($in_mat->error_desc=='') {
-					$id_mk = $in_mat->data->id_mk;
+					$id_mk = $in_mat->data->id_matkul;
 					++$sukses_count;
 					$db->update('mat_kurikulum',array('status_error'=>1,'keterangan'=>''),'id',$dt->id_mat);
 						//mat kur for second access

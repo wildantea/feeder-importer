@@ -121,7 +121,7 @@ function insertRegPdArray($biodata,$additional_data)
 
     if ($biodata->id_jns_daftar!='1') {
         $array_pindah = array(
-            "sks_diakui" => $biodata->sks_diakui,
+           // "sks_diakui" => $biodata->sks_diakui,
             "id_perguruan_tinggi_asal" => $additional_data['id_sp']
         );
        	$array_pindah["id_prodi_asal"] = $additional_data['id_sms'];
@@ -197,6 +197,7 @@ function insertRegPdArray($biodata,$additional_data)
 			        "record" => $data_insert_mhs_pt
 			    ];
 				$insert_mhs_pt = service_request($data_dic);
+				//dump($insert_mhs_pt);
         		if ($insert_mhs_pt->error_desc=='') {
 					++$sukses_count;
 					$db->update('mhs',array('status_error'=>1,'keterangan'=>''),'id',$value->id);
@@ -220,6 +221,7 @@ function insertRegPdArray($biodata,$additional_data)
 				'filter' => $filter_nim
 			);
 			$check_nim_exist = service_request($data_param);
+
 			if (empty($check_nim_exist->data)) { 
 	        	$id_mahasiswa = $id_pd->data[0]->id_mahasiswa;
 				$data_insert_mhs_pt = insertRegPdArray($value,array('id_sp' => $id_pt,'id_sms' => $id_prodi,'id_mahasiswa' => $id_mahasiswa));
@@ -229,8 +231,8 @@ function insertRegPdArray($biodata,$additional_data)
 			        "record" => $data_insert_mhs_pt
 			    ];
 				$insert_mhs_pt = service_request($data_dic);
-				//dump($data_dic);
-				//dump($insert_mhs_pt);
+				/*dump($data_dic);
+				dump($insert_mhs_pt);*/
         		if ($insert_mhs_pt->error_desc=='') {
 					++$sukses_count;
 					$db->update('mhs',array('status_error'=>1,'keterangan'=>''),'id',$value->id);

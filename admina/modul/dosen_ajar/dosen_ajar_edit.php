@@ -69,7 +69,28 @@
                           <input type="text" data-rule-number="true" name="tatap_muka_real" value="<?=$data_edit->tatap_muka_real;?>" placeholder="Jumlah Realisasi Tatap Muka" class="form-control" required> 
                         </div>
                       </div><!-- /.form-group -->
-
+<div class="form-group">
+                        <label for="Jurusan" class="control-label col-lg-2">Jenis Evaluasi</label>
+                        <div class="col-lg-10">
+                           <select name="id_jenis_evaluasi" data-placeholder="Pilih Evaluasi..." class="form-control chzn-select" tabindex="2" required>
+<?php
+$evaluasi = array(
+    1 => 'Evaluasi Akademik',
+    2 => 'Aktivitas Partisipatif',
+    3 => 'Hasil Proyek',
+    4 => 'Kognitif/ Pengetahuan'
+);
+foreach ($evaluasi as $id => $val) {
+    if ($data_edit->id_jenis_evaluasi==$id) {
+      echo "<option value='$id' selected>$val</option>";
+    } else {
+      echo "<option value='$id'>$val</option>";
+    }
+} 
+ ?>
+              </select>
+                        </div>
+                      </div><!-- /.form-group -->
                        <input type="hidden" name="jurusan" value="<?=$id_jur;?>">
                       <input type="hidden" name="id" value="<?=$data_edit->id;?>">
                       <div class="form-group">

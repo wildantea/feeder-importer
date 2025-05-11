@@ -363,7 +363,7 @@
 		 *
 		 * @return array List of sheets (key is sheet index, value is name)
 		 */
-		public function Sheets()
+		/*public function Sheets()
 		{
 			if ($this -> Sheets === false)
 			{
@@ -385,7 +385,44 @@
 				ksort($this -> Sheets);
 			}
 			return array_values($this -> Sheets);
+		}*/
+
+		public function Sheets()
+		{
+		  if ($this -> Sheets === false)
+		  {
+		    $this -> Sheets = array();
+		    foreach ($this -> WorkbookXML -> sheets -> sheet as $Index => $Sheet)
+		    {
+		      $AttributesWithPrefix = $Sheet -> attributes('r', true);
+		      $Attributes = $Sheet -> attributes();
+
+		      $rId = 0;
+		      $sheetId = 0;
+
+		      foreach ($AttributesWithPrefix as $Name => $Value)
+		      {
+		        if ($Name == 'id')
+		        {
+		          $rId = (int)str_replace('rId', '', (string)$Value);
+		          break;
+		        }
+		      }
+		      foreach ($Attributes as $Name => $Value)
+		      {
+		        if ($Name == 'sheetId') {
+		          $sheetId = (int)$Value;
+		          break;
+		        }
+		      }
+
+		      $this -> Sheets[min($rId, $sheetId)] = (string)$Sheet['name'];
+		    }
+		    ksort($this -> Sheets);
+		  }
+		  return array_values($this -> Sheets);
 		}
+
 
 		/**
 		 * Changes the current sheet in the file to another
@@ -453,7 +490,7 @@
 					case 't':
 						if ($this -> SharedStrings -> nodeType == XMLReader::END_ELEMENT)
 						{
-							continue;
+							continue 2;
 						}
 						$CacheValue .= $this -> SharedStrings -> readString();
 						break;
@@ -578,7 +615,7 @@
 						case 't':
 							if ($this -> SharedStrings -> nodeType == XMLReader::END_ELEMENT)
 							{
-								continue;
+								continue 2;
 							}
 							$Value .= $this -> SharedStrings -> readString();
 							break;
@@ -929,10 +966,10 @@
 		public function GeneralFormat($Value)
 		{
 			// Numeric format
-			if (is_numeric($Value))
+		/*	if (is_numeric($Value))
 			{
 				$Value = (float)$Value;
-			}
+			}*/
 			return $Value;
 		}
 
@@ -1046,7 +1083,7 @@
 							// If it is a closing tag, skip it
 							if ($this -> Worksheet -> nodeType == XMLReader::END_ELEMENT)
 							{
-								continue;
+								continue 2;
 							}
 
 							$StyleId = (int)$this -> Worksheet -> getAttribute('s');
@@ -1080,7 +1117,7 @@
 						case 'is':
 							if ($this -> Worksheet -> nodeType == XMLReader::END_ELEMENT)
 							{
-								continue;
+								continue 2;
 							}
 
 							$Value = $this -> Worksheet -> readString();

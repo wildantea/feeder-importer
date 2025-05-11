@@ -1,9 +1,9 @@
 <?php
 session_start();
+$time_start = microtime(true); 
 include "../../inc/config.php";
 session_check();
- /** PHPExcel_IOFactory */
-require_once '../../lib/PHPExcel/IOFactory.php';
+require('../../lib/SpreadsheetReader.php');
 
 switch ($_GET["act"]) {
 
@@ -27,24 +27,16 @@ switch ($_GET["act"]) {
 
             } else {
               move_uploaded_file($_FILES["semester"]["tmp_name"], "../../../upload/dosen_ajar/".$_FILES['semester']['name']);
-              $semester = array("semester"=>$_FILES["semester"]["name"]);
 
             }
-
-
-$objPHPExcel = PHPExcel_IOFactory::load("../../../upload/dosen_ajar/".$_FILES['semester']['name']);
-
-
-$data = $objPHPExcel->getActiveSheet()->toArray();
-
 
 $error_count = 0;
 $error = array();
 $sukses = 0;
 
-
-
-foreach ($data as $key => $val) {
+  $Reader = new SpreadsheetReader("../../../upload/dosen_ajar/".$_FILES['semester']['name']);
+  foreach ($Reader as $key => $val)
+  {
 
     if ($key>0) {
 
@@ -70,6 +62,7 @@ foreach ($data as $key => $val) {
                           'rencana_tatap_muka'=>$val[5],
                           "tatap_muka_real" => $realisasi,
                           "sks_ajar" => $val[7],
+                          "id_jenis_evaluasi" => $val[8],
                           'kode_jurusan' => $_POST['jurusan']
                               );
 
@@ -127,6 +120,7 @@ if (($sukses>0) || ($error_count>0)) {
     "nama_kelas"=>$_POST["nama_kelas"],
     "rencana_tatap_muka" => $_POST['tatap_muka'],
     "tatap_muka_real" => $_POST['tatap_muka_real'],
+    "id_jenis_evaluasi" => $_POST['id_jenis_evaluasi'],
     'kode_jurusan' => $_POST['jurusan']
     );
   
@@ -148,7 +142,7 @@ if (($sukses>0) || ($error_count>0)) {
     $db->delete("ajar_dosen","id",$_GET["id"]);
     break;
   case "up":
-   $data = array("semester"=>$_POST["semester"],"nidn"=>$_POST["nidn"],"nama_dosen"=>$_POST["nama_dosen"],"kode_mk"=>$_POST["kode_mk"],"nama_kelas"=>$_POST["nama_kelas"],"rencana_tatap_muka" => $_POST['tatap_muka'],"tatap_muka_real" => $_POST['tatap_muka_real'],'kode_jurusan' => $_POST['jurusan']);
+   $data = array("semester"=>$_POST["semester"],"nidn"=>$_POST["nidn"],"nama_dosen"=>$_POST["nama_dosen"],"kode_mk"=>$_POST["kode_mk"],"nama_kelas"=>$_POST["nama_kelas"],"rencana_tatap_muka" => $_POST['tatap_muka'],"tatap_muka_real" => $_POST['tatap_muka_real'],"id_jenis_evaluasi" => $_POST['id_jenis_evaluasi'],'kode_jurusan' => $_POST['jurusan']);
    
    
    

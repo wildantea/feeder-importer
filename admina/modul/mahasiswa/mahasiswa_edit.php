@@ -24,7 +24,7 @@
                                 </div>
 
                   <div class="box-body">
-                     <form id="update" method="post" class="form-horizontal" action="<?=base_admin();?>modul/mahasiswa/mahasiswa_action.php?act=up">
+                     <form id="update_mhs" method="post" class="form-horizontal" action="<?=base_admin();?>modul/mahasiswa/mahasiswa_action.php?act=up">
                            <div class="form-group">
                         <label for="NIM" class="control-label col-lg-2">NIM</label>
                         <div class="col-lg-10">
@@ -34,7 +34,7 @@
                       <div class="form-group">
                         <label for="Nama" class="control-label col-lg-2">Nama</label>
                         <div class="col-lg-10">
-                          <input type="text" name="nm_pd" value="<?=$data_edit->nm_pd;?>" class="form-control" required> 
+                          <input type="text" name="nm_pd" value="<?= htmlspecialchars($data_edit->nm_pd, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" required> 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
@@ -61,13 +61,13 @@
 <div class="form-group">
                         <label for="Nomor KTP" class="control-label col-lg-2">NIK Mahasiswa</label>
                         <div class="col-lg-10">
-                          <input type="text" data-rule-number="true" name="nik" value="<?=$data_edit->nik;?>" class="form-control" > 
+                          <input type="text" name="nik" value="<?=$data_edit->nik;?>" class="form-control" maxlength="16"> 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
                         <label for="Nomor KTP" class="control-label col-lg-2">NISN</label>
                         <div class="col-lg-10">
-                          <input type="text" name="nisn" placeholder="NISN" value="<?=$data_edit->nisn;?>" class="form-control" > 
+                          <input type="text" name="nisn" placeholder="NISN" value="<?=$data_edit->nisn;?>" maxlength="10" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
@@ -112,7 +112,7 @@
 <div class="form-group">
                         <label for="Tempat Lahir" class="control-label col-lg-2">Tempat Lahir</label>
                         <div class="col-lg-10">
-                          <input type="text" name="tmpt_lahir" value="<?=$data_edit->tmpt_lahir;?>" class="form-control" required> 
+                          <input type="text" name="tmpt_lahir" value="<?= htmlspecialchars($data_edit->tmpt_lahir, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" required> 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
@@ -167,76 +167,45 @@
                           <input type="text" name="ds_kel" value="<?=$data_edit->ds_kel;?>" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->
-<?php
-          $provinsi = $db->fetch_custom_single("select dprov.id_wil as id_prov,dprov.nm_wil as provinsi, dkab.nm_wil as kab, dk.nm_wil as kec,dk.id_wil
- from data_wilayah dk 
-inner join data_wilayah dkab
-on dk.id_induk_wilayah=dkab.id_wil
-inner join data_wilayah dprov
-on dkab.id_induk_wilayah=dprov.id_wil
-where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
-          ?>
-            <div class="form-group">
-                <label for="Provinsi" class="control-label col-lg-2">Provinsi</label>
-                <div class="col-lg-10">
-                    <select name="provinsi_provinsi"  id="provinsi_provinsi" data-placeholder="Pilih Provinsi..." class="form-control chzn-select" tabindex="2" required>
-                    <option value=""></option>
-                     <?php
-                     foreach ($db->query("select * from data_wilayah where id_level_wil=1") as $isi) {
-                      if ($provinsi->id_prov==$isi->id_wil) {
-                        echo "<option value='$isi->id_wil' selected>$isi->nm_wil</option>";
-                        } else {
-                        echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
-                        }
-
-                        } ?>
-                      </select>
-                  </div>
-              </div><!-- /.form-group -->
-              
-              <div class="form-group">
-                  <label for="Kabupaten" class="control-label col-lg-2">Kabupaten</label>
-                  <div class="col-lg-10">
-                  <?php
-                  $kabupaten = $db->fetch_custom_single("select dkab.id_wil as id_kab, dkab.nm_wil as kab, dk.nm_wil as kec,dk.id_wil
- from data_wilayah dk 
-inner join data_wilayah dkab
-on dk.id_induk_wilayah=dkab.id_wil
-where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
-                  ?>
-                  <select name="id_kab" id="kabupaten_kabupaten" data-placeholder="Pilih Kabupaten ..." class="form-control chzn-select" tabindex="2" required>
-                    <option value=""></option>
-                   <?php
-
-                  
-                   foreach ($db->query("select * from data_wilayah where id_induk_wilayah=$provinsi->id_prov") as $isi) {
-                            if ($kabupaten->id_kab==$isi->id_wil) {
-                        echo "<option value='$isi->id_wil' selected>$isi->nm_wil</option>";
-                      } else {
-                        echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
-                        }
-
-                   } ?>
-                    </select>
-                  </div>
-              </div><!-- /.form-group -->
 
 <div class="form-group">
                         <label for="Jenis Tinggal" class="control-label col-lg-2">Kecamatan <span style="color:#FF0000">*</span></label>
                         <div class="col-lg-10">
-                          <select id="id_kec_tea" name="id_wil" data-placeholder="Pilih Kecamatan..." class="form-control chzn-select" tabindex="2" required="">
+                          <select id="kecamatan" name="id_wil" data-placeholder="Pilih Kecamatan..." class="form-control data_wil" tabindex="2" required="">
                <option value=""></option>
               <?php
 
-                  
-                   foreach ($db->query("select * from data_wilayah where id_induk_wilayah=$kabupaten->id_kab") as $isi) {
-                    if ($db->trimmer($data_edit->id_wil)==$db->trimmer($isi->id_wil)) {
-                        echo "<option value='$isi->id_wil' selected>$isi->nm_wil</option>";
-                      } else {
-                        echo "<option value='$isi->id_wil'>$isi->nm_wil</option>";
-                        }
+                   if ($data_edit->id_wil=='999999') {
+                     echo "<option value='$data_edit->id_wil' selected>Tidak ada</option>";
+                   } else {
+                    foreach ($db->fetch_custom("
+                      SELECT 
+    dwc.id_wil,CONCAT(dwc.nm_wil, ' - ', dw.nm_wil, ' - ', data_wilayah.nm_wil) AS wil 
+FROM 
+    data_wilayah
+LEFT JOIN 
+    data_wilayah dw ON data_wilayah.id_wil = dw.id_induk_wilayah
+LEFT JOIN 
+    data_wilayah dwc ON dw.id_wil = dwc.id_induk_wilayah
+WHERE 
+    data_wilayah.id_level_wil = '1'and dwc.id_wil='$data_edit->id_wil'
 
-                   } ?>
+union all
+SELECT 
+    dw.id_wil,CONCAT( dw.nm_wil, ' - ', data_wilayah.nm_wil) AS wil 
+FROM 
+    data_wilayah
+LEFT JOIN 
+    data_wilayah dw ON data_wilayah.id_wil = dw.id_induk_wilayah
+WHERE 
+    data_wilayah.id_level_wil = '1' and dw.id_wil='$data_edit->id_wil'
+") as $isi) {
+                    if ($data_edit->id_wil==$isi->id_wil) {
+                        echo "<option value='$isi->id_wil' selected>$isi->wil</option>";
+                      }
+                   }
+                   }
+                    ?>
               </select>
                         </div>
                       </div><!-- /.form-group -->
@@ -326,13 +295,57 @@ where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
                         <div class="col-lg-10">
                           <select name="id_jns_daftar" id="id_jns_daftar" data-placeholder="Pilih Jenis Pendaftaran ..." class="form-control chzn-select" tabindex="2" >
                <option value=""></option>
-               <?php foreach ($db->query("select * from jenis_pendaftaran where id_jns_daftar in(1,2,11,12,13,14,15)") as $isi) {
+               <?php foreach ($db->fetch_custom("select * from jenis_pendaftaran") as $isi) {
                 if ($isi->id_jns_daftar==$data_edit->id_jns_daftar) {
                   echo "<option value='$isi->id_jns_daftar' selected>$isi->nm_jns_daftar</option>";
                 } else {
                   echo "<option value='$isi->id_jns_daftar'>$isi->nm_jns_daftar</option>";
                 }
                } ?>
+              </select>
+                        </div>
+                      </div><!-- /.form-group -->
+
+<?php
+if ($data_edit->id_jns_daftar!=1) {
+  $show = "";
+} else {
+  $show = "style='display:none'";
+}
+?>
+<div class="form-group" id="show_asal_pt" <?=$show?>>
+                        <label for="Jenis Pendaftaran" class="control-label col-lg-2">Asal Perguruan Tinggi</label>
+                        <div class="col-lg-10">
+                          <select name="kode_pt_asal" id="kode_pt_asal" data-placeholder="Pilih Asal Perguruan Tinggi ..." class="form-control" tabindex="2" >
+                          <?php
+                          if ($data_edit->id_jns_daftar!=1 && $data_edit->kode_pt_asal!="") {
+                            $kampus = $db->fetch_single_row("satuan_pendidikan","npsn",$data_edit->kode_pt_asal);
+                             echo "<option value='$kampus->npsn'>$kampus->nm_lemb</option>";
+                          }
+                          ?>
+
+              </select>
+                        </div>
+                      </div><!-- /.form-group -->
+<div class="form-group" id="show_asal_prodi" <?=$show?>>
+                        <label for="Jenis Pendaftaran" class="control-label col-lg-2">Asal Program Studi</label>
+                        <div class="col-lg-10">
+                          <select name="kode_prodi_asal" id="kode_prodi_asal" data-placeholder="Pilih Asal Program Studi ..." class="form-control chzn-select" tabindex="2">
+                            <option value=""></option>
+                          <?php
+                          $npsn = "";
+                          if ($data_edit->id_jns_daftar!=1) {
+                            $id_sp = $db->fetch_single_row("satuan_pendidikan","npsn",$data_edit->kode_pt_asal);
+                            $prodis = $db->fetch_custom("SELECT concat(nm_jenj_didik,' ',nm_lemb) as nama_jurusan,kode_prodi from jenjang_pendidikan INNER join sms USING(id_jenj_didik) where id_sp=?",array('id_sp' => $id_sp->id_sp));
+                            foreach ($prodis as $prodi) {
+                              if ($data_edit->kode_prodi_asal==$prodi->kode_prodi) {
+                                 echo "<option value='$prodi->kode_prodi' selected>$prodi->nama_jurusan</option>";
+                              } else {
+                                echo "<option value='$prodi->kode_prodi'>$prodi->nama_jurusan</option>";
+                              }
+                          }
+                        }
+                          ?>
               </select>
                         </div>
                       </div><!-- /.form-group -->
@@ -351,14 +364,14 @@ where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
 <div class="form-group">
                         <label for="Nomor KTP" class="control-label col-lg-2">NIK Ayah</label>
                         <div class="col-lg-10">
-                          <input type="text" data-rule-number="true" name="nik_ayah" value="<?=$data_edit->nik_ayah;?>" class="form-control" > 
+                          <input type="text" data-rule-number="true" name="nik_ayah" value="<?=$data_edit->nik_ayah;?>" class="form-control" maxlength="16"> 
                         </div>
                       </div><!-- /.form-group -->
 
 <div class="form-group">
                         <label for="Nama Ayah" class="control-label col-lg-2">Nama Ayah</label>
                         <div class="col-lg-10">
-                          <input type="text" name="nm_ayah" value="<?=$data_edit->nm_ayah;?>" class="form-control" > 
+                          <input type="text" name="nm_ayah" value="<?= htmlspecialchars($data_edit->nm_ayah, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
@@ -418,13 +431,13 @@ where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
 <div class="form-group">
                         <label for="Nomor KTP" class="control-label col-lg-2">NIK Ibu</label>
                         <div class="col-lg-10">
-                          <input type="text" data-rule-number="true" name="nik_ibu" value="<?=$data_edit->nik_ibu;?>" class="form-control" > 
+                          <input type="text" data-rule-number="true" name="nik_ibu" value="<?=$data_edit->nik_ibu;?>" class="form-control" maxlength="16"> 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
                         <label for="Nama Ibu" class="control-label col-lg-2">Nama Ibu</label>
                         <div class="col-lg-10">
-                          <input type="text" name="nm_ibu_kandung" value="<?=$data_edit->nm_ibu_kandung;?>" class="form-control" required> 
+                          <input type="text" name="nm_ibu_kandung" value="<?= htmlspecialchars($data_edit->nm_ibu_kandung, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" required> 
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
@@ -482,7 +495,7 @@ where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
                         </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
-                        <label for="nm_wali" class="control-label col-lg-2">nm_wali</label>
+                        <label for="nm_wali" class="control-label col-lg-2">Nama Wali</label>
                         <div class="col-lg-10">
                           <input type="text" name="nm_wali" value="<?=$data_edit->nm_wali;?>" class="form-control" > 
                         </div>
@@ -557,44 +570,17 @@ where dk.id_wil=?",array('id_wil' => $data_edit->id_wil));
               </select>
                         </div>
                       </div><!-- /.form-group -->
-
-<?php
-if ($data_edit->id_jns_daftar!=1) {
-  $show = "";
-} else {
-  $show = "style='display:none'";
-}
-?>
-<div class="form-group" id="show_sks_diakui" <?=$show;?>>
-                        <label for="Email" class="control-label col-lg-2">Jumlah Sks di akui</label>
-                        <div class="col-lg-1">
-                          <input type="text" id="sks_diakui" name="sks_diakui" value="<?=$data_edit->sks_diakui;?>" class="form-control"> 
-                        </div>
-                      </div><!-- /.form-group -->
-
-<div class="form-group" id="show_asal_pt" <?=$show?>>
-                        <label for="Jenis Pendaftaran" class="control-label col-lg-2">Kode PT Asal</label>
-                        <div class="col-lg-3">
-                          <input type="text" id="kode_pt_asal" name="kode_pt_asal" value="<?=$data_edit->kode_pt_asal;?>" class="form-control"> 
-                        </div>
-                      </div><!-- /.form-group -->
-<div class="form-group" id="show_asal_prodi" <?=$show?>>
-                        <label for="Jenis Pendaftaran" class="control-label col-lg-2">Kode Prodi Asal</label>
-                         <div class="col-lg-3">
-                          <input type="text" id="kode_prodi_asal" name="kode_prodi_asal" value="<?=$data_edit->kode_prodi_asal;?>" class="form-control"> 
-                        </div>
-                      </div><!-- /.form-group -->
-
 <div class="form-group">
                         <label for="biaya_masuk_kuliah" class="control-label col-lg-2">Biaya Masuk Kuliah</label>
                         <div class="col-lg-10">
                           <input type="number" name="biaya_masuk_kuliah" value="<?=$data_edit->biaya_masuk_kuliah;?>" class="form-control" > 
                         </div>
                       </div><!-- /.form-group -->
+
 <div class="form-group">
                         <label for="Jurusan" class="control-label col-lg-2">Prodi</label>
                         <div class="col-lg-10">
-                          <select name="kode_jurusan" data-placeholder="Pilih Jurusan..." class="form-control chzn-select" tabindex="2" required>
+                        <select name="kode_jurusan" data-placeholder="Pilih Jurusan..." class="form-control chzn-select" tabindex="2" required>
 
                <?php 
 if ($_SESSION['level']==1) {
@@ -628,7 +614,102 @@ foreach ($jur as $isi) {
                 </section><!-- /.content -->
         
  <script type="text/javascript">
-                       $("#provinsi_provinsi").change(function(){
+$(document).ready(function(){
+
+  //trigger validation onchange
+$('select').on('change', function() {
+    $(this).valid();
+});
+$.validator.setDefaults({ ignore: ":hidden:not(select)" });
+
+    $("#update_mhs").validate({
+        errorClass: "help-block",
+        errorElement: "span",
+        highlight: function(element, errorClass, validClass) {
+            $(element).parents(".form-group").removeClass(
+                "has-success").addClass("has-error");
+        },
+        unhighlight: function(element, errorClass, validClass) {
+            $(element).parents(".form-group").removeClass(
+                "has-error").addClass("has-success");
+        },
+        errorPlacement: function(error, element) {
+            if (element.hasClass("chzn-select")) {
+                var id = element.attr("id");
+                error.insertAfter("#" + id + "_chosen");
+            } else if (element.attr("accept") == "image/*") {
+                element.parent().parent().parent().append(error);
+            } else if (element.hasClass("waktu")) {
+               element.parent().parent().append(error);
+            }
+            else if (element.hasClass("tgl_picker_input")) {
+               element.parent().parent().append(error);
+            } else if (element.hasClass("select2-hidden-accessible")) {
+               element.parent().append(error);
+            }
+            else if (element.hasClass("file-upload-data")) {
+               element.parent().parent().parent().append(error);
+            }  else if (element.hasClass("dosen-ke")) {
+                  error.appendTo('.error-dosen');
+            }
+            else if (element.attr("type") == "checkbox") {
+                element.parent().parent().append(error);
+            } else if (element.attr("type") == "radio") {
+                element.parent().parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+            submitHandler: function(form) {
+               $('#loadnya').show();
+
+                   $(form).ajaxSubmit({
+                          type:"post",
+                          url: $(this).attr('action'),
+                          data: $("form#update_mhs").serialize(),
+                        success: function(data){
+                         console.log(data);
+                          $('#loadnya').hide();
+                              if (data=='good') {
+                          $('.notif_top_up').fadeIn(2000);
+                           $(".notif_top_up").fadeOut(1000,function(){
+                           window.history.back();
+                        });
+
+                                //$('.sukses').html(data);
+                              } else {
+
+                                 $('.errorna').fadeIn();
+                                //redirect jika berhasil login
+
+                              }
+                      }
+                    });
+            }
+
+        });
+
+  $( "#kecamatan" ).select2({
+    ajax: {
+      url: '<?=base_admin();?>modul/mahasiswa/get_kecamatan.php',
+      dataType: 'json'
+      // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+    },
+    formatInputTooShort: "Cari Kecamatan/Kabupaten",
+    width: "100%",
+  });
+
+  $( "#kode_pt_asal" ).select2({
+    ajax: {
+      url: '<?=base_admin();?>modul/mahasiswa/get_kampus.php',
+      dataType: 'json'
+      // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+    },
+    formatInputTooShort: "Cari Nama Kampus",
+    width: "100%",
+  });
+
+$("#provinsi_provinsi").change(function(){
 
                         $.ajax({
                         type : "post",
@@ -642,6 +723,9 @@ foreach ($jur as $isi) {
                     });
 
                   });
+
+
+
 
                     $("#kabupaten_kabupaten").change(function(){
 
@@ -657,4 +741,37 @@ foreach ($jur as $isi) {
                     });
 
                   });
+
+  $("#id_jns_daftar").change(function(){
+    if ($(this).val()!=1) {
+        //$("#show_sks_diakui").show();
+        $("#show_asal_pt").show();
+        $("#show_asal_prodi").show();
+        $("#sks_diakui").prop('required',true);
+        $("#kode_pt_asal").prop('required',true);
+     
+    } else {
+        //$("#show_sks_diakui").hide();
+        $("#show_asal_pt").hide();
+        $("#show_asal_prodi").hide();
+        $("#sks_diakui").prop('required',false);
+        $("#kode_pt_asal").prop('required',false);
+    }
+});
+
+$("#kode_pt_asal").change(function(){
+      $.ajax({
+      type : "post",
+      url : "<?=base_admin();?>modul/mahasiswa/get_prodi_asal.php",
+      data : {id_sp:this.value},
+      success : function(data) {
+          $("#kode_prodi_asal").html(data);
+          $("#kode_prodi_asal").trigger("chosen:updated");
+      }
+  });
+});
+
+});
+
+
  </script>

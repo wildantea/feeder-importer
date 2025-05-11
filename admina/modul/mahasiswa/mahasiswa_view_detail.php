@@ -85,13 +85,14 @@
               <h3 class="box-title">Filter</h3>
             </div>
             <div class="box-body">
-           <form class="form-horizontal">
+
+ <form class="form-horizontal" method="post">
                       <div class="form-group">
                         <label for="Semester" class="control-label col-lg-2">Angkatan</label>
                         <div class="col-lg-3">
-                        <select id="sem_filter" data-placeholder="Pilih Angkatan ..." class="form-control chzn-select" tabindex="2">
+                        <select id="sem_filter" name="sem_filter" data-placeholder="Pilih Angkatan ..." class="form-control chzn-select" tabindex="2">
                         <option value="all">Semua</option>
-               <?php 
+                <?php 
           $jurusan_sem = "";
         if ($_SESSION['level']!=1) {
               $jurusan_sem = "where mhs.kode_jurusan='".$_SESSION['jurusan']."'";
@@ -107,6 +108,20 @@
  </div>
                       </div><!-- /.form-group -->
 <div class="form-group">
+                        <label for="Kode Matakuliah" class="control-label col-lg-2">Jenis Pendaftaran</label>
+                        <div class="col-lg-3">
+                       <select class="form-control" name="id_jns_daftar" id="id_jns_daftar">
+                    <option value="all">Semua</option>
+                   <?php
+                    $jurusan_and = "where mhs.kode_jurusan='".$id_jur."'";
+                   foreach ($db->fetch_custom("select * from jenis_pendaftaran where id_jns_daftar in (select id_jns_daftar from mhs $jurusan_and) ") as $jns) {
+                     echo "<option value='$jns->id_jns_daftar'>$jns->nm_jns_daftar</option>";
+                   }
+                   echo $db->getErrorMessage();
+                   ?>
+                  </select> </div>
+                      </div><!-- /.form-group -->
+<div class="form-group">
                         <label for="Kode Matakuliah" class="control-label col-lg-2">Status</label>
                         <div class="col-lg-3">
                        <select class="form-control" name="status" id="status_filter">
@@ -119,23 +134,30 @@
                       <div class="form-group">
                         <label for="tags" class="control-label col-lg-2">&nbsp;</label>
                         <div class="col-lg-10">
-                          <span id="filter" class="btn btn-primary btn-flat">Submit</span>
-                        </div>
+                          <span id="filter" class="btn btn-primary"><i class="fa fa-refresh"></i> Filter</span>
+                         </div>
                       </div><!-- /.form-group -->
                     </form>
+
             </div>
     
                                 <div class="box-body table-responsive">
-                                    <table id="dtb_mahasiswa" class="table table-bordered table-striped">
+                                    <table id="dtb_mahasiswa" class="table table-bordered table-striped" width="100%">
                                    <thead>
                                      <tr>
                                            <th><input type="checkbox"  id="bulkDelete"  /> <button id="deleteTriger"><i class="fa fa-trash"></i></button></th>
-                                     <th>NIPD/NIM</th>
-                          <th>Nama Mahasiswa</th>
-													<th>Jenis Kelamin</th>
-													<th>Tempat Lahir</th>
+                                    
+                       
+                          <th>NIM</th>
+                          <th>Nama</th>
+                          <th>Angkatan</th>
+                          <th>JK</th>
+                          <th>NIK</th>
+                          <th>Tmpt Lahir</th>
+                          <th>Tgl Lahir</th>
+                          <th>Nama Ibu</th>
+                          <th>Prodi</th>
                           <th>Status</th>
-													
                           <th>Action</th>
                          
                         </tr>
@@ -269,10 +291,11 @@ $('#filter').on('click', function() {
             "ajax":{
              url :"<?=base_admin();?>modul/mahasiswa/mahasiswa_data.php",
             type: "post",  // method  , by default get
-            data: function ( d ) {
+             data: function ( d ) {
                     d.jurusan = "<?=$id_jur;?>";
                     d.semester = $("#sem_filter").val();
                     d.status_filter = $("#status_filter").val();
+                    d.id_jns_daftar = $("#id_jns_daftar").val();
                   },
           error: function (xhr, error, thrown) {
             console.log(xhr);

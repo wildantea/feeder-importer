@@ -94,9 +94,8 @@ $values = "";
                   'kode_jurusan' => $_POST['jurusan'],
                   'id_pembiayaan' => $db->trimmer($val[45]),
                   'biaya_masuk_kuliah' => $db->trimmer($val[46]),
-                  'sks_diakui' => isset($val[47]) ? $db->trimmer($val[47]) : '',
-                  'kode_pt_asal' => isset($val[48]) ? $db->trimmer($val[48]) : '',
-                  'kode_prodi_asal' => isset($val[49]) ? $db->trimmer($val[49]) : '',
+                  'kode_pt_asal' => isset($val[47]) ? $db->trimmer($val[47]) : '',
+                  'kode_prodi_asal' => isset($val[48]) ? $db->trimmer($val[48]) : '',
                   'id_kk' => 0
                   );
 
@@ -263,13 +262,16 @@ $data_mhs = array(
     "biaya_masuk_kuliah"=>$_POST["biaya_masuk_kuliah"],
     "id_jalur_masuk"=>$_POST["id_jalur_masuk"]
     );
- 
 if ($_POST['id_jns_daftar']!=1) {
-    $data_mhs["sks_diakui"] = $_POST["sks_diakui"];
-    $data_mhs["kode_pt_asal"] = $_POST["kode_pt_asal"];
+    //$data_mhs["sks_diakui"] = $_POST["sks_diakui"];
+    if (isset($_POST['kode_pt_asal'])) {
+      $data_mhs["kode_pt_asal"] = $_POST["kode_pt_asal"];
+    } else {
+    //$data_mhs["sks_diakui"] = '';
+    $data_mhs["kode_pt_asal"] = '';
+    }
     $data_mhs["kode_prodi_asal"]= $_POST["kode_prodi_asal"];
 } else {
-    $data_mhs["sks_diakui"] = '';
     $data_mhs["kode_pt_asal"] = '';
     $data_mhs["kode_prodi_asal"]= '';
 }
